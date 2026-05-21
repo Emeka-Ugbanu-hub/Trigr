@@ -1,0 +1,69 @@
+{
+  "name": "trigr",
+  "version": "0.0.1",
+  "description": "Wrap. Watch. Animate.",
+  "license": "MIT",
+  "author": "Emeka Ugbanu",
+  "keywords": [
+    "react",
+    "animation",
+    "transitions",
+    "wrapper",
+    "trigr"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/text/index.cjs",
+  "module": "./dist/text/index.js",
+  "types": "./dist/text/index.d.ts",
+  "exports": {
+    "./text": {
+      "types": "./dist/text/index.d.ts",
+      "import": "./dist/text/index.js",
+      "require": "./dist/text/index.cjs"
+    },
+    "./paragraph": {
+      "types": "./dist/paragraph/index.d.ts",
+      "import": "./dist/paragraph/index.js",
+      "require": "./dist/paragraph/index.cjs"
+    },
+    "./list": {
+      "types": "./dist/list/index.d.ts",
+      "import": "./dist/list/index.js",
+      "require": "./dist/list/index.cjs"
+    },
+    "./block": {
+      "types": "./dist/block/index.d.ts",
+      "import": "./dist/block/index.js",
+      "require": "./dist/block/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "playground": "vite --config playground/vite.config.ts playground",
+    "site:build": "vite build --config playground/vite.config.ts playground",
+    "site:preview": "vite preview --config playground/vite.config.ts playground",
+    "pack:dry": "npm pack --dry-run",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.8.0",
+    "@types/react": "^19.2.14",
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "tsup": "^8.4.0",
+    "typescript": "^6.0.3",
+    "vite": "^6.4.2"
+  }
+}
