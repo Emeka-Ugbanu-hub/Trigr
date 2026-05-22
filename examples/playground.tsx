@@ -602,29 +602,33 @@ function SearchDemo({ preset, duration, easing }: { preset: AnimationPreset; dur
   const triggerValue = triggerProp("change", secondaryTrigger) as "change" | ["change", Trigger]
   return (
     <div className="real-demo">
-      <p className="demo-label">Live search — type or click random to see text animate with each change</p>
-      <div className="search-field">
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search..." />
-        <button className="random-btn" onClick={() => setQuery(RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)])}>Random</button>
+      <div className="search-real-ui">
+        <div className="search-real-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products..." />
+        </div>
+        <div className="search-real-results">
+          <div className="search-real-result-item">
+            <div className="search-real-result-thumb" />
+            <div className="search-real-result-body">
+              <TextAnimate.Text trigger={triggerValue} value={query} animation={preset} duration={duration} easing={easing} properties={properties} as="h4" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})}>
+                {query}
+              </TextAnimate.Text>
+              <p>Found in 12 products · Updated yesterday</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="search-result-display">
-        <TextAnimate.Text trigger={triggerValue} value={query} animation={preset} duration={duration} easing={easing} properties={properties} as="h2" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})}>
-          {query}
-        </TextAnimate.Text>
-      </div>
-      <span className="demo-meta">Results for: {query || "\u00A0"}</span>
       <Code>{
 `import { Animate } from "trigr/text"
 
-function SearchDemo() {
+function SearchResults() {
   const [query, setQuery] = useState("")
 
   return (
-    <div>
-      <input
-        value={query}
+    <div className="search">
+      <input value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search..."
       />
       <Animate.Text
         trigger=${triggerSnippet("change", secondaryTrigger)}
@@ -632,7 +636,7 @@ function SearchDemo() {
         animation="${preset}"
         duration={${duration}}
         easing="${easing}"${propertiesSnippet(properties)}
-        as="h2"
+        as="h4"
       >
         {query}
       </Animate.Text>
@@ -651,42 +655,50 @@ function NavLinksDemo({ preset, duration, easing }: { preset: AnimationPreset; d
   const triggerValue = triggerProp("hover", secondaryTrigger) as "hover" | ["hover", Trigger]
   return (
     <div className="real-demo">
-      <p className="demo-label">Hover over each nav item to animate the text</p>
-      <nav className="nav-links-demo">
-        {NAV_ITEMS.map((item) => (
-          <TextAnimate.Text
-            key={item}
-            trigger={triggerValue}
-            animation={preset}
-            duration={duration}
-            easing={easing}
-            properties={properties}
-            as="button"
-            className="nav-link-item"
-            onHoverStart={() => setHovered(item)}
-            onHoverEnd={() => setHovered("")}
-          >
-            {item}
-          </TextAnimate.Text>
-        ))}
-      </nav>
-      <span className="demo-meta">Hovered: {hovered || "—"}</span>
+      <div className="app-header-demo">
+        <div className="app-header-logo">
+          <div className="app-header-logo-icon" />
+          <span>Acme</span>
+        </div>
+        <nav className="nav-links-demo">
+          {NAV_ITEMS.map((item) => (
+            <TextAnimate.Text
+              key={item}
+              trigger={triggerValue}
+              animation={preset}
+              duration={duration}
+              easing={easing}
+              properties={properties}
+              as="button"
+              className="nav-link-item"
+              onHoverStart={() => setHovered(item)}
+              onHoverEnd={() => setHovered("")}
+            >
+              {item}
+            </TextAnimate.Text>
+          ))}
+        </nav>
+        <button className="app-header-cta">Get Started</button>
+      </div>
       <Code>{
 `import { Animate } from "trigr/text"
 
-function NavBar() {
+function AppHeader() {
   return (
-    <nav>
-      ${NAV_ITEMS.map((item) => `<Animate.Text
+    <header className="app-header">
+      <div className="logo">Acme</div>
+      <nav>
+        ${NAV_ITEMS.map((item) => `<Animate.Text
   trigger="hover"
   animation="${preset}"
   duration={${duration}}
   easing="${easing}"
-  as="button"
+  as="a"
 >
   ${item}
-</Animate.Text>`).join("\n      ")}
-    </nav>
+</Animate.Text>`).join("\n        ")}
+      </nav>
+    </header>
   )
 }`}</Code>
     </div>
@@ -699,38 +711,44 @@ function CTADemo({ preset, duration, easing }: { preset: AnimationPreset; durati
   const triggerValue = triggerProp("click", secondaryTrigger) as "click" | ["click", Trigger]
   return (
     <div className="real-demo">
-      <p className="demo-label">Click the text — the animation runs on every click</p>
-      <TextAnimate.Text
-        trigger={triggerValue}
-        animation={preset}
-        duration={duration}
-        easing={easing}
-        properties={properties}
-        onClick={() => setCount((c) => c + 1)}
-        as="span"
-        style={{ cursor: "pointer", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 600 }}
-      >
-        Click Me
-      </TextAnimate.Text>
-      <span className="demo-meta">{count} clicks</span>
+      <div className="landing-hero-demo">
+        <span className="landing-eyebrow">New Release</span>
+        <TextAnimate.Text
+          trigger={triggerValue}
+          animation={preset}
+          duration={duration}
+          easing={easing}
+          properties={properties}
+          onClick={() => setCount((c) => c + 1)}
+          as="h1"
+          className="landing-headline"
+        >
+          Ship motion that feels right
+        </TextAnimate.Text>
+        <p className="landing-subtitle">Click the headline to see the animation replay. Perfect for hero sections that need to respond to user interaction.</p>
+        <div className="landing-actions">
+          <button className="landing-btn landing-btn-primary">Get Started</button>
+          <button className="landing-btn">View Docs</button>
+        </div>
+      </div>
       <Code>{
 `import { Animate } from "trigr/text"
 
-function ClickableText() {
-  const [count, setCount] = useState(0)
-
+function LandingHero() {
   return (
-    <Animate.Text
-      trigger="click"
-      animation="${preset}"
-      duration={${duration}}
-      easing="${easing}"
-      onClick={() => setCount((c) => c + 1)}
-      as="span"
-      style={{ cursor: "pointer", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 600 }}
-    >
-      Click Me
-    </Animate.Text>
+    <section className="hero">
+      <span className="eyebrow">New Release</span>
+      <Animate.Text
+        trigger="click"
+        animation="${preset}"
+        duration={${duration}}
+        easing="${easing}"
+        as="h1"
+      >
+        Ship motion that feels right
+      </Animate.Text>
+      <p>Click the headline to replay</p>
+    </section>
   )
 }`}</Code>
     </div>
@@ -806,33 +824,33 @@ function QuoteRotatorDemo({ preset, duration, easing }: { preset: AnimationPrese
 
   return (
     <div className="real-demo">
-      <p className="demo-label">Click "Next" to manually trigger the quote transition</p>
-      <div className="quote-display">
-        <TextAnimate.Text ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties} as="blockquote">
-          "{quote}"
-        </TextAnimate.Text>
-      </div>
-      <div className="manual-controls">
-        <button className="fire-button" onClick={next}>Next Quote</button>
-        <span className="demo-meta">{count} transitions</span>
+      <div className="testimonial-demo">
+        <div className="testimonial-avatar" />
+        <div className="quote-display">
+          <TextAnimate.Text ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties} as="blockquote">
+            "{quote}"
+          </TextAnimate.Text>
+        </div>
+        <div className="testimonial-author">
+          <strong>Sarah Chen</strong>
+          <span>Design Lead at Vercel</span>
+        </div>
+        <div className="manual-controls">
+          <button className="fire-button" onClick={next}>Next Quote</button>
+        </div>
       </div>
       <Code>{
 `import { Animate } from "trigr/text"
 
-const quotes = ${JSON.stringify(QUOTES)}
-
-function QuoteRotator() {
+function Testimonials() {
   const ref = useRef(null)
-  const [idx, setIdx] = useState(0)
-  const quote = quotes[idx]
 
   function next() {
-    setIdx((i) => (i + 1) % quotes.length)
     ref.current?.animate()
   }
 
   return (
-    <div>
+    <div className="testimonial">
       <Animate.Text
         ref={ref}
         trigger="manual"
@@ -841,9 +859,9 @@ function QuoteRotator() {
         easing="${easing}"
         as="blockquote"
       >
-        "{quote}"
+        "The best interface..."
       </Animate.Text>
-      <button onClick={next}>Next Quote</button>
+      <button onClick={next}>Next</button>
     </div>
   )
 }`}</Code>
@@ -859,40 +877,40 @@ function TextMountDemo({ preset, duration, easing }: { preset: AnimationPreset; 
   const triggerValue = triggerProp("mount", secondaryTrigger) as "mount" | ["mount", Trigger]
   return (
     <div className="real-demo">
-      <p className="demo-label">Toggle to mount/unmount the headline with an entrance animation</p>
-      <div className="manual-controls">
-        <button className="fire-button" onClick={() => setVisible((v) => !v)}>{visible ? "Unmount" : "Mount"}</button>
-      </div>
-      <div className="search-result-display" style={{ minHeight: 60 }}>
+      <div className="page-load-demo">
+        <div className="page-load-controls">
+          <button className="fire-button" onClick={() => setVisible((v) => !v)}>{visible ? "Unmount" : "Mount Section"}</button>
+        </div>
         {visible && (
-          <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties} as="h2">
-            {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
-          </TextAnimate.Text>
+          <div className="page-load-content">
+            <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties} as="h2">
+              {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
+            </TextAnimate.Text>
+            <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
+            <div className="page-load-stats">
+              <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
+              <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
+              <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
+            </div>
+          </div>
         )}
       </div>
       <Code>{
 `import { Animate } from "trigr/text"
 
-function MountDemo() {
-  const [show, setShow] = useState(true)
-
+function FeatureSection() {
   return (
-    <div>
-      <button onClick={() => setShow((v) => !v)}>
-        {show ? "Unmount" : "Mount"}
-      </button>
-      {show && (
-        <Animate.Text
-          trigger="mount"
-          animation="${preset}"
-          duration={${duration}}
-          easing="${easing}"
-          as="h2"
-        >
-          Page Loaded
-        </Animate.Text>
-      )}
-    </div>
+    <section>
+      <Animate.Text
+        trigger="mount"
+        animation="${preset}"
+        duration={${duration}}
+        easing="${easing}"
+        as="h2"
+      >
+        Page Loaded
+      </Animate.Text>
+    </section>
   )
 }`}</Code>
     </div>
@@ -3607,6 +3625,61 @@ html, body {
 }
 
 /* ── Search Demo ────────────────────────── */
+.search-real-ui {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.search-real-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+}
+.search-real-header input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: 500 15px/1 var(--font);
+  outline: none;
+}
+.search-real-header input::placeholder { color: var(--text-tertiary); }
+.search-real-results { padding: 8px; }
+.search-real-result-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s var(--ease);
+}
+.search-real-result-item:hover { background: var(--bg-sidebar); }
+.search-real-result-thumb {
+  width: 40px; height: 40px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
+  flex-shrink: 0;
+}
+.search-real-result-body { flex: 1; min-width: 0; text-align: left; }
+.search-real-result-body h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.search-real-result-body p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
 .search-field {
   width: 100%;
   max-width: 420px;
@@ -3668,17 +3741,56 @@ html, body {
 }
 
 /* ── Nav Links Demo ─────────────────────── */
+.app-header-demo {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 24px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.app-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+}
+.app-header-logo-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, #171717, #404040);
+}
+.app-header-cta {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg-elevated);
+  font: 600 13px/1 var(--font);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  white-space: nowrap;
+}
+.app-header-cta:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
 .nav-links-demo {
   display: flex;
-  gap: 6px;
+  gap: 2px;
   flex-wrap: wrap;
   justify-content: center;
 }
 .nav-link-item {
   all: unset;
   cursor: pointer;
-  padding: 10px 20px;
-  font-size: 15px;
+  padding: 8px 14px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
   border-radius: var(--radius-sm);
@@ -3687,6 +3799,163 @@ html, body {
 .nav-link-item:hover {
   background: var(--bg-sidebar);
   color: var(--text);
+}
+
+/* ── Landing Hero Demo ──────────────────── */
+.landing-hero-demo {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 32px;
+}
+.landing-eyebrow {
+  font: 600 11px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.landing-headline {
+  margin: 0;
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  cursor: pointer;
+  color: var(--text);
+}
+.landing-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 400px;
+}
+.landing-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.landing-btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font: 600 14px/1 var(--font);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+}
+.landing-btn:hover {
+  border-color: var(--border);
+  background: var(--bg-sidebar);
+  color: var(--text);
+}
+.landing-btn-primary {
+  background: var(--accent);
+  color: var(--bg-elevated);
+  border-color: var(--accent);
+}
+.landing-btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--bg-elevated);
+}
+
+/* ── Testimonial Demo ───────────────────── */
+.testimonial-demo {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  padding: 24px;
+}
+.testimonial-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #d0d0d0, #a0a0a0);
+  flex-shrink: 0;
+}
+.testimonial-author {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.testimonial-author strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.testimonial-author span {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* ── Page Load Demo ─────────────────────── */
+.page-load-demo {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.page-load-controls {
+  display: flex;
+  justify-content: center;
+}
+.page-load-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+.page-load-content h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.page-load-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 360px;
+}
+.page-load-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 8px;
+}
+.page-load-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.page-load-stat strong {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.page-load-stat span {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
 }
 
 /* ── CTA Button ─────────────────────────── */
