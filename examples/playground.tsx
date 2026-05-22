@@ -2863,6 +2863,9 @@ const styles = `
 [data-theme="dark"] .reorder-card { background: var(--bg-elevated); }
 [data-theme="dark"] .ghost { background: var(--bg-elevated); border-color: var(--border); }
 [data-theme="dark"] .nav-links-demo { background: var(--bg-elevated); }
+[data-theme="dark"] .docs-hero::before {
+  background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%);
+}
 }
 
 html, body {
@@ -3184,6 +3187,18 @@ html, body {
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.docs-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, transparent 70%);
+  pointer-events: none;
 }
 .docs-hero-content {
   display: flex;
@@ -3402,7 +3417,7 @@ html, body {
 }
 
 /* ── Section ────────────────────────────── */
-.section { margin-top: 28px; display: flex; flex-direction: column; gap: 16px; }
+.section { margin-top: 32px; display: flex; flex-direction: column; gap: 20px; }
 .real-demo {
   width: 100%;
   display: flex;
@@ -3418,6 +3433,7 @@ html, body {
   margin: 0;
   max-width: 520px;
   line-height: 1.5;
+  font-weight: 500;
 }
 .demo-meta {
   font-size: 12px;
@@ -3467,12 +3483,12 @@ html, body {
 .preview-card {
   border: 1px solid var(--border); border-radius: var(--radius-lg);
   background: var(--bg-elevated); box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
   display: flex; flex-direction: column;
   width: 100%;
   overflow: hidden;
 }
-.preview-card:hover { box-shadow: var(--shadow); border-color: var(--border); }
+.preview-card:hover { box-shadow: var(--shadow-lg); border-color: var(--border); transform: translateY(-1px); }
 .preview-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 16px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-subtle);
