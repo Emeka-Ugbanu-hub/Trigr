@@ -3070,7 +3070,7 @@ const styles = `
 [data-theme="dark"] .sidebar-trigger.active { color: var(--text) !important; }
 [data-theme="dark"] .sidebar-trigger-count { background: rgba(255,255,255,0.06) !important; color: var(--text-tertiary) !important; }
 [data-theme="dark"] .sidebar-trigger.active .sidebar-trigger-count { background: rgba(255,255,255,0.08) !important; color: var(--text-secondary) !important; }
-[data-theme="dark"] .sidebar { border-right-color: #0a0a0a !important; }
+[data-theme="dark"] .sidebar { border-right: none !important; }
 
 /* Controls */
 [data-theme="dark"] .controls-title { color: var(--text-tertiary) !important; }
