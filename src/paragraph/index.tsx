@@ -797,6 +797,7 @@ function animateWords(
             onEnd?.()
           }
         }
+        anim.oncancel = () => { div.style.willChange = 'auto' }
       })
       return el.animate([{ opacity: 1 }, { opacity: 1 }], { duration: totalDuration, fill: 'forwards' })
     }
@@ -833,6 +834,7 @@ function animateWords(
         onEnd?.()
       }
     }
+    anim.oncancel = () => { span.style.willChange = 'auto' }
   })
   return el.animate([{ opacity: 1 }, { opacity: 1 }], { duration: totalDuration, fill: 'forwards' })
 }
@@ -867,6 +869,7 @@ function animateLines(
         onEnd?.()
       }
     }
+    anim.oncancel = () => { div.style.willChange = 'auto' }
   })
   return el.animate([{ opacity: 1 }, { opacity: 1 }], { duration: totalDuration, fill: 'forwards' })
 }
@@ -1154,6 +1157,51 @@ function animateHeightAuto(
   return anim
 }
 
+function animateCursorBlink(
+  el: HTMLElement,
+  _prevValue: string | undefined,
+  _nextValue: string | undefined,
+  duration: number,
+  onEnd?: () => void,
+): Animation | undefined {
+  const cursor = document.createElement('span')
+  cursor.textContent = '|'
+  cursor.style.display = 'inline-block'
+  cursor.style.width = '0.6em'
+  cursor.style.fontWeight = '300'
+  cursor.style.opacity = '1'
+  el.appendChild(cursor)
+
+  const blinkDuration = validDuration(duration, 800)
+
+  const anim = cursor.animate(
+    [{ opacity: 1 }, { opacity: 0.3 }],
+    {
+      duration: blinkDuration / 2,
+      iterations: Infinity,
+      direction: 'alternate',
+      easing: 'steps(1)',
+      fill: 'forwards',
+    },
+  )
+
+  let cleaned = false
+  const cleanup = () => {
+    if (cleaned) return
+    cleaned = true
+    cursor.remove()
+  }
+
+  anim.oncancel = () => {
+    cleanup()
+    onEnd?.()
+  }
+
+  queueMicrotask(() => onEnd?.())
+
+  return anim
+}
+
 // ─── Helpers for old/new paragraph swap ───────────────────
 
 function colorWithAlpha(color: string, alpha: number): string {
@@ -1198,6 +1246,8 @@ function reserveStableParagraphSize(el: HTMLElement, prevText: string, nextText:
   const prevSize = measureTextBlock(el, prevText)
   const nextSize = measureTextBlock(el, nextText)
   const minW = Math.max(prevSize.width, nextSize.width)
+  el.dataset.motifPrevWidth = el.style.width
+  el.dataset.motifPrevMinHeight = el.style.minHeight
   el.style.width = `${Math.ceil(minW)}px`
   el.style.minHeight = `${Math.ceil(prevSize.height)}px`
 }
@@ -1216,6 +1266,7 @@ const customAnimations: Record<string, (...args: any[]) => Animation | undefined
     animateHighlight(el, text ?? '', duration, highlightColor, onEnd),
   diffAnimate: animateDiff,
   heightAuto: animateHeightAuto,
+  cursorBlink: animateCursorBlink,
 }
 
 // ─── runAnimation fallback ────────────────────────────────
@@ -1555,6 +1606,14 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
       clearTimeout(runFallbackRef.current)
       runFallbackRef.current = null
     }
+    if (ref.current.dataset.motifPrevWidth !== undefined) {
+      ref.current.style.width = ref.current.dataset.motifPrevWidth
+      delete ref.current.dataset.motifPrevWidth
+    }
+    if (ref.current.dataset.motifPrevMinHeight !== undefined) {
+      ref.current.style.minHeight = ref.current.dataset.motifPrevMinHeight
+      delete ref.current.dataset.motifPrevMinHeight
+    }
 
     const el = ref.current
     const current = currentRun.source === 'change' ? (watchedCurrent as string) : (value as string) ?? el.textContent ?? ''
@@ -1563,13 +1622,28 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
     const safeDuration = validDuration(duration, 300)
     const motionDuration = reduced ? safeDuration / 2 : safeDuration
     const effectivePrev = currentRun.source === 'change' ? capturedPrevRef.current : undefined
+    const isChange = currentRun.source === 'change' && effectivePrev !== undefined
+
+    const onFinish = isChange
+      ? () => {
+          if (el.dataset.motifPrevWidth !== undefined) {
+            el.style.width = el.dataset.motifPrevWidth
+            delete el.dataset.motifPrevWidth
+          }
+          if (el.dataset.motifPrevMinHeight !== undefined) {
+            el.style.minHeight = el.dataset.motifPrevMinHeight
+            delete el.dataset.motifPrevMinHeight
+          }
+          finishRun()
+        }
+      : finishRun
 
     runFallbackRef.current = setTimeout(() => {
       runFallbackRef.current = null
-      finishRun()
+      onFinish()
     }, Math.max(900, motionDuration * 2 + 600))
 
-    if (currentRun.source === 'change' && effectivePrev !== undefined) {
+    if (isChange) {
       reserveStableParagraphSize(el, String(effectivePrev), text)
     }
     propertyAnimRef.current = runPropertyAnimation(el, properties, {
@@ -1581,7 +1655,7 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
     // Try registry
     const handler = customAnimations[animation as string]
     if (handler) {
-      animRef.current = handler(el, effectivePrev !== undefined ? String(effectivePrev) : undefined, text, motionDuration, finishRun, highlightColorProp) ?? null
+      animRef.current = handler(el, effectivePrev !== undefined ? String(effectivePrev) : undefined, text, motionDuration, onFinish, highlightColorProp) ?? null
       return
     }
 
@@ -1593,7 +1667,7 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
       currentRun.source === 'change' ? 'change' : 'single',
     )
     animRef.current = anim
-    anim.onfinish = finishRun
+    anim.onfinish = onFinish
   }, [animation, currentRun, delay, duration, easing, finishRun, highlightColorProp, playCount, prev, properties, value, watchedCurrent])
 
   useEffect(() => () => {

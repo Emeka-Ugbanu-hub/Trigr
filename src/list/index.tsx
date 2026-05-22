@@ -653,6 +653,8 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
     queueRef.current = []
   }, [])
 
+  const marqueeKeyframeName = useMemo(() => 'trigr-list-marquee-x-' + Math.random().toString(36).slice(2, 8), [])
+
   const marquee = isMarqueeAnimation(activeAnimation)
   if (marquee) {
     const childrenArr = React.Children.toArray(children)
@@ -681,7 +683,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
       createElement("style", {
         key: "trigr-list-marquee-keyframes",
         dangerouslySetInnerHTML: {
-          __html: "@keyframes trigr-list-marquee-x{from{transform:translateX(0)}to{transform:translateX(-50%)}}",
+          __html: `@keyframes ${marqueeKeyframeName}{from{transform:translateX(0)}to{transform:translateX(-50%)}}`,
         },
       }),
       createElement(
@@ -694,7 +696,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
             whiteSpace: "nowrap",
             animation: reducedRef.current
               ? undefined
-              : `trigr-list-marquee-x ${marqueeDurationMs}ms linear infinite${reverse ? " reverse" : ""}`,
+              : `${marqueeKeyframeName} ${marqueeDurationMs}ms linear infinite${reverse ? " reverse" : ""}`,
             willChange: reducedRef.current ? undefined : "transform",
           },
         },

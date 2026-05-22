@@ -313,7 +313,8 @@ function appendRollingCharSlots(el: HTMLElement, text: string, slotHeightEm = 1.
   const inners: HTMLElement[] = []
   el.textContent = ""
   const fragment = document.createDocumentFragment()
-  for (const char of text) {
+  const chars = splitGraphemes(text)
+  for (const char of chars) {
     if (char === " ") {
       fragment.appendChild(document.createTextNode(" "))
     } else {
@@ -346,8 +347,9 @@ function appendCharSpans(
   const spans: HTMLElement[] = []
   el.textContent = ""
   const fragment = document.createDocumentFragment()
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i]
+  const chars = splitGraphemes(text)
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i]
     if (char === " ") {
       fragment.appendChild(document.createTextNode(" "))
     } else {
