@@ -971,42 +971,46 @@ function ArticlePreviewDemo({ preset, duration, easing }: { preset: ParagraphPre
 
   return (
     <div className="real-demo">
-      <p className="demo-label">Click "Next Article" to transition between full paragraphs</p>
-      <div className="paragraph-display">
-        <ParagraphAnimate.Paragraph trigger={triggerValue} value={displayBody} animation={preset} duration={duration} easing={easing} properties={properties} as="article" {...paragraphHighlightProps(preset)}>
-          <h3>{article.title}</h3>
-          <p>{displayBody}</p>
-        </ParagraphAnimate.Paragraph>
-      </div>
-      <div className="manual-controls">
-        <button className="fire-button" onClick={() => setArticleIdx((i) => (i + 1) % ARTICLES.length)}>Next Article</button>
-        <button className="random-btn" onClick={() => { setRandomBody(RANDOM_SENTENCES[Math.floor(Math.random() * RANDOM_SENTENCES.length)]); setArticleIdx(-1) }}>Random</button>
-        <span className="demo-meta">{articleIdx + 1} / {ARTICLES.length}</span>
+      <div className="blog-card-demo">
+        <div className="blog-card-image" />
+        <div className="blog-card-body">
+          <div className="blog-card-meta">
+            <span className="blog-card-tag">Design</span>
+            <span className="blog-card-date">Jan 15, 2025</span>
+          </div>
+          <ParagraphAnimate.Paragraph trigger={triggerValue} value={displayBody} animation={preset} duration={duration} easing={easing} properties={properties} as="article" {...paragraphHighlightProps(preset)}>
+            <h3>{article.title}</h3>
+            <p>{displayBody}</p>
+          </ParagraphAnimate.Paragraph>
+          <div className="blog-card-footer">
+            <div className="blog-card-author">
+              <div className="blog-card-author-avatar" />
+              <span>Alex Rivera</span>
+            </div>
+            <button className="blog-card-read" onClick={() => setArticleIdx((i) => (i + 1) % ARTICLES.length)}>Read Next →</button>
+          </div>
+        </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+        `import { Animate } from "trigr/paragraph"
 
-const articles = [
-  { title: "Designing Microinteractions", body: "Small functional moments that create delightful experiences." },
-  { title: "The Physics of Animation", body: "Good motion follows real-world physics and feels alive." },
-]
-
-function ArticleViewer() {
-  const [idx, setIdx] = useState(0)
-  const article = articles[idx]
+function ArticleCard() {
+  const [article, setArticle] = useState(articles[0])
 
   return (
-    <Animate.Paragraph
-      trigger=${triggerSnippet("change", secondaryTrigger)}
-      value={article.body}
-      animation="${preset}"
-      duration={${duration}}
-      easing="${easing}"${propertiesSnippet(properties)}${paragraphHighlightSnippet(preset)}
-      as="article"
-    >
-      <h3>{article.title}</h3>
-      <p>{article.body}</p>
-    </Animate.Paragraph>
+    <article className="card">
+      <Animate.Paragraph
+        trigger=${triggerSnippet("change", secondaryTrigger)}
+        value={article.body}
+        animation="${preset}"
+        duration={${duration}}
+        easing="${easing}"${propertiesSnippet(properties)}${paragraphHighlightSnippet(preset)}
+        as="div"
+      >
+        <h3>{article.title}</h3>
+        <p>{article.body}</p>
+      </Animate.Paragraph>
+    </article>
   )
 }`}</Code>
     </div>
@@ -4074,6 +4078,89 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
 .fire-button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .fire-button:active { transform: scale(0.97); }
 .demo-fire-btn { min-width: 180px; }
+
+/* ── Blog Card Demo ─────────────────────── */
+.blog-card-demo {
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.blog-card-image {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #e0e0e0, #c8c8c8);
+}
+.blog-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.blog-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.blog-card-tag {
+  font: 600 11px/1 var(--mono);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.blog-card-date {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.blog-card-body h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.blog-card-body p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.blog-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+.blog-card-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.blog-card-author-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c8c8c8, #a0a0a0);
+}
+.blog-card-read {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font: 600 13px/1 var(--font);
+  cursor: pointer;
+  padding: 0;
+}
+.blog-card-read:hover {
+  text-decoration: underline;
+}
 
 /* ── Paragraph Display ──────────────────── */
 .paragraph-display {
