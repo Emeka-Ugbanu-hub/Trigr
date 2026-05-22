@@ -2504,6 +2504,7 @@ export default function Playground() {
   const [propertyMode, setPropertyMode] = useState<PropertyMode>(initialState.propertyMode)
   const [secondaryTrigger, setSecondaryTrigger] = useState<SecondaryTrigger>(initialState.secondaryTrigger)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [dark, setDark] = useState(() => typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false)
   const runtimeOptions = useMemo<RuntimeOptions>(() => ({
     threshold,
     stagger,
@@ -2578,7 +2579,7 @@ export default function Playground() {
   const moduleEntries = useMemo(() => Object.keys(MODULE_META) as ModuleId[], [])
 
   return (
-    <>
+    <div data-theme={dark ? "dark" : "light"}>
       <style>{styles}</style>
       <header className="topbar">
         <div className="topbar-inner">
@@ -2592,7 +2593,7 @@ export default function Playground() {
           <span className="logo">
             <svg viewBox="0 0 240 80" width="100" height="34" xmlns="http://www.w3.org/2000/svg">
               <rect width="240" height="80" fill="transparent" />
-              <g fill="#111">
+              <g fill="var(--logo-fill)">
                 <rect x="10" y="14" width="8" height="8" />
                 <rect x="20" y="14" width="8" height="8" />
                 <rect x="30" y="14" width="8" height="8" />
@@ -2602,12 +2603,15 @@ export default function Playground() {
                 <rect x="20" y="42" width="8" height="8" />
                 <rect x="30" y="42" width="8" height="8" />
               </g>
-              <text x="50" y="48" fontFamily="'Courier New', monospace" fontSize="36" fontWeight="bold" fill="#111" letterSpacing="2">trigr</text>
+              <text x="50" y="48" fontFamily="'Courier New', monospace" fontSize="36" fontWeight="bold" fill="var(--logo-fill)" letterSpacing="2">trigr</text>
             </svg>
           </span>
           <nav className="topbar-nav">
             <button type="button" onClick={() => selectModule("docs")}>Docs</button>
-            <a href="#">GitHub</a>
+            <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">
+              {dark ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>}
+            </button>
           </nav>
         </div>
       </header>
@@ -2750,7 +2754,7 @@ export default function Playground() {
           </div>
         </main>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -2763,12 +2767,63 @@ const styles = `
   --bg: #f3f3f3;
   --bg-elevated: #ffffff;
   --bg-sidebar: #efefef;
+  --bg-topbar: #f7f7f7;
   --border: #d5d5d5;
   --border-subtle: #e4e4e4;
   --text: #1a1a1a;
   --text-secondary: #5f5f5f;
   --text-tertiary: #8c8c8c;
   --accent: #111111;
+  --accent-hover: #333;
+  --docs-bg: #fafafa;
+  --code-bg: #f0f0f0;
+  --logo-fill: #111;
+}
+
+[data-theme="dark"] {
+  --bg: #161618;
+  --bg-elevated: #1e1e20;
+  --bg-sidebar: #121214;
+  --bg-topbar: #1a1a1c;
+  --border: #2a2a2e;
+  --border-subtle: #232326;
+  --text: #e8e8ed;
+  --text-secondary: #9f9fa8;
+  --text-tertiary: #6b6b75;
+  --accent: #e8e8ed;
+  --accent-hover: #ffffff;
+  --docs-bg: #1a1a1c;
+  --code-bg: #252528;
+  --logo-fill: #e8e8ed;
+}
+
+[data-theme="dark"] .select-trigger,
+[data-theme="dark"] .select-popover,
+[data-theme="dark"] .select-search-wrap,
+[data-theme="dark"] .select-empty,
+[data-theme="dark"] .preview-card,
+[data-theme="dark"] .docs-section,
+[data-theme="dark"] .docs-hero,
+[data-theme="dark"] .docs-module-card,
+[data-theme="dark"] .docs-practice-grid article,
+[data-theme="dark"] .capability-panel { background: var(--bg-elevated); }
+
+[data-theme="dark"] .select-option { color: var(--text); }
+[data-theme="dark"] .select-option:hover { background: var(--bg-sidebar); }
+[data-theme="dark"] .select-option.active { background: #2a2a2e; color: var(--text); font-weight: 600; }
+[data-theme="dark"] .select-caret { color: var(--text-tertiary); }
+[data-theme="dark"] .select-trigger:hover { border-color: var(--border); }
+[data-theme="dark"] .select-menu.open .select-trigger { border-color: var(--text-tertiary); box-shadow: 0 0 0 2px rgba(232,232,237,0.08); }
+
+[data-theme="dark"] .doc-code { background: var(--code-bg); }
+[data-theme="dark"] .docs-api-grid article,
+[data-theme="dark"] .docs-trigger-grid article { background: var(--bg-elevated); }
+
+[data-theme="dark"] .control-slider { background: var(--border); }
+[data-theme="dark"] .control-slider::-webkit-slider-thumb { background: var(--text); }
+
+[data-theme="dark"] .sidebar-trigger:hover { background: var(--bg-elevated); }
+[data-theme="dark"] .sidebar-trigger.active { background: var(--bg-elevated); }
   --radius-sm: 6px;
   --radius: 11px;
   --radius-lg: 12px;
@@ -2793,7 +2848,7 @@ body {
 /* ── Topbar ─────────────────────────────── */
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: #f7f7f7;
+  background: var(--bg-topbar);
   border-bottom: 1px solid var(--border-subtle);
   height: 54px;
 }
@@ -2825,6 +2880,13 @@ body {
 }
 .topbar-nav a:hover,
 .topbar-nav button:hover { color: var(--text); }
+
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  transition: background 0.2s var(--ease);
+}
+.theme-toggle:hover { background: var(--bg-sidebar); }
 
 /* ── Sidebar Overlay (mobile) ───────────── */
 .sidebar-overlay {
