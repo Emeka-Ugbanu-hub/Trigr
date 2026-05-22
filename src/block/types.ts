@@ -20,6 +20,8 @@ export type BlockAnimationPreset =
   | "blurIn" | "blurOut"
   | "clipUp" | "clipLeft"
   | "zoomIn" | "zoomOut"
+  | "springBounce" | "springScale" | "springSlideUp" | "springSlideDown"
+  | "morphRadius" | "morphCircle"
   | "parallax" | "parallaxFast" | "parallaxReverse" | "tiltScroll" | "scaleScroll"
   | "lift" | "sink" | "grow" | "glow" | "shadow" | "borderPop" | "tilt" | "float"
   | "press" | "ripple" | "burst"
@@ -67,6 +69,13 @@ export interface AnimateBlockProps {
   onHoverStart?: () => void
   onHoverEnd?: () => void
   onAnimationEnd?: () => void
+  drag?: "x" | "y" | "both" | boolean
+  dragThreshold?: number
+  dragElastic?: number
+  dragSnapBackDuration?: number
+  onDragEnd?: (info: { offset: { x: number; y: number }; velocity: { x: number; y: number }; dismissed: boolean }) => void
+  layoutId?: string
+  layoutTransition?: { duration?: number; easing?: string }
   children: ReactNode
 }
 

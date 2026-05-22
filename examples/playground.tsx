@@ -4,6 +4,7 @@ import type { AnimateTextHandle, AnimationPreset } from "../src/text/types"
 import { Animate as ParagraphAnimate } from "../src/paragraph"
 import type { AnimateParagraphHandle, ParagraphPreset } from "../src/paragraph/types"
 import { Animate as BlockAnimate } from "../src/block"
+import { SMOOTH, SPRING } from "../src/block/animations"
 import { Animate as ListAnimate } from "../src/list"
 import type { AnimateBlockHandle, BlockAnimationPreset } from "../src/block/types"
 import type { AnimateListHandle, ListAnimationPreset } from "../src/list/types"
@@ -13,6 +14,28 @@ type Trigger = "change" | "scroll" | "hover" | "click" | "manual" | "mount"
 type SecondaryTrigger = "none" | Trigger
 
 type AnimationProperties = Record<string, [string | number, string | number]>
+
+const SPRING_EASE = SPRING
+const SMOOTH_EASE = SMOOTH
+
+const ANIMATION_DEFAULTS: Record<string, { duration: number; easing: string }> = {
+  springBounce: { duration: 500, easing: SMOOTH_EASE },
+  springScale: { duration: 450, easing: SMOOTH_EASE },
+  springSlideUp: { duration: 450, easing: SMOOTH_EASE },
+  springSlideDown: { duration: 450, easing: SMOOTH_EASE },
+  morphRadius: { duration: 400, easing: SMOOTH_EASE },
+  morphCircle: { duration: 400, easing: SMOOTH_EASE },
+}
+
+const EASINGS: [string, string][] = [
+  ["Spring", "cubic-bezier(0.34, 1.56, 0.64, 1)"],
+  ["Smooth", "cubic-bezier(0.25, 0.46, 0.45, 0.94)"],
+  ["Ease In", "cubic-bezier(0.0, 0.0, 0.2, 1)"],
+  ["Ease Out", "cubic-bezier(0.4, 0.0, 1, 1)"],
+  ["Ease In Out", "cubic-bezier(0.4, 0.0, 0.2, 1)"],
+  ["Snappy", "cubic-bezier(0.2, 0, 0, 1)"],
+  ["Linear", "linear"],
+]
 
 function getAnimationDefaults(name: string): { duration: number; easing: string } {
   return ANIMATION_DEFAULTS[name] ?? { duration: 400, easing: SPRING_EASE }
@@ -145,6 +168,8 @@ const BLOCK_ONESHOT_PRESETS: BlockAnimationPreset[] = [
   "glideIn", "glideOut", "dropIn", "riseUp",
   "expandIn", "collapseOut", "expandHeight", "fadeSlideUp",
   "blurIn", "blurOut", "clipUp", "clipLeft", "zoomIn", "zoomOut",
+  "springBounce", "springScale", "springSlideUp", "springSlideDown",
+  "morphRadius", "morphCircle",
   "press",
 ]
 
@@ -164,6 +189,7 @@ const BLOCK_ENTRANCE_PRESETS: BlockAnimationPreset[] = [
   "scaleIn", "popIn", "rotateIn", "flipX", "flipY", "bounceIn",
   "glideIn", "dropIn", "riseUp", "expandIn", "expandHeight", "fadeSlideUp",
   "blurIn", "clipUp", "clipLeft", "zoomIn",
+  "springBounce", "springScale", "springSlideUp", "springSlideDown",
 ]
 const BLOCK_CHANGE_PRESETS: BlockAnimationPreset[] = BLOCK_ONESHOT_PRESETS
 const BLOCK_INTERACTION_PRESETS: BlockAnimationPreset[] = [
@@ -2670,6 +2696,143 @@ function HeroSection() {
   )
 }
 
+function DragDismissDemo() {
+  const [items, setItems] = useState([
+    { id: 1, title: "Swipe to dismiss", desc: "Drag left or right past threshold to remove" },
+    { id: 2, title: "Gesture-driven", desc: "Elastic resistance follows your pointer" },
+    { id: 3, title: "Spring-back", desc: "Snaps back if you don't drag far enough" },
+  ])
+  const dismissedRef = useRef(0)
+
+  function handleDragEnd(id: number) {
+    setItems((prev) => prev.filter((item) => item.id !== id))
+    dismissedRef.current = id
+  }
+
+  function reset() {
+    setItems([
+      { id: 1, title: "Swipe to dismiss", desc: "Drag left or right past threshold to remove" },
+      { id: 2, title: "Gesture-driven", desc: "Elastic resistance follows your pointer" },
+      { id: 3, title: "Sprint to dismiss", desc: "Snaps back if you don't drag far enough" },
+    ])
+  }
+
+  return (
+    <div className="section">
+      <PreviewCard>
+        <div className="real-demo composed-demo">
+          <p className="demo-label">Gesture drag-to-dismiss cards — drag past 100px to remove with spring animation. Drag back elastically if below threshold.</p>
+          <div className="notif-centre">
+            {items.length === 0 && (
+              <div className="empty-notifs" style={{ padding: 24 }}>
+                <p>All dismissed! <button className="fire-button" onClick={reset}>Reset</button></p>
+              </div>
+            )}
+            {items.map((item) => (
+              <BlockAnimate.Block
+                key={item.id}
+                drag="x"
+                dragThreshold={100}
+                dragElastic={0.5}
+                dragSnapBackDuration={300}
+                animation="fadeIn"
+                duration={350}
+                onDragEnd={(info) => { if (info.dismissed) handleDragEnd(item.id) }}
+              >
+                <div className="notif-item">
+                  <div className="notif-dot" />
+                  <div className="notif-content">
+                    <strong>{item.title}</strong>
+                    <p>{item.desc}</p>
+                  </div>
+                </div>
+              </BlockAnimate.Block>
+            ))}
+          </div>
+        </div>
+        <Code>{`import { Animate } from "trigr/block"
+
+function DragDismissList({ items }) {
+  const [list, setList] = useState(items)
+
+  return list.map((item) => (
+    <Animate.Block
+      key={item.id}
+      drag="x"
+      dragThreshold={100}
+      dragElastic={0.5}
+      onDragEnd={(info) => {
+        if (info.dismissed) setList((prev) =>
+          prev.filter((i) => i.id !== item.id))
+      }}
+    >
+      <Card title={item.title} desc={item.desc} />
+    </Animate.Block>
+  ))
+}`}</Code>
+      </PreviewCard>
+    </div>
+  )
+}
+
+function LayoutIdDemo() {
+  const [layout, setLayout] = useState<"grid" | "list">("grid")
+  const cards = [
+    { id: "a", label: "Analytics", color: "#6366f1" },
+    { id: "b", label: "Builds", color: "#f59e0b" },
+    { id: "c", label: "Config", color: "#10b981" },
+    { id: "d", label: "Deploy", color: "#a855f7" },
+  ]
+
+  return (
+    <div className="section">
+      <PreviewCard>
+        <div className="real-demo composed-demo">
+          <p className="demo-label">Shared layout animations — toggle between grid and list. Cards with the same layoutId animate smoothly between positions and sizes.</p>
+          <div className="manual-controls" style={{ marginBottom: 16 }}>
+            <button className={layout === "grid" ? "fire-button" : "random-btn"} onClick={() => setLayout("grid")}>Grid</button>
+            <button className={layout === "list" ? "fire-button" : "random-btn"} onClick={() => setLayout("list")}>List</button>
+          </div>
+          <div className={layout === "grid" ? "stats-grid" : "activity-feed"} style={layout === "list" ? { display: "flex", flexDirection: "column", gap: 8 } : {}}>
+            {cards.map((card) => (
+              <BlockAnimate.Block
+                key={card.id}
+                layoutId={card.id}
+                layoutTransition={{ duration: 400, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+              >
+                <div className="stat-card" style={{ borderLeft: `3px solid ${card.color}` }}>
+                  <span className="stat-label">{card.label}</span>
+                  <span className="stat-value" style={{ fontSize: layout === "grid" ? 22 : 16 }}>{card.label === "Analytics" ? "12.4k" : card.label === "Builds" ? "47" : card.label === "Config" ? "8" : "3"}</span>
+                </div>
+              </BlockAnimate.Block>
+            ))}
+          </div>
+        </div>
+        <Code>{`import { Animate } from "trigr/block"
+import { useState } from "react"
+
+function LayoutToggle() {
+  const [layout, setLayout] = useState("grid")
+
+  return (
+    <div className={layout === "grid" ? "grid" : "list"}>
+      {cards.map((card) => (
+        <Animate.Block
+          key={card.id}
+          layoutId={card.id}
+          layoutTransition={{ duration: 400 }}
+        >
+          <Card {...card} />
+        </Animate.Block>
+      ))}
+    </div>
+  )
+}`}</Code>
+      </PreviewCard>
+    </div>
+  )
+}
+
 function ComposedSection() {
   const { threshold, stagger, listSpeed } = useRuntimeOptions()
   const [duration] = useState(400)
@@ -2692,6 +2855,8 @@ function ComposedSection() {
       <OnboardingWizardDemo duration={duration} easing={easing} />
       <SettingsPanelDemo duration={duration} easing={easing} />
       <HeroSectionDemo duration={duration} easing={easing} />
+      <DragDismissDemo />
+      <LayoutIdDemo />
     </div>
   )
 }

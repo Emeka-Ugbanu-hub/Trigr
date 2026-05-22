@@ -19,6 +19,8 @@ export const presetCategory: Record<string, PresetCategory> = {
   blurIn: "oneshot", blurOut: "oneshot",
   clipUp: "oneshot", clipLeft: "oneshot",
   zoomIn: "oneshot", zoomOut: "oneshot",
+  springBounce: "oneshot", springScale: "oneshot", springSlideUp: "oneshot", springSlideDown: "oneshot",
+  morphRadius: "oneshot", morphCircle: "oneshot",
   press: "oneshot",
   parallax: "scrollLink", parallaxFast: "scrollLink", parallaxReverse: "scrollLink",
   tiltScroll: "scrollLink", scaleScroll: "scrollLink",
@@ -254,6 +256,77 @@ export const presets: Record<string, AnimationDefinition> = {
   zoomOut: {
     in: [{ opacity: 0, transform: "scale(1.15)" }, { opacity: 1, transform: "scale(1)" }],
     out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.15)" }],
+  },
+  springBounce: {
+    in: [
+      { transform: "scale(0)", opacity: 0 },
+      { transform: "scale(1.15)", opacity: 1, offset: 0.55 },
+      { transform: "scale(0.92)", offset: 0.72 },
+      { transform: "scale(1.03)", offset: 0.85 },
+      { transform: "scale(1)" },
+    ],
+    out: [
+      { transform: "scale(1)", opacity: 1 },
+      { transform: "scale(1.1)", opacity: 0.3, offset: 0.3 },
+      { transform: "scale(0)", opacity: 0 },
+    ],
+  },
+  springScale: {
+    in: [
+      { transform: "scale(0.6)", opacity: 0 },
+      { transform: "scale(1.08)", opacity: 1, offset: 0.6 },
+      { transform: "scale(0.96)", offset: 0.8 },
+      { transform: "scale(1)" },
+    ],
+    out: [
+      { transform: "scale(1)", opacity: 1 },
+      { transform: "scale(0.6)", opacity: 0 },
+    ],
+  },
+  springSlideUp: {
+    in: [
+      { transform: "translateY(40px)", opacity: 0 },
+      { transform: "translateY(-6px)", opacity: 1, offset: 0.6 },
+      { transform: "translateY(2px)", offset: 0.8 },
+      { transform: "translateY(0)" },
+    ],
+    out: [
+      { transform: "translateY(0)", opacity: 1 },
+      { transform: "translateY(-20px)", opacity: 0 },
+    ],
+  },
+  springSlideDown: {
+    in: [
+      { transform: "translateY(-40px)", opacity: 0 },
+      { transform: "translateY(6px)", opacity: 1, offset: 0.6 },
+      { transform: "translateY(-2px)", offset: 0.8 },
+      { transform: "translateY(0)" },
+    ],
+    out: [
+      { transform: "translateY(0)", opacity: 1 },
+      { transform: "translateY(20px)", opacity: 0 },
+    ],
+  },
+  morphRadius: {
+    in: [
+      { borderRadius: "12px", opacity: 0 },
+      { borderRadius: "0px", opacity: 1 },
+    ],
+    out: [
+      { borderRadius: "0px", opacity: 1 },
+      { borderRadius: "12px", opacity: 0 },
+    ],
+  },
+  morphCircle: {
+    in: [
+      { borderRadius: "50%", opacity: 0 },
+      { borderRadius: "8px", opacity: 1, offset: 0.5 },
+      { borderRadius: "12px", opacity: 1 },
+    ],
+    out: [
+      { borderRadius: "12px", opacity: 1 },
+      { borderRadius: "50%", opacity: 0 },
+    ],
   },
   press: {
     in: [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(0.96)", opacity: 1 }],

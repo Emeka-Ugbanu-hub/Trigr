@@ -1,7 +1,7 @@
 import { useRef, useEffect, useLayoutEffect, useState, createElement, forwardRef, useCallback, useImperativeHandle, useMemo } from "react"
 import type { MouseEvent } from "react"
 import type { AnimateBlockHandle, AnimateBlockProps, AnimationProperties, AnimationTrigger } from "./types"
-import { SMOOTH, SNAPPY, SPRING, presetCategory, presets } from "./animations"
+import { EASE_IN, SMOOTH, SNAPPY, SPRING, presetCategory, presets } from "./animations"
 import { Parallax } from "./parallax"
 
 const warned = new Set<string>()
@@ -301,6 +301,13 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
   onHoverStart,
   onHoverEnd,
   onAnimationEnd: onAnimationEndProp,
+  drag,
+  dragThreshold,
+  dragElastic,
+  dragSnapBackDuration,
+  onDragEnd,
+  layoutId,
+  layoutTransition,
   children,
 }: AnimateBlockProps, forwardedRef) {
   const ref = useRef<HTMLElement>(null)
@@ -322,7 +329,20 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
   const exitKeyRef = useRef(0)
   const mountPlayedRef = useRef(false)
   const scrollTriggeredRef = useRef(false)
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null)
+  const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const dragVelocityRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const dragLastPosRef = useRef<{ x: number; y: number; t: number } | null>(null)
+  const dragMovedRef = useRef(false)
+  const dragSuppressClickRef = useRef(false)
+  const layoutSnapshotRef = useRef<DOMRect | null>(null)
   const shouldObserveOnce = once ?? !repeat
+  const dragEnabled = drag === true || drag === "both" || drag === "x" || drag === "y"
+  const dragX = drag === true || drag === "both" || drag === "x"
+  const dragY = drag === true || drag === "both" || drag === "y"
+  const dragThresholdPx = dragThreshold ?? 100
+  const dragElasticVal = dragElastic ?? 0.5
+  const dragSnapBackMs = dragSnapBackDuration ?? 300
   const triggerConfigs = useMemo(() => {
     if (triggersProp) {
       return triggersProp.map(tc => ({
@@ -497,6 +517,41 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
       return ref.current
     },
   }), [animate])
+
+  // layoutId — FLIP-based shared layout animation
+  useLayoutEffect(() => {
+    if (!layoutId || !ref.current) return
+
+    const prevRect = layoutSnapshotRef.current
+    const nextRect = ref.current.getBoundingClientRect()
+
+    if (prevRect && (prevRect.x !== nextRect.x || prevRect.y !== nextRect.y || prevRect.width !== nextRect.width || prevRect.height !== nextRect.height)) {
+      const deltaX = prevRect.left - nextRect.left
+      const deltaY = prevRect.top - nextRect.top
+      const scaleX = prevRect.width / nextRect.width
+      const scaleY = prevRect.height / nextRect.height
+
+      ref.current.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`
+      ref.current.style.transformOrigin = "top left"
+
+      requestAnimationFrame(() => {
+        if (!ref.current) return
+        ref.current.style.transition = `transform ${layoutTransition?.duration ?? 400}ms ${layoutTransition?.easing ?? "cubic-bezier(0.34, 1.56, 0.64, 1)"}`
+        ref.current.style.transform = ""
+
+        const onTransitionEnd = () => {
+          if (ref.current) {
+            ref.current.style.transition = ""
+            ref.current.style.transformOrigin = ""
+          }
+          ref.current?.removeEventListener("transitionend", onTransitionEnd)
+        }
+        ref.current.addEventListener("transitionend", onTransitionEnd)
+      })
+    }
+
+    layoutSnapshotRef.current = nextRect
+  })
 
   // scroll trigger (IntersectionObserver)
   useEffect(() => {
@@ -750,6 +805,141 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
     }
   }, [getAnimationFor, hasTrigger])
 
+  // gesture drag
+  useEffect(() => {
+    if (!dragEnabled) return
+    const el = ref.current
+    if (!el) return
+
+    const prevUserSelect = el.style.userSelect
+    const prevTouchAction = el.style.touchAction
+    el.style.userSelect = "none"
+    el.style.touchAction = "none"
+
+    function snapBack() {
+      const { x: ox, y: oy } = dragOffsetRef.current
+      el!.style.transition = `transform ${dragSnapBackMs}ms ${SPRING}`
+      el!.style.transform = "translate(0px, 0px)"
+
+      const onEnd = () => {
+        el!.removeEventListener("transitionend", onEnd)
+        el!.style.transition = ""
+        finishWillChange(el!)
+        onDragEnd?.({
+          offset: { x: ox, y: oy },
+          velocity: { x: dragVelocityRef.current.x, y: dragVelocityRef.current.y },
+          dismissed: false,
+        })
+      }
+      el!.addEventListener("transitionend", onEnd)
+    }
+
+    function dismissElement() {
+      const { x: ox, y: oy } = dragOffsetRef.current
+      const dirX = ox !== 0 ? (ox > 0 ? 1 : -1) : 0
+      const dirY = oy !== 0 ? (oy > 0 ? 1 : -1) : 0
+      const dismissX = dirX * Math.max(Math.abs(ox) * 3, window.innerWidth)
+      const dismissY = dirY * Math.max(Math.abs(oy) * 3, window.innerHeight)
+
+      el!.style.transition = `transform ${dragSnapBackMs}ms ${EASE_IN}, opacity ${dragSnapBackMs}ms ${EASE_IN}`
+      el!.style.transform = `translate(${dismissX}px, ${dismissY}px)`
+      el!.style.opacity = "0"
+
+      const onEnd = () => {
+        el!.removeEventListener("transitionend", onEnd)
+        el!.style.transition = ""
+        finishWillChange(el!)
+        onDragEnd?.({
+          offset: { x: ox, y: oy },
+          velocity: { x: dragVelocityRef.current.x, y: dragVelocityRef.current.y },
+          dismissed: true,
+        })
+      }
+      el!.addEventListener("transitionend", onEnd)
+    }
+
+    const handlePointerDown = (e: PointerEvent) => {
+      dragStartRef.current = { x: e.clientX, y: e.clientY }
+      dragOffsetRef.current = { x: 0, y: 0 }
+      dragLastPosRef.current = { x: e.clientX, y: e.clientY, t: performance.now() }
+      dragMovedRef.current = false
+      dragSuppressClickRef.current = false
+      cancelElementAnimations(el!)
+      el!.style.transition = "none"
+      el!.style.willChange = "transform"
+    }
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!dragStartRef.current) return
+      const dx = e.clientX - dragStartRef.current.x
+      const dy = e.clientY - dragStartRef.current.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+
+      if (!dragMovedRef.current && dist < 5) return
+      dragMovedRef.current = true
+      dragSuppressClickRef.current = true
+
+      el!.setPointerCapture?.(e.pointerId)
+
+      const now = performance.now()
+      const last = dragLastPosRef.current!
+      const dt = now - last.t
+      if (dt > 0) {
+        dragVelocityRef.current = {
+          x: (e.clientX - last.x) / dt,
+          y: (e.clientY - last.y) / dt,
+        }
+      }
+      dragLastPosRef.current = { x: e.clientX, y: e.clientY, t: now }
+
+      const offsetX = dragX ? dx * dragElasticVal : 0
+      const offsetY = dragY ? dy * dragElasticVal : 0
+      dragOffsetRef.current = { x: offsetX, y: offsetY }
+      el!.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+    }
+
+    const handlePointerUp = () => {
+      if (!dragStartRef.current) return
+      dragStartRef.current = null
+
+      if (!dragMovedRef.current) return
+
+      const { x: ox, y: oy } = dragOffsetRef.current
+      const dist = Math.sqrt(ox * ox + oy * oy)
+
+      if (dist >= dragThresholdPx) {
+        dismissElement()
+      } else {
+        snapBack()
+      }
+      dragMovedRef.current = false
+    }
+
+    const handlePointerCancel = () => {
+      if (!dragStartRef.current) return
+      dragStartRef.current = null
+
+      if (!dragMovedRef.current) return
+
+      snapBack()
+      dragMovedRef.current = false
+    }
+
+    el.addEventListener("pointerdown", handlePointerDown)
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerup", handlePointerUp)
+    window.addEventListener("pointercancel", handlePointerCancel)
+
+    return () => {
+      el.removeEventListener("pointerdown", handlePointerDown)
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerUp)
+      window.removeEventListener("pointercancel", handlePointerCancel)
+      el.style.userSelect = prevUserSelect
+      el.style.touchAction = prevTouchAction
+    }
+  }, [dragEnabled, dragX, dragY, dragThresholdPx, dragElasticVal, dragSnapBackMs, onDragEnd])
+
   // scroll-linked (parallax)
   useEffect(() => {
     const scrollName = getAnimationFor("scroll")
@@ -829,6 +1019,10 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
   }, [getAnimationFor, hasTrigger, speed])
 
   const handleClick = useCallback((event: MouseEvent<HTMLElement>) => {
+    if (dragSuppressClickRef.current) {
+      dragSuppressClickRef.current = false
+      return
+    }
     onClick?.(event)
     const el = ref.current
     if (!el) return
