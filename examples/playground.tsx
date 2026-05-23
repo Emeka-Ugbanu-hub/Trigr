@@ -236,7 +236,7 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
 }
 
 function presetsFor(module: ModuleId, trigger: Trigger) {
-  if (module === "docs") return []
+  if (module === "docs" || module === "composed") return []
   const config = PRESETS_BY_MODULE_TRIGGER[module]
   return Array.isArray(config) ? config : config[trigger] ?? []
 }
