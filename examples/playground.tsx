@@ -87,13 +87,9 @@ const TEXT_ALL_PRESETS: AnimationPreset[] = [
 
 const TEXT_CHANGE_PRESETS: AnimationPreset[] = [
   "fadeSwap", "morph", "slideReplace", "typewriter", "decoder", "scramble",
-  "odometer", "ticker", "textRotate", "gooeyMorph", "strikeThrough",
+  "odometer", "ticker", "strikeThrough",
   "highlight", "boldFlash", "blur",
   "letterDrop", "glitch", "textReveal", "scatter", "splash",
-  "textEffect", "staggerText", "splitReveal", "splitSlide", "scrollFanIn",
-  "bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall",
-  "pendulum", "centerBurst", "gravityBounce",
-  "randomLetterSwap",
   "fadeIn", "slideUp", "slideDown", "flip", "bounce",
   "popIn", "dropIn", "riseUp", "expandIn",
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
@@ -102,17 +98,14 @@ const TEXT_CHANGE_PRESETS: AnimationPreset[] = [
 
 const TEXT_SCROLL_PRESETS: AnimationPreset[] = [
   "fadeIn", "letterDrop", "textReveal", "scatter", "splash",
-  "textEffect", "staggerText", "splitReveal", "splitSlide", "scrollFanIn",
-  "bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall",
-  "pendulum", "centerBurst", "gravityBounce",
   "slideUp", "slideDown", "flip", "bounce", "popIn", "dropIn", "riseUp", "expandIn",
-  "underlineDraw", "colorShift", "activeTabText",
+  "underlineDraw", "copyConfirm", "colorShift", "activeTabText",
 ]
 
 const TEXT_INTERACTION_PRESETS: AnimationPreset[] = [
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
-  "highlight", "boldFlash", "blur", "randomLetterSwap", "splitReveal", "splitSlide", "textReveal",
-  "underlineSlide", "underlineDraw", "copyConfirm", "colorShift", "activeTabText",
+  "highlight", "boldFlash", "blur", "textReveal",
+  "underlineSlide", "underlineDraw", "copyConfirm", "colorShift", "activeTabText", "shrinkOut",
 ]
 
 const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
@@ -120,6 +113,7 @@ const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
   "textEffect", "staggerText", "splitReveal", "splitSlide", "scrollFanIn",
   "bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall",
   "pendulum", "centerBurst", "gravityBounce",
+  "textRotate", "gooeyMorph", "randomLetterSwap",
   "slideUp", "slideDown", "flip", "bounce", "popIn", "dropIn", "riseUp", "expandIn",
   "underlineDraw", "copyConfirm", "colorShift", "activeTabText",
 ]
@@ -142,11 +136,11 @@ const PARAGRAPH_ALL_PRESETS: ParagraphPreset[] = [
 const PARAGRAPH_CHANGE_PRESETS: ParagraphPreset[] = [
   "fadeSwap", "morphText", "slideReplace", "crossFade", "expandCollapse",
   "diffAnimate", "morphBlur", "pushLeft", "pushRight", "flipPage",
-  "highlight", "flash", "fadeIn", "fadeOut",
+  "highlight", "flash", "fadeIn",
   "wordFadeIn", "wordSlideUp", "wordPop",
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "slideUp", "slideDown", "slideLeft", "slideRight",
-  "popIn", "expandIn", "zoomIn", "pulse", "shake", "errorMessageIn",
+  "popIn", "expandIn", "zoomIn", "shake", "errorMessageIn",
 ]
 
 const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
@@ -186,6 +180,7 @@ const LIST_PRESETS: ListAnimationPreset[] = [
 ]
 
 const LIST_EXIT_PRESETS: ListAnimationPreset[] = ["fadeOut", "slideOut", "slideOutLeft", "slideOutRight", "popOut", "bounceOut", "collapseOut", "flipOut", "itemFadeOut", "itemSlideOut", "itemCollapseOut", "glideOut"]
+const LIST_EXIT_ONLY_PRESETS: ListAnimationPreset[] = ["fadeOut", "slideOut", "slideOutLeft", "slideOutRight", "popOut", "bounceOut", "collapseOut", "flipOut", "itemFadeOut", "itemSlideOut", "itemCollapseOut", "glideOut"]
 const LIST_ENTER_PRESETS: ListAnimationPreset[] = ["fadeIn", "slideIn", "slideInLeft", "slideInRight", "popIn", "bounceIn", "expandIn", "flipIn", "staggerFadeIn", "staggerSlideUp", "staggerSlideLeft", "staggerZoomIn", "staggerPopIn", "stackIn", "wordCascade", "wordWave", "wordDrop", "wordFadeIn", "itemFadeIn", "itemSlideIn", "itemPopIn", "itemBounceIn", "glideIn", "staggerBlurIn", "feedAppend", "filterIn", "emptyToList", "selectionPulse", "insertItem", "emptyStateToList"]
 const LIST_REORDER_PRESETS: ListAnimationPreset[] = ["flip", "smooth", "spring", "none"]
 const LIST_MARQUEE_PRESETS: ListAnimationPreset[] = ["marquee", "marqueeReverse", "marqueeFade"]
@@ -225,8 +220,8 @@ const BLOCK_ENTRANCE_PRESETS: BlockAnimationPreset[] = [
   "glideIn", "dropIn", "riseUp", "expandIn", "expandHeight", "fadeSlideUp",
   "blurIn", "clipUp", "clipLeft", "zoomIn",
   "springBounce", "springScale", "springSlideUp", "springSlideDown",
-  "modalIn", "popoverIn", "toastIn", "successCheckIn", "buttonLoading",
-  "tabPanelIn", "tabPanelOut", "successToast", "checkboxCheck",
+  "modalIn", "popoverIn", "toastIn", "successCheckIn",
+  "tabPanelIn", "successToast", "checkboxCheck",
 ]
 const BLOCK_CHANGE_PRESETS: BlockAnimationPreset[] = BLOCK_ONESHOT_PRESETS
 const BLOCK_INTERACTION_PRESETS: BlockAnimationPreset[] = [
@@ -267,7 +262,7 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
     scroll: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_SCROLL_LINK_PRESETS],
     hover: BLOCK_INTERACTION_PRESETS,
     click: BLOCK_CLICK_PRESETS,
-    manual: [...BLOCK_ENTRANCE_PRESETS, "shake", "wiggle", "jello", "flash", "heartBeat", ...BLOCK_CONTINUOUS_PRESETS],
+    manual: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_ONESHOT_PRESETS, ...BLOCK_CONTINUOUS_PRESETS],
     mount: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_CONTINUOUS_PRESETS],
   },
 }
