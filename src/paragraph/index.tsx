@@ -650,16 +650,44 @@ function animateMorph(
     const oldPart = oldWords[i]
     const newPart = newWords[i]
 
-    // Whitespace text nodes from either old or new — render as-is
-    if ((oldPart instanceof Text && (!newPart || newPart instanceof Text))
-        || (newPart instanceof Text && !oldPart)) {
-      el.appendChild((oldPart instanceof Text ? oldPart : newPart!).cloneNode())
+    // One side is missing — treat as word addition/removal
+    if (!oldPart || !newPart) {
+      const span = document.createElement('span')
+      span.style.display = 'inline-grid'
+      span.style.position = 'relative'
+      span.style.verticalAlign = 'baseline'
+      const content = (oldPart && !(oldPart instanceof Text) ? oldPart.textContent : newPart && !(newPart instanceof Text) ? newPart.textContent : '') ?? ''
+      if (content) span.textContent = content
+      el.appendChild(span)
       slots.push({ oldSpan: null, newSpan: null })
       continue
     }
 
-    const oldText = oldPart instanceof Text ? oldPart.textContent ?? '' : (oldPart as HTMLSpanElement).textContent ?? ''
-    const newText = newPart instanceof Text ? newPart.textContent ?? '' : (newPart as HTMLSpanElement).textContent ?? ''
+    // Both are text (whitespace) nodes — render as-is, no animation
+    if (oldPart instanceof Text && newPart instanceof Text) {
+      el.appendChild(oldPart.cloneNode())
+      slots.push({ oldSpan: null, newSpan: null })
+      continue
+    }
+
+    // One is text, one is a word — render the word directly
+    if (oldPart instanceof Text || newPart instanceof Text) {
+      const wordPart = (oldPart instanceof Text ? newPart : oldPart) as HTMLSpanElement
+      const text = wordPart.textContent ?? ''
+      if (text) {
+        const span = document.createElement('span')
+        span.textContent = text
+        span.style.display = 'inline-grid'
+        span.style.position = 'relative'
+        span.style.verticalAlign = 'baseline'
+        el.appendChild(span)
+      }
+      slots.push({ oldSpan: null, newSpan: null })
+      continue
+    }
+
+    const oldText = (oldPart as HTMLSpanElement).textContent ?? ''
+    const newText = (newPart as HTMLSpanElement).textContent ?? ''
     const same = oldText === newText && oldText.length > 0
 
     const slot = document.createElement('span')
