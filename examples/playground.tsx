@@ -344,6 +344,19 @@ function exitCategoryMatch(preset: string, category: string): boolean {
   return true
 }
 
+let propRowCounter = 0
+function nextPropRowId() { return `prop-${++propRowCounter}` }
+
+function buildProperties(rows: PropertyRow[]): AnimationProperties | undefined {
+  const valid = rows.filter(r => r.enabled && r.name.trim() && r.from && r.to)
+  if (!valid.length) return undefined
+  const props: AnimationProperties = {}
+  for (const r of valid) {
+    props[r.name.trim()] = [r.from, r.to]
+  }
+  return props
+}
+
 const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Partial<Record<Trigger, string[]>>> = {
   text: {
     change: TEXT_CHANGE_PRESETS,
@@ -384,6 +397,8 @@ function presetsFor(module: ModuleId, trigger: Trigger) {
   return Array.isArray(config) ? config : config[trigger] ?? []
 }
 
+type PropertyRow = { id: string; name: string; from: string; to: string; enabled: boolean }
+
 type SavedPlaygroundState = {
   module: ModuleId
   trigger: Trigger
@@ -395,6 +410,7 @@ type SavedPlaygroundState = {
   stagger: number
   listSpeed: number
   dark: boolean
+  propertyRows: PropertyRow[]
 }
 
 const PLAYGROUND_STATE_KEY = "trigr.playground.state"
@@ -409,6 +425,7 @@ const DEFAULT_PLAYGROUND_STATE: SavedPlaygroundState = {
   stagger: 60,
   listSpeed: 50,
   dark: false,
+  propertyRows: [],
 }
 
 function clampNumber(value: unknown, fallback: number, min: number, max: number) {
@@ -437,7 +454,8 @@ function getSavedPlaygroundState(): SavedPlaygroundState {
     const exitPresets = exitPresetsFor(module)
     const exitPreset = typeof saved.exitPreset === "string" && exitPresets.includes(saved.exitPreset) ? saved.exitPreset : ""
     const dark = typeof saved.dark === "boolean" ? saved.dark : DEFAULT_PLAYGROUND_STATE.dark
-    return { module, trigger, preset, exitPreset, duration, easing, threshold, stagger, listSpeed, dark }
+    const propertyRows = Array.isArray(saved.propertyRows) ? saved.propertyRows as PropertyRow[] : []
+    return { module, trigger, preset, exitPreset, duration, easing, threshold, stagger, listSpeed, dark, propertyRows }
   } catch {
     return DEFAULT_PLAYGROUND_STATE
   }
@@ -448,6 +466,7 @@ type RuntimeOptions = {
   threshold: number
   stagger: number
   listSpeed: number
+  propertyRows: PropertyRow[]
 }
 
 const MODULE_META: Record<ModuleId, { title: string; desc: string; color: string; triggers: Trigger[] }> = {
@@ -511,6 +530,7 @@ const RuntimeOptionsContext = createContext<RuntimeOptions>({
   threshold: DEFAULT_PLAYGROUND_STATE.threshold,
   stagger: DEFAULT_PLAYGROUND_STATE.stagger,
   listSpeed: DEFAULT_PLAYGROUND_STATE.listSpeed,
+  propertyRows: [],
 })
 
 function useRuntimeOptions() {
@@ -534,7 +554,8 @@ function triggerSnippet(base: Trigger) {
 }
 
 function CapabilityPanel({ module, trigger, preset }: { module: ModuleId; trigger: Trigger; preset: string }) {
-  const { threshold, stagger, listSpeed } = useRuntimeOptions()
+  const { threshold, stagger, listSpeed, propertyRows } = useRuntimeOptions()
+  const activeProperties = useMemo(() => buildProperties(propertyRows), [propertyRows])
   const listParallax = module === "list" && LIST_PARALLAX_PRESETS.includes(preset as ListAnimationPreset)
   const listMarquee = module === "list" && LIST_MARQUEE_PRESETS.includes(preset as ListAnimationPreset)
   const items = [
@@ -544,6 +565,7 @@ function CapabilityPanel({ module, trigger, preset }: { module: ModuleId; trigge
     listParallax ? `${(listSpeed / 100).toFixed(2)} parallax speed`
       : listMarquee ? `${listSpeed}px/s marquee`
       : null,
+    activeProperties ? `${Object.keys(activeProperties).length} custom properties` : null,
   ].filter(Boolean) as string[]
 
   return (
@@ -730,7 +752,7 @@ function ManualStage({ children, count, duration, onFire }: { children: ReactNod
 const SEARCH_PRESETS = ["fadeSwap", "morph", "scramble", "typewriter", "decoder", "letterDrop", "highlight"]
 const RANDOM_WORDS = ["trigr", "animation", "motion", "design", "morph", "scroll", "hover", "click", "physics", "spring", "easing", "keyframe", "stagger", "parallax", "interaction", "playground", "typography", "gradient", "overlay", "reveal"]
 
-function SearchDemo({ preset, duration, easing }: { preset: AnimationPreset; duration: number; easing: string }) {
+function SearchDemo({ preset, duration, easing, properties }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [query, setQuery] = useState("trigr")
   useRuntimeOptions()
   const triggerValue = triggerProp("change")
@@ -745,7 +767,7 @@ function SearchDemo({ preset, duration, easing }: { preset: AnimationPreset; dur
           <div className="search-real-result-item">
             <div className="search-real-result-thumb" />
             <div className="search-real-result-body">
-              <TextAnimate.Text trigger={triggerValue} value={query} animation={preset} duration={duration} easing={easing} as="h4" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})}>
+              <TextAnimate.Text trigger={triggerValue} value={query} animation={preset} duration={duration} easing={easing} as="h4" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})} properties={properties}>
                 {query}
               </TextAnimate.Text>
               <p>Found in 12 products · Updated yesterday</p>
@@ -770,7 +792,7 @@ function SearchResults() {
         animation="${preset}"
         duration={${duration}}
         easing="${easing}"
-        as="h4"
+        as="h4"${propertiesSnippet(properties)}
       >
         {query}
       </Animate.Text>
@@ -783,7 +805,7 @@ function SearchResults() {
 
 const NAV_ITEMS = ["Home", "Products", "Pricing", "About", "Contact"]
 
-function NavLinksDemo({ preset, duration, easing }: { preset: AnimationPreset; duration: number; easing: string }) {
+function NavLinksDemo({ preset, duration, easing, properties }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [hovered, setHovered] = useState("")
   useRuntimeOptions()
   const triggerValue = triggerProp("hover")
@@ -802,7 +824,7 @@ function NavLinksDemo({ preset, duration, easing }: { preset: AnimationPreset; d
               animation={preset}
               duration={duration}
               easing={easing}
-             
+              properties={properties}
               as="button"
               className="nav-link-item"
               onHoverStart={() => setHovered(item)}
@@ -839,7 +861,7 @@ function AppHeader() {
   )
 }
 
-function CTADemo({ preset, duration, easing }: { preset: AnimationPreset; duration: number; easing: string }) {
+function CTADemo({ preset, duration, easing, properties }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [count, setCount] = useState(0)
   useRuntimeOptions()
   const triggerValue = triggerProp("click")
@@ -852,7 +874,7 @@ function CTADemo({ preset, duration, easing }: { preset: AnimationPreset; durati
           animation={preset}
           duration={duration}
           easing={easing}
-         
+          properties={properties}
           onClick={() => setCount((c) => c + 1)}
           as="h1"
           className="landing-headline"
@@ -876,7 +898,7 @@ function LandingHero() {
         trigger="click"
         animation="${preset}"
         duration={${duration}}
-        easing="${easing}"
+        easing="${easing}"${propertiesSnippet(properties)}
         as="h1"
       >
         Ship motion that feels right
@@ -891,7 +913,7 @@ function LandingHero() {
 
 const HEADINGS = ["Features", "Blog", "Testimonials", "FAQ"]
 
-function SectionHeadersDemo({ preset, duration, easing }: { preset: AnimationPreset; duration: number; easing: string }) {
+function SectionHeadersDemo({ preset, duration, easing, properties }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const { threshold } = useRuntimeOptions()
   const triggerValue = triggerProp("scroll")
   return (
@@ -902,7 +924,7 @@ function SectionHeadersDemo({ preset, duration, easing }: { preset: AnimationPre
       <div className="scroll-hfeed">
         {HEADINGS.map((h) => (
           <div key={h} className="scroll-reveal-item">
-            <TextAnimate.Text trigger={triggerValue} animation={preset} duration={duration} easing={easing} threshold={threshold} once={false} repeat as="h2" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})}>
+            <TextAnimate.Text trigger={triggerValue} animation={preset} duration={duration} easing={easing} threshold={threshold} once={false} repeat as="h2" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})} properties={properties}>
               {h}
             </TextAnimate.Text>
             <p className="demo-label">This is the {h.toLowerCase()} section. It animates each time you scroll back.</p>
@@ -922,7 +944,7 @@ function PageSections() {
         animation="${preset}"
         duration={${duration}}
         easing="${easing}"
-        threshold={${threshold}}${preset === "highlight" ? '\n        highlightColor="yellow"' : ""}
+        threshold={${threshold}}${preset === "highlight" ? '\n        highlightColor="yellow"' : ""}${propertiesSnippet(properties)}
         once={false}
         repeat
         as="h2"
@@ -942,7 +964,7 @@ const QUOTES = [
   "Simplicity is the ultimate sophistication.",
 ]
 
-function QuoteRotatorDemo({ preset, duration, easing }: { preset: AnimationPreset; duration: number; easing: string }) {
+function QuoteRotatorDemo({ preset, duration, easing, properties }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [idx, setIdx] = useState(0)
   const [count, setCount] = useState(0)
   const ref = useRef<AnimateTextHandle>(null)
@@ -961,7 +983,7 @@ function QuoteRotatorDemo({ preset, duration, easing }: { preset: AnimationPrese
       <div className="testimonial-demo">
         <div className="testimonial-avatar" />
         <div className="quote-display">
-          <TextAnimate.Text ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="blockquote">
+          <TextAnimate.Text ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="blockquote" properties={properties}>
             "{quote}"
           </TextAnimate.Text>
         </div>
@@ -1005,7 +1027,7 @@ function Testimonials() {
 
 const MOUNT_HEADLINES = ["Page Loaded", "Welcome Back", "Section Ready"]
 
-function TextMountDemo({ preset, duration, easing, exitPreset }: { preset: AnimationPreset; duration: number; easing: string; exitPreset?: AnimationPreset }) {
+function TextMountDemo({ preset, duration, easing, exitPreset, properties }: { preset: AnimationPreset; duration: number; easing: string; exitPreset?: AnimationPreset; properties?: AnimationProperties }) {
   const [visible, setVisible] = useState(true)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
@@ -1019,7 +1041,7 @@ function TextMountDemo({ preset, duration, easing, exitPreset }: { preset: Anima
         {hasExit ? (
           <BlockAnimate.Block show={visible} exitAnimation={exitPreset as BlockAnimationPreset} unmountOnExit duration={duration} easing={easing}>
             <div className="page-load-content">
-              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2">
+              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2" properties={properties}>
                 {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
               </TextAnimate.Text>
               <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
@@ -1033,7 +1055,7 @@ function TextMountDemo({ preset, duration, easing, exitPreset }: { preset: Anima
         ) : (
           visible && (
             <div className="page-load-content">
-              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2">
+              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2" properties={properties}>
                 {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
               </TextAnimate.Text>
               <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
@@ -1076,14 +1098,14 @@ function FeatureSection() {
   )
 }
 
-function TextSection({ preset, duration, easing, trigger, exitPreset }: { preset: AnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: AnimationPreset }) {
-  const content = trigger === "change" ? <SearchDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "hover" ? <NavLinksDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "click" ? <CTADemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "scroll" ? <SectionHeadersDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "manual" ? <QuoteRotatorDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "mount" ? <TextMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
-    : <CTADemo preset={preset} duration={duration} easing={easing} />
+function TextSection({ preset, duration, easing, trigger, exitPreset, properties }: { preset: AnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: AnimationPreset; properties?: AnimationProperties }) {
+  const content = trigger === "change" ? <SearchDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "hover" ? <NavLinksDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "click" ? <CTADemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "scroll" ? <SectionHeadersDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "manual" ? <QuoteRotatorDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "mount" ? <TextMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} />
+    : <CTADemo preset={preset} duration={duration} easing={easing} properties={properties} />
 
   return (
     <div className="section">
@@ -1120,7 +1142,7 @@ function paragraphHighlightSnippet(preset: ParagraphPreset) {
   return preset === "highlight" ? '\n      highlightColor="yellow"' : ""
 }
 
-function ArticlePreviewDemo({ preset, duration, easing }: { preset: ParagraphPreset; duration: number; easing: string }) {
+function ArticlePreviewDemo({ preset, duration, easing, properties }: { preset: ParagraphPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [articleIdx, setArticleIdx] = useState(0)
   const [randomBody, setRandomBody] = useState<string | null>(null)
   useRuntimeOptions()
@@ -1137,7 +1159,7 @@ function ArticlePreviewDemo({ preset, duration, easing }: { preset: ParagraphPre
             <span className="blog-card-tag">Design</span>
             <span className="blog-card-date">Jan 15, 2025</span>
           </div>
-          <ParagraphAnimate.Paragraph trigger={triggerValue} value={displayBody} animation={preset} duration={duration} easing={easing} as="article" {...paragraphHighlightProps(preset)}>
+          <ParagraphAnimate.Paragraph trigger={triggerValue} value={displayBody} animation={preset} duration={duration} easing={easing} as="article" {...paragraphHighlightProps(preset)} properties={properties}>
             <h3>{article.title}</h3>
             <p>{displayBody}</p>
           </ParagraphAnimate.Paragraph>
@@ -1163,7 +1185,7 @@ function ArticleCard() {
         value={article.body}
         animation="${preset}"
         duration={${duration}}
-        easing="${easing}"${paragraphHighlightSnippet(preset)}
+        easing="${easing}"${paragraphHighlightSnippet(preset)}${propertiesSnippet(properties)}
         as="div"
       >
         <h3>{article.title}</h3>
@@ -1183,7 +1205,7 @@ const STORY_PARAGRAPHS = [
   "Each volume held a world within its pages, waiting to be discovered anew.",
 ]
 
-function StoryScrollDemo({ preset, duration, easing }: { preset: ParagraphPreset; duration: number; easing: string }) {
+function StoryScrollDemo({ preset, duration, easing, properties }: { preset: ParagraphPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const { threshold } = useRuntimeOptions()
   const triggerValue = triggerProp("scroll")
   return (
@@ -1194,7 +1216,7 @@ function StoryScrollDemo({ preset, duration, easing }: { preset: ParagraphPreset
       <div className="story-content">
         {STORY_PARAGRAPHS.map((text, i) => (
           <div key={i} className="story-paragraph">
-            <ParagraphAnimate.Paragraph trigger={triggerValue} animation={preset} duration={duration} easing={easing} threshold={threshold} once={false} repeat as="div" {...paragraphHighlightProps(preset)}>
+            <ParagraphAnimate.Paragraph trigger={triggerValue} animation={preset} duration={duration} easing={easing} threshold={threshold} once={false} repeat as="div" {...paragraphHighlightProps(preset)} properties={properties}>
               <p>{text}</p>
             </ParagraphAnimate.Paragraph>
           </div>
@@ -1226,14 +1248,14 @@ function StoryPage() {
   )
 }
 
-function ParagraphHoverDemo({ preset, duration, easing }: { preset: ParagraphPreset; duration: number; easing: string }) {
+function ParagraphHoverDemo({ preset, duration, easing, properties }: { preset: ParagraphPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const ref = useRef<AnimateParagraphHandle>(null)
   useRuntimeOptions()
   const triggerValue = triggerProp("hover")
   return (
     <div className="real-demo">
       <p className="demo-label">Hover over the text to animate it</p>
-      <ParagraphAnimate.Paragraph ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="p" className="paragraph-hover-demo" {...paragraphHighlightProps(preset)}>
+      <ParagraphAnimate.Paragraph ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="p" className="paragraph-hover-demo" {...paragraphHighlightProps(preset)} properties={properties}>
         Hover over this paragraph to see the {preset} animation in action. The text animates each time you hover, making it perfect for interactive content and micro-copy.
       </ParagraphAnimate.Paragraph>
       <Code>{
@@ -1256,7 +1278,7 @@ function InteractiveText() {
   )
 }
 
-function ReadMoreDemo({ preset, duration, easing }: { preset: ParagraphPreset; duration: number; easing: string }) {
+function ReadMoreDemo({ preset, duration, easing, properties }: { preset: ParagraphPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [expanded, setExpanded] = useState(false)
   const ref = useRef<AnimateParagraphHandle>(null)
   useRuntimeOptions()
@@ -1276,7 +1298,7 @@ function ReadMoreDemo({ preset, duration, easing }: { preset: ParagraphPreset; d
         animation={preset}
         duration={duration}
         easing={easing}
-       
+        properties={properties}
         onClick={handleClick}
         as="div"
         className="readmore-card"
@@ -1324,7 +1346,7 @@ const SLIDES = [
   { title: "Implementation", body: "Practical examples of how to implement these animations using the trigr library with various triggers and presets." },
 ]
 
-function SlideDeckDemo({ preset, duration, easing }: { preset: ParagraphPreset; duration: number; easing: string }) {
+function SlideDeckDemo({ preset, duration, easing, properties }: { preset: ParagraphPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [slideIdx, setSlideIdx] = useState(0)
   const [count, setCount] = useState(0)
   const ref = useRef<AnimateParagraphHandle>(null)
@@ -1347,7 +1369,7 @@ function SlideDeckDemo({ preset, duration, easing }: { preset: ParagraphPreset; 
     <div className="real-demo">
       <p className="demo-label">Use the arrows to navigate slides with paragraph transitions</p>
       <div className="slide-deck">
-        <ParagraphAnimate.Paragraph ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="div" {...paragraphHighlightProps(preset)}>
+        <ParagraphAnimate.Paragraph ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="div" {...paragraphHighlightProps(preset)} properties={properties}>
           <span className="slide-number">{slideIdx + 1} / {SLIDES.length}</span>
           <h3>{slide.title}</h3>
           <p>{slide.body}</p>
@@ -1393,7 +1415,7 @@ function SlideDeck() {
 
 const PARAGRAPH_CONTENT = "This paragraph appears with a smooth entrance animation as soon as it mounts. Perfect for loading states, dynamic content, and page transitions."
 
-function ParagraphMountDemo({ preset, duration, easing, exitPreset }: { preset: ParagraphPreset; duration: number; easing: string; exitPreset?: ParagraphPreset }) {
+function ParagraphMountDemo({ preset, duration, easing, exitPreset, properties }: { preset: ParagraphPreset; duration: number; easing: string; exitPreset?: ParagraphPreset; properties?: AnimationProperties }) {
   const [visible, setVisible] = useState(true)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
@@ -1407,13 +1429,13 @@ function ParagraphMountDemo({ preset, duration, easing, exitPreset }: { preset: 
       <div style={{ minHeight: 80 }}>
         {hasExit ? (
           <BlockAnimate.Block show={visible} exitAnimation={exitPreset as BlockAnimationPreset} unmountOnExit duration={duration} easing={easing}>
-            <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)}>
+            <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)} properties={properties}>
               {PARAGRAPH_CONTENT}
             </ParagraphAnimate.Paragraph>
           </BlockAnimate.Block>
         ) : (
           visible && (
-            <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)}>
+            <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)} properties={properties}>
               {PARAGRAPH_CONTENT}
             </ParagraphAnimate.Paragraph>
           )
@@ -1453,14 +1475,14 @@ function MountDemo() {
   )
 }
 
-function ParagraphSection({ preset, duration, easing, trigger, exitPreset }: { preset: ParagraphPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ParagraphPreset }) {
-  const content = trigger === "change" ? <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "scroll" ? <StoryScrollDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "hover" ? <ParagraphHoverDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "click" ? <ReadMoreDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "manual" ? <SlideDeckDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "mount" ? <ParagraphMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
-    : <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} />
+function ParagraphSection({ preset, duration, easing, trigger, exitPreset, properties }: { preset: ParagraphPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ParagraphPreset; properties?: AnimationProperties }) {
+  const content = trigger === "change" ? <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "scroll" ? <StoryScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "hover" ? <ParagraphHoverDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "click" ? <ReadMoreDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "manual" ? <SlideDeckDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "mount" ? <ParagraphMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} />
+    : <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} properties={properties} />
 
   return (
     <div className="section">
@@ -1519,7 +1541,7 @@ function listDemoMode(preset: ListAnimationPreset) {
   return "stagger"
 }
 
-function ListChangeDemo({ preset, duration, easing, exitPreset }: { preset: ListAnimationPreset; duration: number; easing: string; exitPreset?: ListAnimationPreset }) {
+function ListChangeDemo({ preset, duration, easing, exitPreset, properties }: { preset: ListAnimationPreset; duration: number; easing: string; exitPreset?: ListAnimationPreset; properties?: AnimationProperties }) {
   const [items, setItems] = useState<ListDemoItem[]>(LIST_DEMO_POOL.slice(0, 4))
   const [input, setInput] = useState("")
   const { stagger, listSpeed } = useRuntimeOptions()
@@ -1567,7 +1589,7 @@ function ListChangeDemo({ preset, duration, easing, exitPreset }: { preset: List
             <p className="demo-label">Marquee carousel — repeated children loop continuously without the collection knowing what they are.</p>
             <div className="marquee-demo">
               <span className="marquee-prefix">trusted by</span>
-              <ListAnimate.List trigger={triggerValue} animation={preset} duration={duration} speed={listSpeed}>
+              <ListAnimate.List trigger={triggerValue} animation={preset} duration={duration} speed={listSpeed} properties={properties}>
                 {MARQUEE_LABELS.map((item) => <span className="marquee-item" key={item}>{item}</span>)}
               </ListAnimate.List>
             </div>
@@ -1594,7 +1616,7 @@ function ListChangeDemo({ preset, duration, easing, exitPreset }: { preset: List
               reorderDuration={duration}
               easing={easing}
               stagger={stagger}
-             
+              properties={properties}
             >
               {mode === "cascade" ? CASCADE_LABELS.map((item) => (
                 <button className="list-tag-pill" key={item}>{item}</button>
@@ -1687,7 +1709,7 @@ const LIST_MOUNT_ITEMS = [
   { id: "settings", title: "Settings", desc: "Team permissions and billing" },
 ]
 
-function ListMountDemo({ preset, duration, easing, exitPreset }: { preset: ListAnimationPreset; duration: number; easing: string; exitPreset?: ListAnimationPreset }) {
+function ListMountDemo({ preset, duration, easing, exitPreset, properties }: { preset: ListAnimationPreset; duration: number; easing: string; exitPreset?: ListAnimationPreset; properties?: AnimationProperties }) {
   const [visible, setVisible] = useState(true)
   const { stagger } = useRuntimeOptions()
   const triggerValue = triggerProp("mount")
@@ -1701,7 +1723,7 @@ function ListMountDemo({ preset, duration, easing, exitPreset }: { preset: ListA
           </div>
           <div className="list-demo list-demo-presence" style={{ minHeight: 260 }}>
             {visible && (
-              <ListAnimate.List key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} stagger={stagger}>
+              <ListAnimate.List key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} stagger={stagger} properties={properties}>
                 {LIST_MOUNT_ITEMS.map((item) => (
                   <div className="list-dashboard-row" key={item.id}>
                     <span className="list-status-dot tone-blue" />
@@ -1749,7 +1771,7 @@ function ListMountDemo() {
   )
 }
 
-function ListScrollDemo({ preset, duration, easing }: { preset: ListAnimationPreset; duration: number; easing: string }) {
+function ListScrollDemo({ preset, duration, easing, properties }: { preset: ListAnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const { stagger, threshold, listSpeed } = useRuntimeOptions()
   const triggerValue = triggerProp("scroll")
   const parallaxSpeed = Number((listSpeed / 100).toFixed(2))
@@ -1772,6 +1794,7 @@ function ListScrollDemo({ preset, duration, easing }: { preset: ListAnimationPre
           animation={preset}
           speed={parallaxSpeed}
           threshold={threshold}
+          properties={properties}
           className="list-parallax-stack"
         >
           {cards.map((card) => (
@@ -1811,7 +1834,7 @@ function CollectionParallax({ cards }) {
       </div>
       {["Metrics", "Notifications", "Pricing"].map((label, index) => (
         <div className="list-scroll-item" key={label}>
-          <ListAnimate.List trigger={triggerValue} animation={preset} duration={duration} easing={easing} stagger={stagger} threshold={threshold}>
+            <ListAnimate.List trigger={triggerValue} animation={preset} duration={duration} easing={easing} stagger={stagger} threshold={threshold} properties={properties}>
             {LIST_DEMO_POOL.slice(index, index + 3).map((item) => (
               <div className="list-dashboard-row" key={`${label}-${item.id}`}>
                 <span className={`list-status-dot tone-${item.tone}`} />
@@ -1848,7 +1871,7 @@ function ScrollCollection() {
   )
 }
 
-function ListInteractionDemo({ preset, duration, easing, trigger }: { preset: ListAnimationPreset; duration: number; easing: string; trigger: Trigger }) {
+function ListInteractionDemo({ preset, duration, easing, trigger, properties }: { preset: ListAnimationPreset; duration: number; easing: string; trigger: Trigger; properties?: AnimationProperties }) {
   const ref = useRef<AnimateListHandle>(null)
   const [fires, setFires] = useState(0)
   const { stagger } = useRuntimeOptions()
@@ -1867,14 +1890,14 @@ function ListInteractionDemo({ preset, duration, easing, trigger }: { preset: Li
         </button>
       )}
       <div className="list-demo list-demo-presence">
-        <ListAnimate.List
+          <ListAnimate.List
           ref={ref}
           trigger={triggerValue}
           animation={preset}
           duration={duration}
           easing={easing}
           stagger={stagger}
-         
+          properties={properties}
           onReorder={() => setFires((count) => count + 1)}
         >
           {LIST_MOUNT_ITEMS.map((item) => (
@@ -1914,14 +1937,14 @@ function MenuMotion() {
   )
 }
 
-function ListSection({ preset, duration, easing, trigger, exitPreset }: { preset: ListAnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ListAnimationPreset }) {
+function ListSection({ preset, duration, easing, trigger, exitPreset, properties }: { preset: ListAnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ListAnimationPreset; properties?: AnimationProperties }) {
   if (trigger === "mount") {
-    return <ListMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
+    return <ListMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} />
   }
 
-  const content = trigger === "scroll" ? <ListScrollDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "hover" || trigger === "click" || trigger === "manual" ? <ListInteractionDemo preset={preset} duration={duration} easing={easing} trigger={trigger} />
-    : <ListChangeDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
+  const content = trigger === "scroll" ? <ListScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "hover" || trigger === "click" || trigger === "manual" ? <ListInteractionDemo preset={preset} duration={duration} easing={easing} trigger={trigger} properties={properties} />
+    : <ListChangeDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} />
 
   return (
     <div className="section">
@@ -1945,7 +1968,7 @@ function BlockCard({ title, desc, tone }: { title: string; desc: string; tone?: 
   )
 }
 
-function BlockChangeDemo({ preset, duration, easing, onReplay }: { preset: BlockAnimationPreset; duration: number; easing: string; onReplay: () => void }) {
+function BlockChangeDemo({ preset, duration, easing, onReplay, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; onReplay: () => void; properties?: AnimationProperties }) {
   const [tick, setTick] = useState(0)
   useRuntimeOptions()
   const triggerValue = triggerProp("change")
@@ -1956,7 +1979,7 @@ function BlockChangeDemo({ preset, duration, easing, onReplay }: { preset: Block
         New Notification
       </button>
       <div className="block-preview-area">
-        <BlockAnimate.Block trigger={triggerValue} value={tick} animation={preset} duration={duration} easing={easing}>
+        <BlockAnimate.Block trigger={triggerValue} value={tick} animation={preset} duration={duration} easing={easing} properties={properties}>
           <BlockCard title={`Notification #${tick}`} desc={`This card animates in using the "${preset}" preset when data changes.`} />
         </BlockAnimate.Block>
       </div>
@@ -1978,7 +2001,7 @@ function NotificationFeed() {
         value={tick}
         animation="${preset}"
         duration={${duration}}
-        easing="${easing}"
+        easing="${easing}"${propertiesSnippet(properties)}
       >
         <Card title={\`Notification #\${tick}\`} desc="..." />
       </Animate.Block>
@@ -1989,7 +2012,7 @@ function NotificationFeed() {
   )
 }
 
-function BlockScrollDemo({ preset, duration, easing }: { preset: BlockAnimationPreset; duration: number; easing: string }) {
+function BlockScrollDemo({ preset, duration, easing, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const isScrollLinked = ["parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll"].includes(preset)
   const { threshold } = useRuntimeOptions()
   const triggerValue = triggerProp("scroll")
@@ -2009,6 +2032,7 @@ function BlockScrollDemo({ preset, duration, easing }: { preset: BlockAnimationP
             threshold={threshold}
             duration={duration}
             easing={easing}
+            properties={properties}
             className="block-parallax-element"
           >
             <div className="block-parallax-visual">
@@ -2043,7 +2067,7 @@ function HeroParallax() {
       </div>
       {["Features", "Pricing", "FAQ"].map((section) => (
         <div key={section} className="block-scroll-item">
-          <BlockAnimate.Block animation={preset} trigger={triggerValue} duration={duration} easing={easing} threshold={threshold} once={false} repeat>
+          <BlockAnimate.Block animation={preset} trigger={triggerValue} duration={duration} easing={easing} threshold={threshold} once={false} repeat properties={properties}>
             <BlockCard title={section} desc={`This ${section.toLowerCase()} section animates each time it scrolls into view.`} tone={section.toLowerCase()} />
           </BlockAnimate.Block>
         </div>
@@ -2061,7 +2085,7 @@ function LandingPage() {
         animation="${preset}"
         duration={${duration}}
         easing="${easing}"
-        threshold={${threshold}}
+        threshold={${threshold}}${propertiesSnippet(properties)}
         once={false}
         repeat
       >
@@ -2074,17 +2098,17 @@ function LandingPage() {
   )
 }
 
-function BlockHoverDemo({ preset, duration, easing }: { preset: BlockAnimationPreset; duration: number; easing: string }) {
+function BlockHoverDemo({ preset, duration, easing, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   useRuntimeOptions()
   const triggerValue = triggerProp("hover")
   return (
     <div className="real-demo">
       <p className="demo-label">Hover over each card to see the hover state animation</p>
       <div className="block-hover-grid">
-        <BlockAnimate.Block trigger={triggerValue} animation={preset} duration={duration} easing={easing}>
+        <BlockAnimate.Block trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties}>
           <BlockCard title="Basic Plan" desc="$19/mo — Great for individuals getting started." tone="basic" />
         </BlockAnimate.Block>
-        <BlockAnimate.Block trigger={triggerValue} animation={preset} duration={duration} easing={easing}>
+        <BlockAnimate.Block trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties}>
           <BlockCard title="Pro Plan" desc="$49/mo — Advanced features for teams." tone="pro" />
         </BlockAnimate.Block>
       </div>
@@ -2113,7 +2137,7 @@ function PricingGrid() {
   )
 }
 
-function BlockClickDemo({ preset, duration, easing }: { preset: BlockAnimationPreset; duration: number; easing: string }) {
+function BlockClickDemo({ preset, duration, easing, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [count, setCount] = useState(0)
   const ref = useRef<AnimateBlockHandle>(null)
   useRuntimeOptions()
@@ -2121,7 +2145,7 @@ function BlockClickDemo({ preset, duration, easing }: { preset: BlockAnimationPr
   return (
     <div className="real-demo">
       <p className="demo-label">Click the card to trigger the animation</p>
-      <BlockAnimate.Block ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} onClick={() => setCount((c) => c + 1)}>
+      <BlockAnimate.Block ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} onClick={() => setCount((c) => c + 1)} properties={properties}>
         <BlockCard title={`Clicked ${count} times`} desc={`The "${preset}" animation plays each time you click this card.`} />
       </BlockAnimate.Block>
       <Code>{
@@ -2150,7 +2174,7 @@ function InteractiveCard() {
 
 const STEPS = ["Fill in your details", "Verify your email", "Set up billing", "Done!"]
 
-function BlockManualDemo({ preset, duration, easing }: { preset: BlockAnimationPreset; duration: number; easing: string }) {
+function BlockManualDemo({ preset, duration, easing, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; properties?: AnimationProperties }) {
   const [step, setStep] = useState(0)
   const [count, setCount] = useState(0)
   const ref = useRef<AnimateBlockHandle>(null)
@@ -2166,7 +2190,7 @@ function BlockManualDemo({ preset, duration, easing }: { preset: BlockAnimationP
   return (
     <div className="real-demo">
       <p className="demo-label">Step through the onboarding flow — each step triggers a manual animation</p>
-      <BlockAnimate.Block ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing}>
+      <BlockAnimate.Block ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties}>
         <BlockCard title={`Step ${step + 1}: ${STEPS[step]}`} desc={`This card animates via ref.current?.animate() when you click "Next Step".`} />
       </BlockAnimate.Block>
       <div className="manual-controls">
@@ -2203,14 +2227,14 @@ function OnboardingFlow() {
   )
 }
 
-function BlockMountDemo({ preset, duration, easing, exitPreset }: { preset: BlockAnimationPreset; duration: number; easing: string; exitPreset?: BlockAnimationPreset }) {
+function BlockMountDemo({ preset, duration, easing, exitPreset, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; exitPreset?: BlockAnimationPreset; properties?: AnimationProperties }) {
   const [show, setShow] = useState(true)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
   const hasExit = !!exitPreset
 
   const content = (
-    <BlockAnimate.Block key={show ? "show" : "hide"} trigger={triggerValue} animation={preset} duration={duration} easing={easing}>
+    <BlockAnimate.Block key={show ? "show" : "hide"} trigger={triggerValue} animation={preset} duration={duration} easing={easing} properties={properties}>
       <BlockCard title="Welcome!" desc={`Animating in with "${preset}" triggered on mount.`} tone="welcome" />
     </BlockAnimate.Block>
   )
@@ -2249,7 +2273,7 @@ function PageEntrance() {
   )
 }
 
-function BlockExitDemo({ duration, easing, preset }: { duration: number; easing: string; preset?: BlockAnimationPreset }) {
+function BlockExitDemo({ duration, easing, preset, properties }: { duration: number; easing: string; preset?: BlockAnimationPreset; properties?: AnimationProperties }) {
   const [items, setItems] = useState([
     { id: 1, title: "Build pipeline failed", desc: "The production build failed on commit a3f2c1d." },
     { id: 2, title: "Deployment complete", desc: "Version 2.4.1 deployed to staging successfully." },
@@ -2285,6 +2309,7 @@ function BlockExitDemo({ duration, easing, preset }: { duration: number; easing:
             duration={duration}
             easing={easing}
             unmountOnExit
+            properties={properties}
           >
             <div className="notif-card" onClick={() => dismiss(item.id)}>
               <div className="notif-body">
@@ -2343,19 +2368,19 @@ function NotificationStack() {
   )
 }
 
-function BlockSection({ preset, duration, easing, trigger, exitPreset }: { preset: BlockAnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: BlockAnimationPreset }) {
+function BlockSection({ preset, duration, easing, trigger, exitPreset, properties }: { preset: BlockAnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: BlockAnimationPreset; properties?: AnimationProperties }) {
   const replay = useCallback(() => {}, [])
   const isExitDemo = trigger === "exit"
 
   const content = isExitDemo
-    ? <BlockExitDemo duration={duration} easing={easing} preset={exitPreset} />
-    : trigger === "change" ? <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} />
-    : trigger === "scroll" ? <BlockScrollDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "hover" ? <BlockHoverDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "click" ? <BlockClickDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "manual" ? <BlockManualDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "mount" ? <BlockMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
-    : <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} />
+    ? <BlockExitDemo duration={duration} easing={easing} preset={exitPreset} properties={properties} />
+    : trigger === "change" ? <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} properties={properties} />
+    : trigger === "scroll" ? <BlockScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "hover" ? <BlockHoverDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "click" ? <BlockClickDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "manual" ? <BlockManualDemo preset={preset} duration={duration} easing={easing} properties={properties} />
+    : trigger === "mount" ? <BlockMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} />
+    : <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} properties={properties} />
 
   return (
     <div className="section">
@@ -3690,6 +3715,8 @@ export default function Playground() {
   const [listSpeed, setListSpeed] = useState(initialState.listSpeed)
   const [exitPreset, setExitPreset] = useState(initialState.exitPreset)
   const [exitCategory, setExitCategory] = useState("all")
+  const [propertyRows, setPropertyRows] = useState<PropertyRow[]>(initialState.propertyRows)
+  const [propertiesOpen, setPropertiesOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [dark, setDark] = useState(initialState.dark)
 
@@ -3700,7 +3727,8 @@ export default function Playground() {
     threshold,
     stagger,
     listSpeed,
-  }), [listSpeed, stagger, threshold])
+    propertyRows,
+  }), [listSpeed, stagger, threshold, propertyRows])
 
   const meta = MODULE_META[module]
   const availablePresets = presetsFor(module, trigger)
@@ -3739,8 +3767,9 @@ export default function Playground() {
       stagger,
       listSpeed,
       dark,
+      propertyRows,
     }))
-  }, [module, trigger, preset, exitPreset, duration, easing, threshold, stagger, listSpeed, dark])
+  }, [module, trigger, preset, exitPreset, duration, easing, threshold, stagger, listSpeed, dark, propertyRows])
 
   function selectModule(m: ModuleId, t?: Trigger) {
     setModule(m)
@@ -3769,6 +3798,7 @@ export default function Playground() {
   }
 
   const moduleEntries = useMemo(() => Object.keys(MODULE_META) as ModuleId[], [])
+  const properties = useMemo(() => buildProperties(propertyRows), [propertyRows])
 
   return (
     <div>
@@ -3896,6 +3926,88 @@ export default function Playground() {
                   }}
                 />
               </div>
+              <div className="control-group">
+                <button type="button" className="properties-toggle" onClick={() => setPropertiesOpen(v => !v)}>
+                  <span className="control-label">Properties</span>
+                  <span className="properties-toggle-icon">{propertiesOpen ? "▾" : "▸"}</span>
+                  {propertyRows.some(r => r.enabled) && <span className="properties-count">{propertyRows.filter(r => r.enabled).length}</span>}
+                </button>
+              </div>
+
+              {propertiesOpen && (
+                <div className="properties-panel">
+                  <div className="properties-quick" style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+                    <span style={{ fontSize: 11, color: "var(--text-tertiary)", marginBottom: 4 }}>Quick insert:</span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "color", from: "#111111", to: "#7F77DD", enabled: true }])}>Color</button>
+                      <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "backgroundColor", from: "#ffffff", to: "#f7f7f7", enabled: true }])}>Background</button>
+                      <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "borderColor", from: "#e5e5e5", to: "#111111", enabled: true }])}>Border</button>
+                      <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "fontSize", from: "14px", to: "18px", enabled: true }])}>Font size</button>
+                      <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "opacity", from: "1", to: "0.7", enabled: true }])}>Opacity</button>
+                      <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "filter", from: "blur(0px)", to: "blur(4px)", enabled: true }])}>Blur</button>
+                    </div>
+                  </div>
+
+                  {propertyRows.map((row) => (
+                    <div key={row.id} className="property-row" style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 6 }}>
+                      <input
+                        type="text"
+                        value={row.name}
+                        onChange={(e) => setPropertyRows(prev => prev.map(r => r.id === row.id ? { ...r, name: e.target.value } : r))}
+                        placeholder="property"
+                        className="property-input"
+                        style={{ width: "30%", minWidth: 60 }}
+                      />
+                      <input
+                        type="text"
+                        value={row.from}
+                        onChange={(e) => setPropertyRows(prev => prev.map(r => r.id === row.id ? { ...r, from: e.target.value } : r))}
+                        placeholder="from"
+                        className="property-input"
+                        style={{ width: "30%", minWidth: 60 }}
+                      />
+                      <input
+                        type="text"
+                        value={row.to}
+                        onChange={(e) => setPropertyRows(prev => prev.map(r => r.id === row.id ? { ...r, to: e.target.value } : r))}
+                        placeholder="to"
+                        className="property-input"
+                        style={{ width: "30%", minWidth: 60 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPropertyRows(prev => prev.map(r => r.id === row.id ? { ...r, enabled: !r.enabled } : r))}
+                        className="property-enable-btn"
+                        style={{
+                          padding: "2px 6px", borderRadius: 4, border: "1px solid var(--border)",
+                          background: row.enabled ? "#31c66d" : "var(--bg)",
+                          color: row.enabled ? "#fff" : "var(--text-tertiary)",
+                          fontSize: 11, cursor: "pointer", flexShrink: 0,
+                        }}
+                      >
+                        {row.enabled ? "on" : "off"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPropertyRows(prev => prev.filter(r => r.id !== row.id))}
+                        className="property-remove-btn"
+                        style={{ padding: "2px 6px", border: "none", background: "transparent", color: "var(--text-tertiary)", cursor: "pointer", fontSize: 14, lineHeight: 1 }}
+                      >
+                        ×
+                      </button>
+                      {row.name.toLowerCase().includes("transform") && (
+                        <div style={{ width: "100%", fontSize: 11, color: "#f59e0b", marginTop: 2, paddingLeft: 2 }}>
+                          ⚠ transform may conflict with animation presets
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  <button type="button" className="control-chip" onClick={() => setPropertyRows(prev => [...prev, { id: nextPropRowId(), name: "", from: "", to: "", enabled: false }])} style={{ marginTop: 4 }}>
+                    + Add property
+                  </button>
+                </div>
+              )}
               {(module === "text" || module === "paragraph" || module === "block" || module === "list") && trigger === "scroll" && (
                 <div className="control-group">
                   <div className="control-label-row">
@@ -3940,10 +4052,10 @@ export default function Playground() {
               {module !== "docs" && module !== "composed" && <CapabilityPanel module={module} trigger={trigger} preset={preset} />}
               {module === "composed" && <ComposedSection />}
               {module === "docs" && <DocsSection />}
-              {module === "text" && <TextSection key={activeSectionKey} preset={preset as AnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as AnimationPreset} />}
-              {module === "paragraph" && <ParagraphSection key={activeSectionKey} preset={preset as ParagraphPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as ParagraphPreset} />}
-              {module === "list" && <ListSection key={activeSectionKey} preset={preset as ListAnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as ListAnimationPreset} />}
-              {module === "block" && <BlockSection key={activeSectionKey} preset={preset as BlockAnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as BlockAnimationPreset} />}
+              {module === "text" && <TextSection key={activeSectionKey} preset={preset as AnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as AnimationPreset} properties={properties} />}
+              {module === "paragraph" && <ParagraphSection key={activeSectionKey} preset={preset as ParagraphPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as ParagraphPreset} properties={properties} />}
+              {module === "list" && <ListSection key={activeSectionKey} preset={preset as ListAnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as ListAnimationPreset} properties={properties} />}
+              {module === "block" && <BlockSection key={activeSectionKey} preset={preset as BlockAnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as BlockAnimationPreset} properties={properties} />}
             </RuntimeOptionsContext.Provider>
           </div>
         </main>
@@ -6562,6 +6674,34 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
 [data-theme="dark"] .control-chip { background: var(--bg); border-color: var(--border); color: var(--text-tertiary); }
 [data-theme="dark"] .control-chip:hover { background: var(--bg-elevated); color: var(--text); }
 [data-theme="dark"] .control-chip.active { background: var(--accent); color: var(--bg-elevated); border-color: var(--accent); }
+
+/* ── Properties Editor ──────────────────── */
+.properties-toggle {
+  display: flex; align-items: center; gap: 8px;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  padding: 0; width: 100%; text-align: left; font-family: var(--font);
+}
+.properties-toggle:hover { color: var(--text); }
+.properties-toggle-icon { font-size: 10px; color: var(--text-tertiary); }
+.properties-count {
+  margin-left: auto; font-size: 11px; font-weight: 600;
+  background: var(--accent); color: var(--bg-elevated); padding: 1px 7px; border-radius: 999px; min-width: 18px; text-align: center;
+}
+.properties-panel {
+  padding: 8px 0; display: flex; flex-direction: column;
+}
+.property-row {
+  flex-wrap: wrap;
+}
+.property-input {
+  padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 12px; font-family: var(--mono);
+}
+.property-input:focus { outline: none; border-color: var(--accent); }
+.property-input::placeholder { color: var(--text-tertiary); }
+
+[data-theme="dark"] .property-input { background: var(--bg-elevated); border-color: var(--border); color: var(--text); }
+[data-theme="dark"] .property-input::placeholder { color: var(--text-tertiary); }
 .demo-actions { display: flex; gap: 10px; margin-bottom: 16px; }
 .demo-nav button { font-family: var(--font); }
 .composed-demo { display: block; }
