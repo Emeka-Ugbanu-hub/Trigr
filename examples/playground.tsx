@@ -89,6 +89,7 @@ const TEXT_ALL_PRESETS: AnimationPreset[] = [
   "popIn", "dropIn", "riseUp", "expandIn", "shrinkOut",
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
   "fadeAway", "liftReveal",
+  "underlineDraw", "underlineSlide", "copyConfirm", "colorShift", "activeTabText",
 ]
 
 const TEXT_CHANGE_PRESETS: AnimationPreset[] = [
@@ -149,7 +150,7 @@ const PARAGRAPH_CHANGE_PRESETS: ParagraphPreset[] = [
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "slideUp", "slideDown", "slideLeft", "slideRight",
   "popIn", "expandIn", "zoomIn", "shake", "errorMessageIn",
-  "fadeMask", "streamFade", "heightAuto",
+  "cursorBlink", "fadeMask", "streamFade", "heightAuto",
 ]
 
 const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
@@ -164,6 +165,7 @@ const PARAGRAPH_INTERACTION_PRESETS: ParagraphPreset[] = [
   "highlight", "flash", "pulse", "shake", "fadeIn",
   "wordFadeIn", "wordSlideUp", "wordPop", "lineFadeIn", "lineSlideUp",
   "slideUp", "slideDown", "popIn", "zoomIn", "errorMessageIn",
+  "cursorBlink",
 ]
 
 const PARAGRAPH_MOUNT_PRESETS: ParagraphPreset[] = [
@@ -171,7 +173,7 @@ const PARAGRAPH_MOUNT_PRESETS: ParagraphPreset[] = [
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "slideUp", "slideDown", "slideLeft", "slideRight",
   "popIn", "expandIn", "zoomIn", "errorMessageIn", "highlight", "flash",
-  "fadeMask", "streamFade", "heightAuto",
+  "cursorBlink", "fadeMask", "streamFade", "heightAuto",
 ]
 
 const LIST_PRESETS: ListAnimationPreset[] = [

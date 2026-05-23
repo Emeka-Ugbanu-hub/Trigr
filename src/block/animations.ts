@@ -35,7 +35,7 @@ export const presetCategory: Record<string, PresetCategory> = {
   popoverIn: "oneshot", popoverOut: "oneshot",
   toastIn: "oneshot", toastOut: "oneshot",
   successCheckIn: "oneshot", buttonLoading: "oneshot",
-  focusRingPulse: "oneshot",
+  focusRingPulse: "continuous",
   tabPanelIn: "oneshot",
   tabPanelOut: "oneshot",
   successToast: "oneshot",
