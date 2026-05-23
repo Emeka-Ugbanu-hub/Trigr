@@ -2163,30 +2163,32 @@ function RepoFeedDemo({ duration, easing }: { duration: number; easing: string }
   return (
     <div className="section">
       <PreviewCard>
-        <div className="real-demo scroll-demo composed-demo">
-          <p className="demo-label">GitHub-style repo feed — cards fade in on scroll with staggered reveals. Each card shows a repo name, description, language dot, and star count.</p>
+        <div className="real-demo scroll-demo">
+          <p className="demo-label" style={{ padding: "24px 24px 0" }}>GitHub-style repo feed — cards fade in on scroll with staggered reveals. Each card shows a repo name, description, language dot, and star count.</p>
           <div className="scroll-entry-screen">
             <div className="scroll-intro">Scroll ⌄</div>
           </div>
-          <div className="composed-feed">
+          <div className="scroll-hfeed" style={{ maxWidth: 620 }}>
             <ListAnimate.List trigger={triggerValue} animation="staggerFadeIn" duration={duration} easing={easing} stagger={60} threshold={threshold}>
               {repos.map((repo) => (
-                <BlockAnimate.Block key={repo.name} trigger={triggerValue} animation="fadeIn" duration={duration} easing={easing}>
-                  <div className="repo-card">
-                    <div className="repo-card-header">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                      <strong>{repo.name}</strong>
+                <div key={repo.name} className="scroll-reveal-item">
+                  <BlockAnimate.Block trigger={triggerValue} animation="fadeIn" duration={duration} easing={easing}>
+                    <div className="repo-card">
+                      <div className="repo-card-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        <strong>{repo.name}</strong>
+                      </div>
+                      <p className="repo-card-desc">{repo.desc}</p>
+                      <div className="repo-card-meta">
+                        <span className="repo-lang"><span className="repo-lang-dot" style={{ background: repo.color }} />{repo.lang}</span>
+                        <span className="repo-stars">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          {repo.stars}
+                        </span>
+                      </div>
                     </div>
-                    <p className="repo-card-desc">{repo.desc}</p>
-                    <div className="repo-card-meta">
-                      <span className="repo-lang"><span className="repo-lang-dot" style={{ background: repo.color }} />{repo.lang}</span>
-                      <span className="repo-stars">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        {repo.stars}
-                      </span>
-                    </div>
-                  </div>
-                </BlockAnimate.Block>
+                  </BlockAnimate.Block>
+                </div>
               ))}
             </ListAnimate.List>
           </div>
@@ -2233,10 +2235,11 @@ function DashboardDemo({ duration, easing }: { duration: number; easing: string 
     { user: "Sarah", action: "deployed v2.4.1", time: "14m ago" },
     { user: "Mike", action: "created branch feat/cursor", time: "1h ago" },
   ]
+  const [playCount, setPlayCount] = useState(0)
   return (
     <div className="section">
-      <PreviewCard>
-        <div className="real-demo composed-demo">
+      <PreviewCard header={<ReplayButton onClick={() => setPlayCount((c) => c + 1)} />}>
+        <div className="real-demo" key={String(playCount)}>
           <p className="demo-label">Real dashboard layout — stats cards pop in on mount, recent activity rows stagger, and the headline animates word by word.</p>
           <div className="dashboard">
             <div className="dashboard-header">
@@ -2349,16 +2352,12 @@ function NotificationCentreDemo({ duration, easing, stagger }: { duration: numbe
 
   return (
     <div className="section">
-      <PreviewCard>
-        <div className="real-demo composed-demo">
-          <p className="demo-label">Notification center — items slide in on mount and exit with slideOut. Action buttons have hover bump feedback.</p>
+      <PreviewCard header={<ReplayButton onClick={reset} />}>
+        <div className="real-demo">
+          <p className="demo-label">Notification centre — items slide in on mount and exit with slideOut. Dismiss notifications individually, or replay to reset the list.</p>
           <div className="notif-centre">
             <div className="notif-centre-header">
               <h3>Notifications</h3>
-              <TextAnimate.Text trigger="hover" animation="bump" duration={duration} easing={easing} as="button" className="notif-reset-btn" onClick={reset}>
-                Reset
-              </TextAnimate.Text>
-            </div>
             {notifs.length === 0 && <p className="notif-empty">All caught up!</p>}
             {notifs.map((n) => (
               <BlockAnimate.Block
@@ -2448,12 +2447,12 @@ function OnboardingWizardDemo({ duration, easing }: { duration: number; easing: 
   return (
     <div className="section">
       <PreviewCard>
-        <div className="real-demo composed-demo">
-          <p className="demo-label">Onboarding wizard — step content fades between states with text morphing on the title. Progress dots show your position.</p>
+        <div className="real-demo">
+          <p className="demo-label">Onboarding wizard — step content transitions with paragraph change animation. The title morphs, the description fades, and progress dots track your position.</p>
           <div className="onboarding-wizard">
             <div className="onboarding-progress">
               {steps.map((_, i) => (
-                <div key={i} className={`progress-dot ${i <= step ? "active" : ""} ${i === step ? "current" : ""}`} />
+                <button key={i} className={`progress-dot ${i <= step ? "active" : ""} ${i === step ? "current" : ""}`} onClick={() => setStep(i)} />
               ))}
             </div>
             <BlockAnimate.Block trigger="change" value={step} animation="fadeSwap" duration={duration} easing={easing}>
@@ -2462,7 +2461,9 @@ function OnboardingWizardDemo({ duration, easing }: { duration: number; easing: 
                 <TextAnimate.Text trigger="change" value={s.title} animation="morph" duration={duration} easing={easing} as="h2">
                   {s.title}
                 </TextAnimate.Text>
-                <p>{s.desc}</p>
+                <ParagraphAnimate.Paragraph trigger="change" value={s.desc} animation="fadeSwap" duration={duration} easing={easing} as="div">
+                  <p>{s.desc}</p>
+                </ParagraphAnimate.Paragraph>
               </div>
             </BlockAnimate.Block>
             <div className="onboarding-actions">
@@ -2475,13 +2476,7 @@ function OnboardingWizardDemo({ duration, easing }: { duration: number; easing: 
         </div>
         <Code>{`import { Animate } from "trigr/block"
 import { Animate as TextAnimate } from "trigr/text"
-
-const steps = [
-  { title: "Welcome", desc: "..." },
-  { title: "Team", desc: "..." },
-  { title: "Integrations", desc: "..." },
-  { title: "Ready", desc: "..." },
-]
+import { Animate as ParagraphAnimate } from "trigr/paragraph"
 
 function OnboardingWizard() {
   const [step, setStep] = useState(0)
@@ -2489,6 +2484,12 @@ function OnboardingWizard() {
 
   return (
     <div className="wizard">
+      <div className="progress">
+        {steps.map((_, i) => (
+          <div key={i} className={i <= step ? "active" : ""} />
+        ))}
+      </div>
+
       <Animate.Block
         trigger="change"
         value={step}
@@ -2503,7 +2504,14 @@ function OnboardingWizard() {
           >
             {s.title}
           </TextAnimate.Text>
-          <p>{s.desc}</p>
+          <Animate.Paragraph
+            trigger="change"
+            value={s.desc}
+            animation="fadeSwap"
+            as="div"
+          >
+            <p>{s.desc}</p>
+          </Animate.Paragraph>
         </div>
       </Animate.Block>
 
@@ -2525,12 +2533,17 @@ function SettingsPanelDemo({ duration, easing }: { duration: number; easing: str
     { id: "security", title: "Security", desc: "Two-factor authentication and session management." },
   ]
   const [open, setOpen] = useState<string | null>(null)
+  const [toggles, setToggles] = useState<Record<string, boolean>>({
+    general: true,
+    notifications: false,
+    security: true,
+  })
 
   return (
     <div className="section">
       <PreviewCard>
-        <div className="real-demo composed-demo">
-          <p className="demo-label">Settings panel — sections expand/collapse with smooth height animation. Titles have a word-level fade in on mount.</p>
+        <div className="real-demo">
+          <p className="demo-label">Settings panel — sections expand/collapse with smooth height animation. Each expandable section has a toggle with state management.</p>
           <div className="settings-panel">
             <ParagraphAnimate.Paragraph trigger="mount" animation="wordFadeIn" duration={duration} easing={easing} as="h2">
               Settings
@@ -2554,8 +2567,13 @@ function SettingsPanelDemo({ duration, easing }: { duration: number; easing: str
                       <div className="settings-section-body">
                         <p>{section.desc}</p>
                         <div className="settings-field">
-                          <label>Setting toggle</label>
-                          <div className="settings-toggle active" />
+                          <label>Enable feature</label>
+                          <button
+                            className={`settings-toggle ${toggles[section.id] ? "active" : ""}`}
+                            onClick={() => setToggles((t) => ({ ...t, [section.id]: !t[section.id] }))}
+                          >
+                            <span className="settings-toggle-knob" />
+                          </button>
                         </div>
                       </div>
                     )}
@@ -2570,6 +2588,7 @@ import { Animate as ParagraphAnimate } from "trigr/paragraph"
 
 function SettingsPanel() {
   const [open, setOpen] = useState(null)
+  const [toggles, setToggles] = useState({})
 
   return (
     <div className="settings">
@@ -2595,6 +2614,10 @@ function SettingsPanel() {
             {open === s.id && (
               <div className="body">
                 <p>{s.desc}</p>
+                <button
+                  className={toggles[s.id] ? "active" : ""}
+                  onClick={() => setToggles(t => ({ ...t, [s.id]: !t[s.id] }))}
+                />
               </div>
             )}
           </Animate.Block>
@@ -2609,10 +2632,11 @@ function SettingsPanel() {
 }
 
 function HeroSectionDemo({ duration, easing }: { duration: number; easing: string }) {
+  const [heroKey, setHeroKey] = useState(0)
   return (
     <div className="section">
-      <PreviewCard>
-        <div className="real-demo composed-demo">
+      <PreviewCard header={<ReplayButton onClick={() => setHeroKey((k) => k + 1)} />}>
+        <div className="real-demo" key={String(heroKey)}>
           <p className="demo-label">Landing page hero — headline letters drop in, the CTA button glows on hover, and the background has a subtle float.</p>
           <div className="hero-section">
             <BlockAnimate.Block trigger="mount" animation="float" duration={2000} easing={easing}>
@@ -2720,12 +2744,12 @@ function DragDismissDemo() {
   return (
     <div className="section">
       <PreviewCard>
-        <div className="real-demo composed-demo">
+        <div className="real-demo">
           <p className="demo-label">Gesture drag-to-dismiss cards — drag past 100px to remove with spring animation. Drag back elastically if below threshold.</p>
           <div className="notif-centre">
             {items.length === 0 && (
               <div className="empty-notifs" style={{ padding: 24 }}>
-                <p>All dismissed! <button className="fire-button" onClick={reset}>Reset</button></p>
+                <p>All dismissed! <button className="fire-button" onClick={reset}>Reset All</button></p>
               </div>
             )}
             {items.map((item) => (
@@ -2787,7 +2811,7 @@ function LayoutIdDemo() {
   return (
     <div className="section">
       <PreviewCard>
-        <div className="real-demo composed-demo">
+        <div className="real-demo">
           <p className="demo-label">Shared layout animations — toggle between grid and list. Cards with the same layoutId animate smoothly between positions and sizes.</p>
           <div className="manual-controls" style={{ marginBottom: 16 }}>
             <button className={layout === "grid" ? "fire-button" : "random-btn"} onClick={() => setLayout("grid")}>Grid</button>
@@ -2802,7 +2826,7 @@ function LayoutIdDemo() {
               >
                 <div className="stat-card" style={{ borderLeft: `3px solid ${card.color}` }}>
                   <span className="stat-label">{card.label}</span>
-                  <span className="stat-value" style={{ fontSize: layout === "grid" ? 22 : 16 }}>{card.label === "Analytics" ? "12.4k" : card.label === "Builds" ? "47" : card.label === "Config" ? "8" : "3"}</span>
+                  <strong className="stat-value">{card.label === "Analytics" ? "12.4k" : card.label === "Builds" ? "47" : card.label === "Config" ? "8" : "3"}</strong>
                 </div>
               </BlockAnimate.Block>
             ))}
@@ -2842,13 +2866,6 @@ function ComposedSection() {
 
   return (
     <div>
-      <div className="section">
-        <div className="main-header">
-          <h1>Composed <span className="badge">composed</span></h1>
-          <p className="main-desc">Real product UI built with trigr. Each example combines multiple modules and triggers naturally — copy the patterns, not just the code.</p>
-        </div>
-      </div>
-
       <RepoFeedDemo duration={duration} easing={easing} />
       <DashboardDemo duration={duration} easing={easing} />
       <NotificationCentreDemo duration={duration} easing={easing} stagger={stagger} />
@@ -3431,7 +3448,7 @@ export default function Playground() {
         </aside>
         <main className="main">
           <div className="main-header">
-            <h1>{meta.title} {module !== "docs" && <span className="badge">{trigger}</span>}</h1>
+            <h1>{meta.title} {module !== "docs" && module !== "composed" && <span className="badge">{trigger}</span>}</h1>
             <p className="main-desc">{meta.desc}</p>
           </div>
           <div className="main-content">
