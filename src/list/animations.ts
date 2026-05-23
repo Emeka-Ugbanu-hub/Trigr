@@ -212,6 +212,29 @@ const extended: Record<string, AnimationDefinition> = {
     ],
     options: { duration: 400, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' },
   },
+  selectionPulse: {
+    keyframes: [
+      { boxShadow: '0 0 0 0 rgba(99, 102, 241, 0.4)', transform: 'scale(1)' },
+      { boxShadow: '0 0 0 6px rgba(99, 102, 241, 0)', transform: 'scale(1.02)', offset: 0.5 },
+      { boxShadow: '0 0 0 0 rgba(99, 102, 241, 0)', transform: 'scale(1)' },
+    ],
+    options: { duration: 400, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' },
+  },
+  insertItem: {
+    keyframes: [
+      { transform: 'translateY(-16px) scale(0.95)', opacity: 0 },
+      { transform: 'translateY(0) scale(1.02)', opacity: 1, offset: 0.6 },
+      { transform: 'translateY(0) scale(1)', opacity: 1 },
+    ],
+    options: { duration: 350, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'forwards' },
+  },
+  emptyStateToList: {
+    keyframes: [
+      { transform: 'translateY(20px)', opacity: 0 },
+      { transform: 'translateY(0)', opacity: 1 },
+    ],
+    options: { duration: 500, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' },
+  },
 }
 
 // Merge enterPresets + extended into a single lookup, typed as the union

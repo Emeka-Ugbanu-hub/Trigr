@@ -39,6 +39,7 @@ export type ParagraphPreset =
   | "morphBlur"
   | "diffAnimate"
   | "scrollWordReveal"
+  | "errorMessageIn"
 
 export type AnimationTrigger = "change" | "scroll" | "hover" | "click" | "manual" | "mount"
 export type AnimationTriggerInput = AnimationTrigger | readonly [AnimationTrigger, AnimationTrigger] | readonly AnimationTrigger[]

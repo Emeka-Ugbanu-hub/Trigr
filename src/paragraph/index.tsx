@@ -290,6 +290,16 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
     out: [],
     in: [],
   },
+  errorMessageIn: {
+    out: [],
+    in: [
+      { transform: 'translateX(-4px)', opacity: 0 },
+      { transform: 'translateX(4px)', opacity: 1, offset: 0.25 },
+      { transform: 'translateX(-2px)', offset: 0.5 },
+      { transform: 'translateX(1px)', offset: 0.75 },
+      { transform: 'translateX(0)' },
+    ],
+  },
 }
 
 // ============================================================

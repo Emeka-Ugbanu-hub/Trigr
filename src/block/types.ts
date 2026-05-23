@@ -28,6 +28,7 @@ export type BlockAnimationPreset =
   | "spin" | "ping" | "shimmer"
   | "tilt3D" | "rotate3D" | "depth"
   | "modalIn" | "modalOut" | "popoverIn" | "popoverOut" | "toastIn" | "toastOut" | "successCheckIn" | "buttonLoading" | "focusRingPulse"
+  | "tabPanelIn" | "tabPanelOut" | "successToast" | "checkboxCheck"
 
 export type AnimationTrigger = "change" | "scroll" | "hover" | "click" | "manual" | "mount"
 export type AnimationTriggerInput = AnimationTrigger | readonly [AnimationTrigger, AnimationTrigger] | readonly AnimationTrigger[]

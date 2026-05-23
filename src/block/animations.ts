@@ -36,6 +36,10 @@ export const presetCategory: Record<string, PresetCategory> = {
   toastIn: "oneshot", toastOut: "oneshot",
   successCheckIn: "oneshot", buttonLoading: "oneshot",
   focusRingPulse: "oneshot",
+  tabPanelIn: "oneshot",
+  tabPanelOut: "oneshot",
+  successToast: "oneshot",
+  checkboxCheck: "oneshot",
 }
 
 export const presets: Record<string, AnimationDefinition> = {
@@ -414,5 +418,44 @@ export const presets: Record<string, AnimationDefinition> = {
   focusRingPulse: {
     in: [],
     out: [],
+  },
+  tabPanelIn: {
+    in: [
+      { transform: 'translateX(16px)', opacity: 0 },
+      { transform: 'translateX(0)', opacity: 1 },
+    ],
+    out: [
+      { transform: 'translateX(0)', opacity: 1 },
+      { transform: 'translateX(-16px)', opacity: 0 },
+    ],
+  },
+  tabPanelOut: {
+    in: [],
+    out: [
+      { transform: 'translateX(0)', opacity: 1 },
+      { transform: 'translateX(-16px)', opacity: 0 },
+    ],
+  },
+  successToast: {
+    in: [
+      { transform: 'translateY(24px) scale(0.9)', opacity: 0 },
+      { transform: 'translateY(-2px) scale(1.02)', opacity: 1, offset: 0.6 },
+      { transform: 'translateY(0) scale(1)', opacity: 1 },
+    ],
+    out: [
+      { transform: 'translateY(0) scale(1)', opacity: 1 },
+      { transform: 'translateY(-8px) scale(0.98)', opacity: 0 },
+    ],
+  },
+  checkboxCheck: {
+    in: [
+      { transform: 'scale(0) rotate(-45deg)', opacity: 0 },
+      { transform: 'scale(1.15) rotate(0deg)', opacity: 1, offset: 0.6 },
+      { transform: 'scale(1) rotate(0deg)', opacity: 1 },
+    ],
+    out: [
+      { transform: 'scale(1)', opacity: 1 },
+      { transform: 'scale(0)', opacity: 0 },
+    ],
   },
 }

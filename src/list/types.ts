@@ -42,6 +42,7 @@ export type ListAnimationPreset =
   | "popOut" | "bounceOut" | "collapseOut" | "flipOut" | "glideOut"
   | "marquee"
   | "staggerBlurIn" | "feedAppend" | "filterIn" | "emptyToList"
+  | "selectionPulse" | "insertItem" | "emptyStateToList"
 
 export interface ListDiff {
   added: (string | number)[]

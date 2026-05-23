@@ -18,6 +18,7 @@ type AnimationProperties = Record<string, [string | number, string | number]>
 const SPRING_EASE = SPRING
 const SMOOTH_EASE = SMOOTH
 const EASE_IN = "cubic-bezier(0.0, 0.0, 0.2, 1)"
+const SNAPPY_EASE = "cubic-bezier(0.2, 0, 0, 1)"
 
 const ANIMATION_DEFAULTS: Record<string, { duration: number; easing: string }> = {
   springBounce: { duration: 500, easing: SMOOTH_EASE },
@@ -44,6 +45,14 @@ const ANIMATION_DEFAULTS: Record<string, { duration: number; easing: string }> =
   successCheckIn: { duration: 500, easing: SPRING_EASE },
   buttonLoading: { duration: 600, easing: SMOOTH_EASE },
   focusRingPulse: { duration: 2000, easing: SMOOTH_EASE },
+  selectionPulse: { duration: 400, easing: SMOOTH_EASE },
+  insertItem: { duration: 350, easing: SPRING_EASE },
+  emptyStateToList: { duration: 500, easing: SMOOTH_EASE },
+  errorMessageIn: { duration: 300, easing: SNAPPY_EASE },
+  tabPanelIn: { duration: 300, easing: SMOOTH_EASE },
+  tabPanelOut: { duration: 200, easing: EASE_IN },
+  successToast: { duration: 400, easing: SPRING_EASE },
+  checkboxCheck: { duration: 350, easing: SPRING_EASE },
 }
 
 const EASINGS: [string, string][] = [
@@ -126,7 +135,7 @@ const PARAGRAPH_ALL_PRESETS: ParagraphPreset[] = [
   "slideUp", "slideDown", "slideLeft", "slideRight",
   "popIn", "popOut", "expandIn", "collapseOut",
   "zoomIn", "zoomOut",
-  "pulse", "shake",
+  "pulse", "shake", "errorMessageIn",
   "pushLeft", "pushRight", "flipPage",
 ]
 
@@ -137,7 +146,7 @@ const PARAGRAPH_CHANGE_PRESETS: ParagraphPreset[] = [
   "wordFadeIn", "wordSlideUp", "wordPop",
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "slideUp", "slideDown", "slideLeft", "slideRight",
-  "popIn", "expandIn", "zoomIn", "pulse", "shake",
+  "popIn", "expandIn", "zoomIn", "pulse", "shake", "errorMessageIn",
 ]
 
 const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
@@ -150,14 +159,14 @@ const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
 const PARAGRAPH_INTERACTION_PRESETS: ParagraphPreset[] = [
   "highlight", "flash", "pulse", "shake", "fadeIn",
   "wordFadeIn", "wordSlideUp", "wordPop", "lineFadeIn", "lineSlideUp",
-  "slideUp", "slideDown", "popIn", "zoomIn",
+  "slideUp", "slideDown", "popIn", "zoomIn", "errorMessageIn",
 ]
 
 const PARAGRAPH_MOUNT_PRESETS: ParagraphPreset[] = [
   "fadeIn", "wordFadeIn", "wordSlideUp", "wordPop",
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "slideUp", "slideDown", "slideLeft", "slideRight",
-  "popIn", "expandIn", "zoomIn", "highlight", "flash",
+  "popIn", "expandIn", "zoomIn", "errorMessageIn", "highlight", "flash",
 ]
 
 const LIST_PRESETS: ListAnimationPreset[] = [
@@ -173,10 +182,11 @@ const LIST_PRESETS: ListAnimationPreset[] = [
   "popOut", "bounceOut", "collapseOut", "flipOut",
   "glideIn", "glideOut",
   "flip", "smooth", "spring", "none",
+  "selectionPulse", "insertItem", "emptyStateToList",
 ]
 
 const LIST_EXIT_PRESETS: ListAnimationPreset[] = ["fadeOut", "slideOut", "slideOutLeft", "slideOutRight", "popOut", "bounceOut", "collapseOut", "flipOut", "itemFadeOut", "itemSlideOut", "itemCollapseOut", "glideOut"]
-const LIST_ENTER_PRESETS: ListAnimationPreset[] = ["fadeIn", "slideIn", "slideInLeft", "slideInRight", "popIn", "bounceIn", "expandIn", "flipIn", "staggerFadeIn", "staggerSlideUp", "staggerSlideLeft", "staggerZoomIn", "staggerPopIn", "stackIn", "wordCascade", "wordWave", "wordDrop", "wordFadeIn", "itemFadeIn", "itemSlideIn", "itemPopIn", "itemBounceIn", "glideIn", "staggerBlurIn", "feedAppend", "filterIn", "emptyToList"]
+const LIST_ENTER_PRESETS: ListAnimationPreset[] = ["fadeIn", "slideIn", "slideInLeft", "slideInRight", "popIn", "bounceIn", "expandIn", "flipIn", "staggerFadeIn", "staggerSlideUp", "staggerSlideLeft", "staggerZoomIn", "staggerPopIn", "stackIn", "wordCascade", "wordWave", "wordDrop", "wordFadeIn", "itemFadeIn", "itemSlideIn", "itemPopIn", "itemBounceIn", "glideIn", "staggerBlurIn", "feedAppend", "filterIn", "emptyToList", "selectionPulse", "insertItem", "emptyStateToList"]
 const LIST_REORDER_PRESETS: ListAnimationPreset[] = ["flip", "smooth", "spring", "none"]
 const LIST_MARQUEE_PRESETS: ListAnimationPreset[] = ["marquee", "marqueeReverse", "marqueeFade"]
 const LIST_PARALLAX_PRESETS: ListAnimationPreset[] = ["parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll", "parallaxStagger"]
@@ -195,6 +205,7 @@ const BLOCK_ONESHOT_PRESETS: BlockAnimationPreset[] = [
   "morphRadius", "morphCircle",
   "press",
   "modalIn", "popoverIn", "toastIn", "successCheckIn", "buttonLoading",
+  "tabPanelIn", "tabPanelOut", "successToast", "checkboxCheck",
 ]
 
 const BLOCK_CONTINUOUS_PRESETS: BlockAnimationPreset[] = ["pulse", "float", "spin", "ping", "shimmer", "focusRingPulse"]
@@ -215,6 +226,7 @@ const BLOCK_ENTRANCE_PRESETS: BlockAnimationPreset[] = [
   "blurIn", "clipUp", "clipLeft", "zoomIn",
   "springBounce", "springScale", "springSlideUp", "springSlideDown",
   "modalIn", "popoverIn", "toastIn", "successCheckIn", "buttonLoading",
+  "tabPanelIn", "tabPanelOut", "successToast", "checkboxCheck",
 ]
 const BLOCK_CHANGE_PRESETS: BlockAnimationPreset[] = BLOCK_ONESHOT_PRESETS
 const BLOCK_INTERACTION_PRESETS: BlockAnimationPreset[] = [
@@ -3065,6 +3077,56 @@ function SearchFilter({ items }) {
   )
 }
 
+function TabPanelDemo({ duration, easing }: { duration: number; easing: string }) {
+  const [tab, setTab] = useState(0)
+  const panels = [
+    { title: "Overview", content: "Your workspace analytics for the last 30 days. Revenue is up 12.4% with 2,841 active users and churn at 1.2%." },
+    { title: "Activity", content: "Alex merged PR #128 2 minutes ago. Sarah deployed v2.4.1 14 minutes ago. Mike created branch feat/cursor an hour ago." },
+    { title: "Billing", content: "Current plan: Pro ($49/mo). Next invoice on July 15. Payment method: Visa ending 4242. Billing history available." },
+  ]
+  return (
+    <div className="section">
+      <PreviewCard>
+        <div className="real-demo" style={{ minHeight: 280, display: "flex", flexDirection: "column", gap: 16, padding: 32 }}>
+          <p className="demo-label">Tab panel transitions — content slides in with tabPanelIn when switching tabs. Directional motion gives clear navigation feedback.</p>
+          <div className="demo-nav" style={{ display: "flex", gap: 4, background: "var(--bg-elevated)", borderRadius: 12, padding: 4, border: "1px solid var(--border)", alignSelf: "center" }}>
+            {panels.map((p, i) => (
+              <button key={p.title} onClick={() => setTab(i)} style={{ padding: "6px 16px", borderRadius: 8, border: "none", background: i === tab ? "var(--accent)" : "transparent", color: i === tab ? "var(--bg-elevated)" : "var(--text-secondary)", fontWeight: i === tab ? 600 : 400, fontSize: 13, cursor: "pointer", fontFamily: "var(--font)", transition: "none" }}>{p.title}</button>
+            ))}
+          </div>
+          <div style={{ position: "relative", minHeight: 100 }}>
+            <BlockAnimate.Block key={tab} trigger="change" animation="tabPanelIn" duration={duration} easing={easing}>
+              <ParagraphAnimate.Paragraph trigger="mount" animation="fadeIn" duration={duration} easing={easing}>
+                <p style={{ textAlign: "center", maxWidth: 480, margin: "0 auto", color: "var(--text-secondary)", lineHeight: 1.6 }}>{panels[tab].content}</p>
+              </ParagraphAnimate.Paragraph>
+            </BlockAnimate.Block>
+          </div>
+        </div>
+        <Code>{`import { Animate } from "trigr/block"
+import { Animate as ParagraphAnimate } from "trigr/paragraph"
+
+function TabPanel({ panels }) {
+  const [tab, setTab] = useState(0)
+  return (
+    <Animate.Block
+      key={tab}
+      trigger="change"
+      animation="tabPanelIn"
+    >
+      <ParagraphAnimate.Paragraph
+        trigger="mount"
+        animation="fadeIn"
+      >
+        <p>{panels[tab].content}</p>
+      </ParagraphAnimate.Paragraph>
+    </Animate.Block>
+  )
+}`}</Code>
+      </PreviewCard>
+    </div>
+  )
+}
+
 function ComposedSection() {
   const { threshold, stagger, listSpeed } = useRuntimeOptions()
   const [duration] = useState(400)
@@ -3085,6 +3147,7 @@ function ComposedSection() {
       <ToastNotificationDemo duration={duration} easing={easing} />
       <UnderlineNavDemo duration={duration} easing={easing} />
       <FilterFeedDemo duration={duration} easing={easing} stagger={stagger} />
+      <TabPanelDemo duration={duration} easing={easing} />
     </div>
   )
 }
