@@ -199,7 +199,7 @@ const BLOCK_ONESHOT_PRESETS: BlockAnimationPreset[] = [
   "springBounce", "springScale", "springSlideUp", "springSlideDown",
   "morphRadius", "morphCircle",
   "press",
-  "modalIn", "popoverIn", "toastIn", "successCheckIn", "buttonLoading",
+  "modalIn", "modalOut", "popoverIn", "popoverOut", "toastIn", "toastOut", "successCheckIn", "buttonLoading",
   "tabPanelIn", "tabPanelOut", "successToast", "checkboxCheck",
 ]
 
@@ -378,6 +378,7 @@ const EXIT_PRESETS_FOR_DEMO: BlockAnimationPreset[] = [
   "fadeOut", "slideUp", "slideDown", "slideLeft", "slideRight",
   "scaleOut", "popOut", "zoomOut", "flipX", "flipY",
   "collapseOut", "blurOut", "fadeSlideUp", "glideOut",
+  "bounceOut", "modalOut", "popoverOut", "toastOut", "tabPanelOut",
 ]
 
 // ── Shared UI Components ──────────────────────────────────────────
