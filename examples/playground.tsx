@@ -112,7 +112,7 @@ const TEXT_SCROLL_PRESETS: AnimationPreset[] = [
 const TEXT_INTERACTION_PRESETS: AnimationPreset[] = [
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
   "highlight", "boldFlash", "blur", "randomLetterSwap", "splitReveal", "splitSlide", "textReveal",
-  "underlineSlide", "copyConfirm", "colorShift", "activeTabText",
+  "underlineSlide", "underlineDraw", "copyConfirm", "colorShift", "activeTabText",
 ]
 
 const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
