@@ -2625,6 +2625,7 @@ function NotificationCentreDemo({ duration, easing, stagger }: { duration: numbe
           <div className="notif-centre">
             <div className="notif-centre-header">
               <h3>Notifications</h3>
+            </div>
             {notifs.length === 0 && <p className="notif-empty">All caught up!</p>}
             {notifs.map((n) => (
               <BlockAnimate.Block
