@@ -266,6 +266,25 @@ const BLOCK_CLICK_PRESETS: BlockAnimationPreset[] = [
   "popIn", "bounceIn", "scaleIn",
 ]
 
+const TEXT_EXIT_PRESETS: AnimationPreset[] = [
+  "fadeOut", "shrinkOut", "slideUp", "slideDown", "fadeAway",
+  "blur", "fadeSwap", "morph", "decoder", "scramble",
+]
+
+const PARAGRAPH_EXIT_PRESETS: ParagraphPreset[] = [
+  "fadeOut", "popOut", "collapseOut", "zoomOut",
+  "slideUp", "slideDown", "slideLeft", "slideRight",
+  "fadeSwap", "slideReplace", "crossFade",
+]
+
+function exitPresetsFor(module: ModuleId): string[] {
+  if (module === "text") return TEXT_EXIT_PRESETS
+  if (module === "paragraph") return PARAGRAPH_EXIT_PRESETS
+  if (module === "list") return LIST_EXIT_PRESETS
+  if (module === "block") return BLOCK_EXIT_PRESETS
+  return []
+}
+
 const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Partial<Record<Trigger, string[]>>> = {
   text: {
     change: TEXT_CHANGE_PRESETS,
@@ -310,6 +329,7 @@ type SavedPlaygroundState = {
   module: ModuleId
   trigger: Trigger
   preset: string
+  exitPreset: string
   duration: number
   easing: string
   threshold: number
@@ -323,6 +343,7 @@ const DEFAULT_PLAYGROUND_STATE: SavedPlaygroundState = {
   module: "docs",
   trigger: "change",
   preset: "fadeSwap",
+  exitPreset: "",
   duration: 400,
   easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
   threshold: 0.8,
@@ -354,8 +375,10 @@ function getSavedPlaygroundState(): SavedPlaygroundState {
     const threshold = clampNumber(saved.threshold, DEFAULT_PLAYGROUND_STATE.threshold, 0.05, 1)
     const stagger = clampNumber(saved.stagger, DEFAULT_PLAYGROUND_STATE.stagger, 0, 240)
     const listSpeed = clampNumber(saved.listSpeed, DEFAULT_PLAYGROUND_STATE.listSpeed, 10, 180)
+    const exitPresets = exitPresetsFor(module)
+    const exitPreset = typeof saved.exitPreset === "string" && exitPresets.includes(saved.exitPreset) ? saved.exitPreset : ""
     const dark = typeof saved.dark === "boolean" ? saved.dark : DEFAULT_PLAYGROUND_STATE.dark
-    return { module, trigger, preset, duration, easing, threshold, stagger, listSpeed, dark }
+    return { module, trigger, preset, exitPreset, duration, easing, threshold, stagger, listSpeed, dark }
   } catch {
     return DEFAULT_PLAYGROUND_STATE
   }
@@ -413,6 +436,8 @@ const EXIT_PRESETS_FOR_DEMO: BlockAnimationPreset[] = [
   "collapseOut", "blurOut", "fadeSlideUp", "glideOut",
   "bounceOut", "modalOut", "popoverOut", "toastOut", "tabPanelOut",
 ]
+
+const BLOCK_EXIT_PRESETS: BlockAnimationPreset[] = EXIT_PRESETS_FOR_DEMO
 
 // ── Shared UI Components ──────────────────────────────────────────
 
@@ -915,36 +940,60 @@ function Testimonials() {
 
 const MOUNT_HEADLINES = ["Page Loaded", "Welcome Back", "Section Ready"]
 
-function TextMountDemo({ preset, duration, easing }: { preset: AnimationPreset; duration: number; easing: string }) {
+function TextMountDemo({ preset, duration, easing, exitPreset }: { preset: AnimationPreset; duration: number; easing: string; exitPreset?: AnimationPreset }) {
   const [visible, setVisible] = useState(true)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
+  const hasExit = !!exitPreset
   return (
     <div className="real-demo">
       <div className="page-load-demo">
         <div className="page-load-controls">
           <button className="fire-button" onClick={() => setVisible((v) => !v)}>{visible ? "Unmount" : "Mount Section"}</button>
         </div>
-        {visible && (
-          <div className="page-load-content">
-            <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2">
-              {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
-            </TextAnimate.Text>
-            <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
-            <div className="page-load-stats">
-              <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
-              <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
-              <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
+        {hasExit ? (
+          <BlockAnimate.Block show={visible} exitAnimation={exitPreset as BlockAnimationPreset} unmountOnExit duration={duration} easing={easing}>
+            <div className="page-load-content">
+              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2">
+                {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
+              </TextAnimate.Text>
+              <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
+              <div className="page-load-stats">
+                <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
+                <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
+                <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
+              </div>
             </div>
-          </div>
+          </BlockAnimate.Block>
+        ) : (
+          visible && (
+            <div className="page-load-content">
+              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2">
+                {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
+              </TextAnimate.Text>
+              <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
+              <div className="page-load-stats">
+                <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
+                <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
+                <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
+              </div>
+            </div>
+          )
         )}
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "trigr/text"${hasExit ? `\nimport { Animate as BlockAnimate } from "trigr/block"` : ""}
 
 function FeatureSection() {
+  const [show, setShow] = useState(true)
+
   return (
-    <section>
+    <section>${hasExit ? `
+      <BlockAnimate.Block
+        show={show}
+        exitAnimation="${exitPreset}"
+        unmountOnExit
+      >` : ""}
       <Animate.Text
         trigger="mount"
         animation="${preset}"
@@ -953,7 +1002,8 @@ function FeatureSection() {
         as="h2"
       >
         Page Loaded
-      </Animate.Text>
+      </Animate.Text>${hasExit ? `
+      </BlockAnimate.Block>` : ""}
     </section>
   )
 }`}</Code>
@@ -961,13 +1011,13 @@ function FeatureSection() {
   )
 }
 
-function TextSection({ preset, duration, easing, trigger }: { preset: AnimationPreset; duration: number; easing: string; trigger: Trigger }) {
+function TextSection({ preset, duration, easing, trigger, exitPreset }: { preset: AnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: AnimationPreset }) {
   const content = trigger === "change" ? <SearchDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "hover" ? <NavLinksDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "click" ? <CTADemo preset={preset} duration={duration} easing={easing} />
     : trigger === "scroll" ? <SectionHeadersDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "manual" ? <QuoteRotatorDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "mount" ? <TextMountDemo preset={preset} duration={duration} easing={easing} />
+    : trigger === "mount" ? <TextMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
     : <CTADemo preset={preset} duration={duration} easing={easing} />
 
   return (
@@ -1278,10 +1328,11 @@ function SlideDeck() {
 
 const PARAGRAPH_CONTENT = "This paragraph appears with a smooth entrance animation as soon as it mounts. Perfect for loading states, dynamic content, and page transitions."
 
-function ParagraphMountDemo({ preset, duration, easing }: { preset: ParagraphPreset; duration: number; easing: string }) {
+function ParagraphMountDemo({ preset, duration, easing, exitPreset }: { preset: ParagraphPreset; duration: number; easing: string; exitPreset?: ParagraphPreset }) {
   const [visible, setVisible] = useState(true)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
+  const hasExit = !!exitPreset
   return (
     <div className="real-demo">
       <p className="demo-label">Toggle to mount/unmount content with an entrance animation</p>
@@ -1289,14 +1340,22 @@ function ParagraphMountDemo({ preset, duration, easing }: { preset: ParagraphPre
         <button className="fire-button" onClick={() => setVisible((v) => !v)}>{visible ? "Unmount" : "Mount"}</button>
       </div>
       <div style={{ minHeight: 80 }}>
-        {visible && (
-          <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)}>
-            {PARAGRAPH_CONTENT}
-          </ParagraphAnimate.Paragraph>
+        {hasExit ? (
+          <BlockAnimate.Block show={visible} exitAnimation={exitPreset as BlockAnimationPreset} unmountOnExit duration={duration} easing={easing}>
+            <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)}>
+              {PARAGRAPH_CONTENT}
+            </ParagraphAnimate.Paragraph>
+          </BlockAnimate.Block>
+        ) : (
+          visible && (
+            <ParagraphAnimate.Paragraph key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} {...paragraphHighlightProps(preset)}>
+              {PARAGRAPH_CONTENT}
+            </ParagraphAnimate.Paragraph>
+          )
         )}
       </div>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+`import { Animate } from "trigr/paragraph"${hasExit ? `\nimport { Animate as BlockAnimate } from "trigr/block"` : ""}
 
 function MountDemo() {
   const [show, setShow] = useState(true)
@@ -1305,8 +1364,13 @@ function MountDemo() {
     <div>
       <button onClick={() => setShow((v) => !v)}>
         {show ? "Unmount" : "Mount"}
-      </button>
-      {show && (
+      </button>${hasExit ? `
+      <BlockAnimate.Block
+        show={show}
+        exitAnimation="${exitPreset}"
+        unmountOnExit
+      >` : `
+      {show && (`}
         <Animate.Paragraph
           trigger="mount"
           animation="${preset}"
@@ -1314,8 +1378,9 @@ function MountDemo() {
           easing="${easing}"
           ${preset === "highlight" ? 'highlightColor="yellow"\n          ' : ""}>
           This paragraph fades in on mount.
-        </Animate.Paragraph>
-      )}
+        </Animate.Paragraph>${hasExit ? `
+      </BlockAnimate.Block>` : `
+      )}`}
     </div>
   )
 }`}</Code>
@@ -1323,13 +1388,13 @@ function MountDemo() {
   )
 }
 
-function ParagraphSection({ preset, duration, easing, trigger }: { preset: ParagraphPreset; duration: number; easing: string; trigger: Trigger }) {
+function ParagraphSection({ preset, duration, easing, trigger, exitPreset }: { preset: ParagraphPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ParagraphPreset }) {
   const content = trigger === "change" ? <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "scroll" ? <StoryScrollDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "hover" ? <ParagraphHoverDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "click" ? <ReadMoreDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "manual" ? <SlideDeckDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "mount" ? <ParagraphMountDemo preset={preset} duration={duration} easing={easing} />
+    : trigger === "mount" ? <ParagraphMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
     : <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} />
 
   return (
@@ -1389,7 +1454,7 @@ function listDemoMode(preset: ListAnimationPreset) {
   return "stagger"
 }
 
-function ListChangeDemo({ preset, duration, easing }: { preset: ListAnimationPreset; duration: number; easing: string }) {
+function ListChangeDemo({ preset, duration, easing, exitPreset }: { preset: ListAnimationPreset; duration: number; easing: string; exitPreset?: ListAnimationPreset }) {
   const [items, setItems] = useState<ListDemoItem[]>(LIST_DEMO_POOL.slice(0, 4))
   const [input, setInput] = useState("")
   const { stagger, listSpeed } = useRuntimeOptions()
@@ -1397,6 +1462,7 @@ function ListChangeDemo({ preset, duration, easing }: { preset: ListAnimationPre
   const mode = listDemoMode(preset)
   const isMarquee = mode === "marquee"
   const listAnim = useMemo(() => resolveListAnimations(preset), [preset])
+  const effectiveExit = exitPreset ?? listAnim.exitAnimation
 
   const add = useCallback(() => {
     const next = input.trim()
@@ -1426,7 +1492,7 @@ function ListChangeDemo({ preset, duration, easing }: { preset: ListAnimationPre
 
   const code = isMarquee
     ? `import { Animate } from "trigr/list"\n\n<Animate.List animation="${preset}" speed={${listSpeed}}>\n  {logos.map((logo) => (\n    <span key={logo}>{logo}</span>\n  ))}\n</Animate.List>`
-    : `import { Animate } from "trigr/list"\n\n<Animate.List\n  animation="${listAnim.animation}"\n  exitAnimation="${listAnim.exitAnimation}"\n  duration={${duration}}\n  easing="${easing}"\n  stagger={${stagger}}\n>\n  {items.map((item) => (\n    <DashboardRow key={item.id} item={item} />\n  ))}\n</Animate.List>`
+    : `import { Animate } from "trigr/list"\n\n<Animate.List\n  animation="${listAnim.animation}"\n  exitAnimation="${effectiveExit}"\n  duration={${duration}}\n  easing="${easing}"\n  stagger={${stagger}}\n>\n  {items.map((item) => (\n    <DashboardRow key={item.id} item={item} />\n  ))}\n</Animate.List>`
 
   return (
     <div className="section">
@@ -1454,10 +1520,10 @@ function ListChangeDemo({ preset, duration, easing }: { preset: ListAnimationPre
                 : mode === "pop" ? "Items pop with a scale overshoot — works well for callouts, alerts, and emphasis."
                 : "Stagger presets reveal repeated cards, blocks, and feature rows with an offset per child."}
             </p>
-            <ListAnimate.List
+              <ListAnimate.List
               trigger={triggerValue}
               animation={listAnim.animation}
-              exitAnimation={listAnim.exitAnimation}
+              exitAnimation={effectiveExit}
               reorderAnimation={listAnim.reorderAnimation}
               duration={duration}
               reorderDuration={duration}
@@ -1556,7 +1622,7 @@ const LIST_MOUNT_ITEMS = [
   { id: "settings", title: "Settings", desc: "Team permissions and billing" },
 ]
 
-function ListMountDemo({ preset, duration, easing }: { preset: ListAnimationPreset; duration: number; easing: string }) {
+function ListMountDemo({ preset, duration, easing, exitPreset }: { preset: ListAnimationPreset; duration: number; easing: string; exitPreset?: ListAnimationPreset }) {
   const [visible, setVisible] = useState(true)
   const { stagger } = useRuntimeOptions()
   const triggerValue = triggerProp("mount")
@@ -1599,7 +1665,8 @@ function ListMountDemo() {
       {show && (
         <Animate.List
           trigger={${triggerSnippet("mount")}}
-          animation="${preset}"
+          animation="${preset}"${exitPreset ? `
+          exitAnimation="${exitPreset}"` : ""}
           duration={${duration}}
           easing="${easing}"
           stagger={${stagger}}
@@ -1782,14 +1849,14 @@ function MenuMotion() {
   )
 }
 
-function ListSection({ preset, duration, easing, trigger }: { preset: ListAnimationPreset; duration: number; easing: string; trigger: Trigger }) {
+function ListSection({ preset, duration, easing, trigger, exitPreset }: { preset: ListAnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ListAnimationPreset }) {
   if (trigger === "mount") {
-    return <ListMountDemo preset={preset} duration={duration} easing={easing} />
+    return <ListMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
   }
 
   const content = trigger === "scroll" ? <ListScrollDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "hover" || trigger === "click" || trigger === "manual" ? <ListInteractionDemo preset={preset} duration={duration} easing={easing} trigger={trigger} />
-    : <ListChangeDemo preset={preset} duration={duration} easing={easing} />
+    : <ListChangeDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
 
   return (
     <div className="section">
@@ -2071,24 +2138,40 @@ function OnboardingFlow() {
   )
 }
 
-function BlockMountDemo({ preset, duration, easing }: { preset: BlockAnimationPreset; duration: number; easing: string }) {
-  const [key, setKey] = useState(0)
+function BlockMountDemo({ preset, duration, easing, exitPreset }: { preset: BlockAnimationPreset; duration: number; easing: string; exitPreset?: BlockAnimationPreset }) {
+  const [show, setShow] = useState(true)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
+  const hasExit = !!exitPreset
+
+  const content = (
+    <BlockAnimate.Block key={show ? "show" : "hide"} trigger={triggerValue} animation={preset} duration={duration} easing={easing}>
+      <BlockCard title="Welcome!" desc={`Animating in with "${preset}" triggered on mount.`} tone="welcome" />
+    </BlockAnimate.Block>
+  )
+
   return (
     <div className="real-demo">
-      <p className="demo-label">This card animates in as soon as it mounts</p>
-      <BlockAnimate.Block key={key} trigger={triggerValue} animation={preset} duration={duration} easing={easing}>
-        <BlockCard title="Welcome!" desc={`Animating in with "${preset}" triggered on mount.`} tone="welcome" />
-      </BlockAnimate.Block>
-      <button className="fire-button" onClick={() => setKey((k) => k + 1)}>Remount Card</button>
+      <p className="demo-label">This card animates in as soon as it mounts{hasExit ? " — toggle to see the exit animation" : ""}</p>
+      <div className="demo-actions">
+        <button className="fire-button" onClick={() => setShow((v) => !v)}>{show ? "Exit" : "Show"}</button>
+      </div>
+      {hasExit ? (
+        <BlockAnimate.Block show={show} exitAnimation={exitPreset} unmountOnExit duration={duration} easing={easing}>
+          {content}
+        </BlockAnimate.Block>
+      ) : content}
       <Code>{
 `import { Animate } from "trigr/block"
 
 function PageEntrance() {
+  const [show, setShow] = useState(true)
+
   return (
     <Animate.Block
-      trigger="mount"
+      show={show}${hasExit ? `
+      exitAnimation="${exitPreset}"
+      unmountOnExit` : ""}
       animation="${preset}"
       duration={${duration}}
       easing="${easing}"
@@ -2101,13 +2184,14 @@ function PageEntrance() {
   )
 }
 
-function BlockExitDemo({ duration, easing }: { duration: number; easing: string }) {
+function BlockExitDemo({ duration, easing, preset }: { duration: number; easing: string; preset?: BlockAnimationPreset }) {
   const [items, setItems] = useState([
     { id: 1, title: "Build pipeline failed", desc: "The production build failed on commit a3f2c1d." },
     { id: 2, title: "Deployment complete", desc: "Version 2.4.1 deployed to staging successfully." },
     { id: 3, title: "New comment on PR #42", desc: "Alex requested changes to the animation module." },
   ])
-  const [exitPreset, setExitPreset] = useState<BlockAnimationPreset>("fadeOut")
+  const [exitPreset, setExitPreset] = useState<BlockAnimationPreset>(preset ?? "fadeOut")
+  useEffect(() => { if (preset) setExitPreset(preset) }, [preset])
   useRuntimeOptions()
 
   function dismiss(id: number) {
@@ -2194,18 +2278,18 @@ function NotificationStack() {
   )
 }
 
-function BlockSection({ preset, duration, easing, trigger }: { preset: BlockAnimationPreset; duration: number; easing: string; trigger: Trigger }) {
+function BlockSection({ preset, duration, easing, trigger, exitPreset }: { preset: BlockAnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: BlockAnimationPreset }) {
   const replay = useCallback(() => {}, [])
   const isExitDemo = trigger === "exit"
 
   const content = isExitDemo
-    ? <BlockExitDemo duration={duration} easing={easing} />
+    ? <BlockExitDemo duration={duration} easing={easing} preset={exitPreset} />
     : trigger === "change" ? <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} />
     : trigger === "scroll" ? <BlockScrollDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "hover" ? <BlockHoverDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "click" ? <BlockClickDemo preset={preset} duration={duration} easing={easing} />
     : trigger === "manual" ? <BlockManualDemo preset={preset} duration={duration} easing={easing} />
-    : trigger === "mount" ? <BlockMountDemo preset={preset} duration={duration} easing={easing} />
+    : trigger === "mount" ? <BlockMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} />
     : <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} />
 
   return (
@@ -3539,6 +3623,7 @@ export default function Playground() {
   const [threshold, setThreshold] = useState(initialState.threshold)
   const [stagger, setStagger] = useState(initialState.stagger)
   const [listSpeed, setListSpeed] = useState(initialState.listSpeed)
+  const [exitPreset, setExitPreset] = useState(initialState.exitPreset)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [dark, setDark] = useState(initialState.dark)
 
@@ -3576,6 +3661,7 @@ export default function Playground() {
       module,
       trigger,
       preset,
+      exitPreset,
       duration,
       easing,
       threshold,
@@ -3583,10 +3669,11 @@ export default function Playground() {
       listSpeed,
       dark,
     }))
-  }, [module, trigger, preset, duration, easing, threshold, stagger, listSpeed, dark])
+  }, [module, trigger, preset, exitPreset, duration, easing, threshold, stagger, listSpeed, dark])
 
   function selectModule(m: ModuleId, t?: Trigger) {
     setModule(m)
+    setExitPreset("")
     const nextTrigger = t ?? MODULE_META[m].triggers[0] ?? DEFAULT_PLAYGROUND_STATE.trigger
     setTrigger(nextTrigger)
     const nextPreset = m === "docs" || m === "composed" ? "" : presetsFor(m, nextTrigger)[0] ?? "fadeIn"
@@ -3698,6 +3785,14 @@ export default function Playground() {
                 <SelectMenu value={preset} options={availablePresets} onChange={setPreset} />
               </div>
               <div className="control-group">
+                <label className="control-label">Exit Animation</label>
+                <SelectMenu
+                  value={exitPreset || "None"}
+                  options={["None", ...exitPresetsFor(module)]}
+                  onChange={(v) => setExitPreset(v === "None" ? "" : v)}
+                />
+              </div>
+              <div className="control-group">
                 <div className="control-label-row">
                   <label className="control-label">Duration</label>
                   <span className="control-value">{duration}ms</span>
@@ -3759,10 +3854,10 @@ export default function Playground() {
               {module !== "docs" && module !== "composed" && <CapabilityPanel module={module} trigger={trigger} preset={preset} />}
               {module === "composed" && <ComposedSection />}
               {module === "docs" && <DocsSection />}
-              {module === "text" && <TextSection key={activeSectionKey} preset={preset as AnimationPreset} duration={duration} easing={easing} trigger={trigger} />}
-              {module === "paragraph" && <ParagraphSection key={activeSectionKey} preset={preset as ParagraphPreset} duration={duration} easing={easing} trigger={trigger} />}
-              {module === "list" && <ListSection key={activeSectionKey} preset={preset as ListAnimationPreset} duration={duration} easing={easing} trigger={trigger} />}
-              {module === "block" && <BlockSection key={activeSectionKey} preset={preset as BlockAnimationPreset} duration={duration} easing={easing} trigger={trigger} />}
+              {module === "text" && <TextSection key={activeSectionKey} preset={preset as AnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as AnimationPreset} />}
+              {module === "paragraph" && <ParagraphSection key={activeSectionKey} preset={preset as ParagraphPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as ParagraphPreset} />}
+              {module === "list" && <ListSection key={activeSectionKey} preset={preset as ListAnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as ListAnimationPreset} />}
+              {module === "block" && <BlockSection key={activeSectionKey} preset={preset as BlockAnimationPreset} duration={duration} easing={easing} trigger={trigger} exitPreset={exitPreset as BlockAnimationPreset} />}
             </RuntimeOptionsContext.Provider>
           </div>
         </main>
