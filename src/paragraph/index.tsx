@@ -1040,8 +1040,7 @@ function animateHighlight(
 ): Animation | undefined {
   const target = findTextChild(el) ?? el
   const content = text || target.textContent || ''
-  const lineDivs = splitLinesAsElements(content, target)
-  if (lineDivs.length === 0) { onEnd?.(); return }
+  if (!content) { onEnd?.(); return }
 
   const previous = {
     minHeight: target.style.minHeight,
@@ -1053,94 +1052,61 @@ function animateHighlight(
 
   const hlColor = highlightColor ?? colorWithAlpha(getComputedStyle(target).color, 0.55)
 
+  // Single inline span — boxDecorationBreak handles native multi-line wrapping
   target.textContent = ''
-  const highlightSpans: HTMLSpanElement[] = []
-  const lineWraps: HTMLSpanElement[] = []
-  for (const line of lineDivs) {
-    const lineText = line.textContent || '\u00A0'
-    const wrap = document.createElement('span')
-    const span = document.createElement('span')
-    span.textContent = lineText
-    span.style.willChange = 'background-size, background-position'
-    span.style.background = `linear-gradient(120deg, ${hlColor} 50%, transparent 50%)`
-    span.style.backgroundSize = '200% 100%'
-    span.style.backgroundRepeat = 'no-repeat'
-    span.style.backgroundPosition = '100% 0'
-    span.style.borderRadius = '0.18em'
-    span.style.paddingInline = '0.08em'
-    span.style.marginInline = '-0.08em'
-    span.style.boxDecorationBreak = 'clone'
-    ;(span.style as any).webkitBoxDecorationBreak = 'clone'
-    wrap.style.display = 'block'
-    wrap.style.margin = '0'
-    wrap.style.padding = '0'
-    wrap.style.lineHeight = 'inherit'
-    wrap.appendChild(span)
-    highlightSpans.push(span)
-    lineWraps.push(wrap)
-    target.appendChild(wrap)
-  }
+  const span = document.createElement('span')
+  span.textContent = content
+  span.style.display = 'inline'
+  span.style.willChange = 'background-size, background-position'
+  span.style.background = `linear-gradient(120deg, ${hlColor} 50%, transparent 50%)`
+  span.style.backgroundSize = '200% 100%'
+  span.style.backgroundRepeat = 'no-repeat'
+  span.style.backgroundPosition = '100% 0'
+  span.style.borderRadius = '0.18em'
+  span.style.paddingInline = '0.08em'
+  span.style.marginInline = '-0.08em'
+  span.style.boxDecorationBreak = 'clone'
+  ;(span.style as any).webkitBoxDecorationBreak = 'clone'
+  target.appendChild(span)
 
-  let remaining = lineWraps.length
-  const stagger = 70
-  const maxDelay = (lineWraps.length - 1) * stagger
   const drawDuration = Math.max(260, validDuration(duration, 600))
-  const holdDuration = 140
-  const totalDuration = drawDuration + maxDelay + holdDuration
   let cleaned = false
   let cancelled = false
-  let holdTimer: number | null = null
 
   const cleanup = () => {
     if (cleaned) return
     cleaned = true
-    if (holdTimer !== null) {
-      window.clearTimeout(holdTimer)
-      holdTimer = null
-    }
-    highlightSpans.forEach(s => {
-      s.style.willChange = 'auto'
-      s.style.background = ''
-      s.style.backgroundSize = ''
-      s.style.backgroundRepeat = ''
-      s.style.backgroundPosition = ''
-    })
-    if (lineWraps.some(w => w.parentElement === target)) {
+    span.style.willChange = 'auto'
+    span.style.background = ''
+    span.style.backgroundSize = ''
+    span.style.backgroundRepeat = ''
+    span.style.backgroundPosition = ''
+    if (span.parentElement === target) {
       target.textContent = content
     }
     target.style.minHeight = previous.minHeight
     target.style.overflow = previous.overflow
   }
 
-  highlightSpans.forEach((span, i) => {
-    const anim = span.animate(
-      [
-        { backgroundPosition: '100% 0' },
-        { backgroundPosition: '0% 0' },
-      ],
-      { duration: drawDuration, delay: i * stagger, fill: 'forwards', easing: SMOOTH },
-    )
-    anim.onfinish = () => {
-      remaining--
-      if (remaining === 0) {
-        holdTimer = window.setTimeout(() => {
-          holdTimer = null
-          if (cancelled) return
-          cleanup()
-          onEnd?.()
-        }, holdDuration)
-      }
-    }
-    anim.oncancel = () => {
-      cancelled = true
-      cleanup()
-    }
-  })
-  const marker = target.animate([{ opacity: 1 }, { opacity: 1 }], { duration: totalDuration, fill: 'forwards' })
-  marker.oncancel = () => {
+  const anim = span.animate(
+    [
+      { backgroundPosition: '100% 0' },
+      { backgroundPosition: '0% 0' },
+    ],
+    { duration: drawDuration, fill: 'forwards', easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' },
+  )
+  anim.onfinish = () => {
+    if (cancelled) return
+    cleanup()
+    onEnd?.()
+  }
+  anim.oncancel = () => {
     cancelled = true
     cleanup()
   }
+
+  const marker = target.animate([{ opacity: 1 }, { opacity: 1 }], { duration: drawDuration + 100, fill: 'forwards' })
+  marker.oncancel = cleanup
   return marker
 }
 function animateDiff(
