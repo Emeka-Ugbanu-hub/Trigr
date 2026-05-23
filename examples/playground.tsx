@@ -3321,6 +3321,7 @@ export default function Playground() {
             </svg>
           </span>
           <nav className="topbar-nav">
+            <button type="button" onClick={() => selectModule("composed")}>Composed</button>
             <button type="button" onClick={() => selectModule("docs")}>Docs</button>
             <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener noreferrer">GitHub</a>
             <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">
