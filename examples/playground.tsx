@@ -10,7 +10,7 @@ import type { AnimateBlockHandle, BlockAnimationPreset } from "../src/block/type
 import type { AnimateListHandle, ListAnimationPreset } from "../src/list/types"
 
 type ModuleId = "docs" | "text" | "paragraph" | "list" | "block" | "composed"
-type Trigger = "change" | "scroll" | "hover" | "click" | "manual" | "mount"
+type Trigger = "change" | "scroll" | "hover" | "click" | "manual" | "mount" | "exit"
 type SecondaryTrigger = "none" | Trigger
 
 type AnimationProperties = Record<string, [string | number, string | number]>
@@ -126,9 +126,9 @@ const TEXT_ALL_PRESETS: AnimationPreset[] = [
   "pendulum", "centerBurst", "gravityBounce",
   "randomLetterSwap",
   "slideUp", "slideDown", "flip", "bounce",
-  "popIn", "dropIn", "riseUp", "expandIn", "shrinkOut",
+  "popIn", "dropIn", "riseUp", "expandIn",
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
-  "fadeAway", "liftReveal",
+  "liftReveal",
   "underlineDraw", "underlineSlide", "copyConfirm", "brightnessShift", "activeTabText",
 ]
 
@@ -139,20 +139,19 @@ const TEXT_CHANGE_PRESETS: AnimationPreset[] = [
   "slideUp", "slideDown", "flip", "bounce",
   "popIn", "dropIn", "riseUp", "expandIn",
   "fadeIn", "underlineDraw", "underlineSlide", "brightnessShift",
-  "fadeAway", "liftReveal",
+  "liftReveal",
 ]
 
 const TEXT_SCROLL_PRESETS: AnimationPreset[] = [
   "fadeIn", "letterDrop", "textReveal", "scatter", "splash", "glitch",
   "slideUp", "slideDown", "flip", "bounce", "popIn", "dropIn", "riseUp", "expandIn",
-  "underlineDraw", "copyConfirm",
-  "fadeAway", "liftReveal",
+  "underlineDraw",
 ]
 
 const TEXT_INTERACTION_PRESETS: AnimationPreset[] = [
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
   "highlight", "boldFlash", "blur", "textReveal",
-  "underlineSlide", "underlineDraw", "copyConfirm", "brightnessShift", "activeTabText", "shrinkOut",
+  "underlineSlide", "underlineDraw", "copyConfirm", "brightnessShift", "activeTabText",
 ]
 
 const TEXT_HOVER_PRESETS: AnimationPreset[] = [
@@ -163,7 +162,7 @@ const TEXT_HOVER_PRESETS: AnimationPreset[] = [
 
 const TEXT_CLICK_PRESETS: AnimationPreset[] = [
   ...TEXT_HOVER_PRESETS,
-  "popUp", "ping", "textReveal", "copyConfirm", "shrinkOut",
+  "popUp", "ping", "textReveal", "copyConfirm",
 ]
 
 const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
@@ -174,7 +173,6 @@ const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
   "textRotate", "gooeyMorph", "randomLetterSwap",
   "slideUp", "slideDown", "flip", "bounce", "popIn", "dropIn", "riseUp", "expandIn",
   "underlineDraw", "copyConfirm", "brightnessShift", "activeTabText",
-  "fadeAway", "liftReveal",
 ]
 
 const PARAGRAPH_ALL_PRESETS: ParagraphPreset[] = [
@@ -196,7 +194,7 @@ const PARAGRAPH_ALL_PRESETS: ParagraphPreset[] = [
 const PARAGRAPH_CHANGE_PRESETS: ParagraphPreset[] = [
   "fadeSwap", "morphText", "slideReplace", "crossFade", "expandCollapse",
   "diffAnimate", "morphBlur", "pushLeft", "pushRight", "flipPage",
-  "highlight", "flash", "fadeIn",
+  "highlight", "flash",
   "wordFadeIn", "wordSlideUp", "wordPop",
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "slideUp", "slideDown", "slideLeft", "slideRight",
@@ -213,10 +211,10 @@ const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
 ]
 
 const PARAGRAPH_INTERACTION_PRESETS: ParagraphPreset[] = [
-  "highlight", "flash", "pulse", "shake", "fadeIn",
+  "highlight", "flash", "pulse", "shake",
   "wordFadeIn", "wordSlideUp", "wordPop", "lineFadeIn", "lineSlideUp",
   "slideUp", "slideDown", "popIn", "zoomIn", "errorMessageIn",
-  "cursorBlink", "fadeOut", "popOut", "collapseOut", "zoomOut",
+  "cursorBlink",
 ]
 
 const PARAGRAPH_MOUNT_PRESETS: ParagraphPreset[] = [
@@ -306,12 +304,27 @@ const BLOCK_CLICK_PRESETS: BlockAnimationPreset[] = [
   "popIn", "bounceIn", "scaleIn",
 ]
 
+const EXIT_PRESETS_FOR_DEMO: BlockAnimationPreset[] = [
+  "fadeOut", "scaleOut", "popOut", "rotateOut", "bounceOut",
+  "glideOut", "collapseOut", "blurOut", "zoomOut",
+  "modalOut", "dialogOut",
+  "drawerOutLeft", "drawerOutRight", "drawerOutTop", "drawerOutBottom",
+  "slideUp", "slideDown", "slideLeft", "slideRight",
+  "popoverOut", "menuOut",
+  "toastOut", "toastOutRight", "toastOutUp",
+  "collapseWidth", "expandHeight",
+  "dismissOut", "errorOut", "successOut",
+  "tabPanelOut", "fadeSlideUp",
+]
+
+const BLOCK_EXIT_PRESETS: BlockAnimationPreset[] = EXIT_PRESETS_FOR_DEMO
+
 const TEXT_EXIT_PRESETS: AnimationPreset[] = [
   "fadeOut", "fadeOutUp", "fadeOutDown", "shrinkOut",
   "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight",
   "scaleOut", "popOut", "blurOut", "clipOut",
   "strikeOut", "typeOut", "scrambleOut",
-  "fadeSwap", "morph", "decoder", "blur", "fadeAway", "slideUp", "slideDown",
+  "fadeAway",
 ]
 
 const PARAGRAPH_EXIT_PRESETS: ParagraphPreset[] = [
@@ -365,6 +378,7 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
     click: TEXT_CLICK_PRESETS,
     manual: TEXT_CLICK_PRESETS,
     mount: TEXT_MOUNT_PRESETS,
+    exit: TEXT_EXIT_PRESETS,
   },
   paragraph: {
     change: PARAGRAPH_CHANGE_PRESETS,
@@ -373,6 +387,7 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
     click: PARAGRAPH_INTERACTION_PRESETS,
     manual: PARAGRAPH_INTERACTION_PRESETS,
     mount: PARAGRAPH_MOUNT_PRESETS,
+    exit: PARAGRAPH_EXIT_PRESETS,
   },
   list: {
     scroll: [...LIST_ENTER_PRESETS, ...LIST_PARALLAX_PRESETS],
@@ -380,6 +395,7 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
     click: LIST_ENTER_PRESETS,
     manual: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS, ...LIST_REORDER_PRESETS],
     mount: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS],
+    exit: LIST_EXIT_PRESETS,
   },
   block: {
     change: BLOCK_CHANGE_PRESETS,
@@ -388,6 +404,7 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
     click: BLOCK_CLICK_PRESETS,
     manual: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_ONESHOT_PRESETS, ...BLOCK_CONTINUOUS_PRESETS],
     mount: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_CONTINUOUS_PRESETS],
+    exit: BLOCK_EXIT_PRESETS,
   },
 }
 
@@ -497,42 +514,27 @@ const MODULE_META: Record<ModuleId, { title: string; desc: string; color: string
     title: "Text",
     desc: "Animate individual characters, words, and numbers on change, scroll, hover, click, manual, or mount trigger. Perfect for headlines, live counters, navigation, and interactive labels.",
     color: "#6366f1",
-    triggers: ["change", "scroll", "hover", "click", "manual", "mount"],
+    triggers: ["change", "scroll", "hover", "click", "manual", "mount", "exit"],
   },
   paragraph: {
     title: "Paragraph",
     desc: "Word and line-level animations for prose, articles, and card descriptions. Supports the same trigger system as Text for content transitions and scroll reveals.",
     color: "#06b6d4",
-    triggers: ["change", "scroll", "hover", "click", "manual", "mount"],
+    triggers: ["change", "scroll", "hover", "click", "manual", "mount", "exit"],
   },
   list: {
     title: "List",
     desc: "Animate any repeated collection: cards, buttons, menu items, feature rows, pricing options, logos, dashboard rows, and scroll-depth stacks.",
     color: "#f59e0b",
-    triggers: ["mount", "scroll", "hover", "click", "manual"],
+    triggers: ["mount", "scroll", "hover", "click", "manual", "exit"],
   },
   block: {
     title: "Block",
     desc: "Animate any element — cards, sections, notifications — with scroll, hover, click, change, manual, or mount triggers. Includes parallax, 3D tilt, hover states, overlays, and exit animations.",
     color: "#a855f7",
-    triggers: ["change", "scroll", "hover", "click", "manual", "mount"],
+    triggers: ["change", "scroll", "hover", "click", "manual", "mount", "exit"],
   },
 }
-
-const EXIT_PRESETS_FOR_DEMO: BlockAnimationPreset[] = [
-  "fadeOut", "scaleOut", "popOut", "rotateOut", "bounceOut",
-  "glideOut", "collapseOut", "blurOut", "zoomOut",
-  "modalOut", "dialogOut",
-  "drawerOutLeft", "drawerOutRight", "drawerOutTop", "drawerOutBottom",
-  "slideUp", "slideDown", "slideLeft", "slideRight",
-  "popoverOut", "menuOut",
-  "toastOut", "toastOutRight", "toastOutUp",
-  "collapseWidth", "expandHeight",
-  "dismissOut", "errorOut", "successOut",
-  "tabPanelOut", "fadeSlideUp",
-]
-
-const BLOCK_EXIT_PRESETS: BlockAnimationPreset[] = EXIT_PRESETS_FOR_DEMO
 
 // ── Shared UI Components ──────────────────────────────────────────
 
@@ -772,26 +774,46 @@ const SEARCH_PRESETS = ["fadeSwap", "morph", "scramble", "typewriter", "decoder"
 const RANDOM_WORDS = ["trigr", "animation", "motion", "design", "morph", "scroll", "hover", "click", "physics", "spring", "easing", "keyframe", "stagger", "parallax", "interaction", "playground", "typography", "gradient", "overlay", "reveal"]
 
 function SearchDemo({ preset, duration, easing, properties, presetOptions }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties; presetOptions?: Record<string, number> }) {
+  const [draft, setDraft] = useState("trigr")
   const [query, setQuery] = useState("trigr")
   useRuntimeOptions()
   const triggerValue = triggerProp("change")
+  const nextWord = RANDOM_WORDS[(RANDOM_WORDS.indexOf(query) + 1) % RANDOM_WORDS.length] ?? "motion"
+
+  function commit(next = draft.trim() || "trigr") {
+    setQuery(next)
+    setDraft(next)
+  }
+
   return (
     <div className="real-demo">
       <div className="search-real-ui">
         <div className="search-real-header">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products..." />
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commit()
+            }}
+            placeholder="Search products..."
+          />
+          <button className="search-commit-btn" onClick={() => commit()}>Change</button>
         </div>
         <div className="search-real-results">
           <div className="search-real-result-item">
             <div className="search-real-result-thumb" />
             <div className="search-real-result-body">
-              <TextAnimate.Text trigger={triggerValue} value={query} animation={preset} duration={duration} easing={easing} as="h4" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})} properties={properties} presetOptions={presetOptions as any}>
+              <TextAnimate.Text trigger={triggerValue} value={query} animation={preset} duration={duration} easing={easing} as="span" className="search-result-title" {...(preset === "highlight" ? { highlightColor: "yellow" } : {})} properties={properties} presetOptions={presetOptions as any}>
                 {query}
               </TextAnimate.Text>
               <p>Found in 12 products · Updated yesterday</p>
             </div>
           </div>
+        </div>
+        <div className="change-demo-actions">
+          <button className="fire-button" onClick={() => commit(nextWord)}>Next value</button>
+          <button className="ghost-button" onClick={() => commit("trigr")}>Reset</button>
         </div>
       </div>
       <Code>{
@@ -799,19 +821,22 @@ function SearchDemo({ preset, duration, easing, properties, presetOptions }: { p
 
 function SearchResults() {
   const [query, setQuery] = useState("")
+  const [draft, setDraft] = useState("")
 
   return (
     <div className="search">
-      <input value={query}
-        onChange={(e) => setQuery(e.target.value)}
+      <input
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
       />
+      <button onClick={() => setQuery(draft)}>Change</button>
       <Animate.Text
         trigger=${triggerSnippet("change")}
         value={query}
         animation="${preset}"
         duration={${duration}}
         easing="${easing}"${presetOptionsSnippet(presetOptions)}
-        as="h4"${propertiesSnippet(properties)}
+        as="span"${propertiesSnippet(properties)}
       >
         {query}
       </Animate.Text>
@@ -996,7 +1021,7 @@ function QuoteRotatorDemo({ preset, duration, easing, properties, presetOptions 
   function next() {
     setIdx((i) => (i + 1) % QUOTES.length)
     setCount((c) => c + 1)
-    ref.current?.animate()
+    requestAnimationFrame(() => ref.current?.animate())
   }
 
   return (
@@ -1004,7 +1029,7 @@ function QuoteRotatorDemo({ preset, duration, easing, properties, presetOptions 
       <div className="testimonial-demo">
         <div className="testimonial-avatar" />
         <div className="quote-display">
-          <TextAnimate.Text ref={ref} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="blockquote" properties={properties} presetOptions={presetOptions as any}>
+          <TextAnimate.Text ref={ref} trigger={triggerValue} value={quote} animation={preset} duration={duration} easing={easing} as="blockquote" properties={properties} presetOptions={presetOptions as any}>
             "{quote}"
           </TextAnimate.Text>
         </div>
@@ -1050,59 +1075,60 @@ const MOUNT_HEADLINES = ["Page Loaded", "Welcome Back", "Section Ready"]
 
 function TextMountDemo({ preset, duration, easing, exitPreset, properties, presetOptions }: { preset: AnimationPreset; duration: number; easing: string; exitPreset?: AnimationPreset; properties?: AnimationProperties; presetOptions?: Record<string, number> }) {
   const [visible, setVisible] = useState(true)
+  const [headlineIdx, setHeadlineIdx] = useState(0)
   useRuntimeOptions()
   const triggerValue = triggerProp("mount")
   const hasExit = !!exitPreset
+  function toggle() {
+    setVisible((v) => {
+      if (!v) setHeadlineIdx((i) => (i + 1) % MOUNT_HEADLINES.length)
+      return !v
+    })
+  }
   return (
     <div className="real-demo">
       <div className="page-load-demo">
         <div className="page-load-controls">
-          <button className="fire-button" onClick={() => setVisible((v) => !v)}>{visible ? "Unmount" : "Mount Section"}</button>
+          <button className="fire-button" onClick={toggle}>{visible ? "Unmount" : "Mount Section"}</button>
         </div>
-        {hasExit ? (
-          <BlockAnimate.Block show={visible} exitAnimation={exitPreset as BlockAnimationPreset} unmountOnExit duration={duration} easing={easing}>
-            <div className="page-load-content">
-              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2" properties={properties} presetOptions={presetOptions as any}>
-                {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
-              </TextAnimate.Text>
-              <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
-              <div className="page-load-stats">
-                <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
-                <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
-                <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
-              </div>
-            </div>
-          </BlockAnimate.Block>
-        ) : (
-          visible && (
-            <div className="page-load-content">
-              <TextAnimate.Text key={String(visible)} trigger={triggerValue} animation={preset} duration={duration} easing={easing} as="h2" properties={properties} presetOptions={presetOptions as any}>
-                {MOUNT_HEADLINES[Math.floor(Math.random() * MOUNT_HEADLINES.length)]}
-              </TextAnimate.Text>
-              <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
-              <div className="page-load-stats">
-                <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
-                <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
-                <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
-              </div>
-            </div>
-          )
-        )}
+        <div className="page-load-content">
+          <TextAnimate.Text
+            key={hasExit ? "text-exit-demo" : String(visible)}
+            show={hasExit ? visible : undefined}
+            exitAnimation={hasExit ? exitPreset : undefined}
+            unmountOnExit={false}
+            trigger={triggerValue}
+            animation={preset}
+            duration={duration}
+            easing={easing}
+            as="h2"
+            properties={properties}
+            presetOptions={presetOptions as any}
+          >
+            {MOUNT_HEADLINES[headlineIdx]}
+          </TextAnimate.Text>
+          <p className="page-load-desc">This section animates when it mounts — perfect for page transitions and lazy-loaded content.</p>
+          <div className="page-load-stats">
+            <div className="page-load-stat"><strong>12K+</strong><span>Users</span></div>
+            <div className="page-load-stat"><strong>99.9%</strong><span>Uptime</span></div>
+            <div className="page-load-stat"><strong>&lt;50ms</strong><span>Latency</span></div>
+          </div>
+        </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"${hasExit ? `\nimport { Animate as BlockAnimate } from "trigr/block"` : ""}
+`import { Animate } from "trigr/text"
 
 function FeatureSection() {
   const [show, setShow] = useState(true)
 
   return (
     <section>${hasExit ? `
-      <BlockAnimate.Block
+      <Animate.Text
         show={show}
         exitAnimation="${exitPreset}"
         unmountOnExit
-      >` : ""}
-      <Animate.Text
+        ` : `
+      {show && (`}<Animate.Text
         trigger="mount"
         animation="${preset}"
         duration={${duration}}
@@ -1110,8 +1136,8 @@ function FeatureSection() {
         as="h2"
       >
         Page Loaded
-      </Animate.Text>${hasExit ? `
-      </BlockAnimate.Block>` : ""}
+      </Animate.Text>${hasExit ? "" : `
+      )}`}
     </section>
   )
 }`}</Code>
@@ -1119,8 +1145,64 @@ function FeatureSection() {
   )
 }
 
+function TextExitDemo({ preset, duration, easing, properties, presetOptions }: { preset: AnimationPreset; duration: number; easing: string; properties?: AnimationProperties; presetOptions?: Record<string, number> }) {
+  const [show, setShow] = useState(true)
+  const [version, setVersion] = useState(0)
+  return (
+    <div className="real-demo">
+      <div className="page-load-demo">
+        <p className="demo-label">Toggle the headline to test the selected text exit animation.</p>
+        <div className="page-load-controls">
+          <button className="fire-button" onClick={() => setShow((v) => !v)}>{show ? "Run Exit" : "Mount Again"}</button>
+          <button className="ghost-button" onClick={() => { setVersion((v) => v + 1); setShow(true) }}>Reset</button>
+        </div>
+        <div className="exit-preview-slot">
+          <TextAnimate.Text
+            key={version}
+            trigger="mount"
+            animation="fadeIn"
+            show={show}
+            exitAnimation={preset}
+            unmountOnExit={false}
+            duration={duration}
+            easing={easing}
+            as="h2"
+            className="exit-demo-title"
+            properties={properties}
+            presetOptions={presetOptions as any}
+          >
+            Exit cleanly
+          </TextAnimate.Text>
+        </div>
+      </div>
+      <Code>{
+`import { Animate } from "trigr/text"
+
+function ExitExample() {
+  const [show, setShow] = useState(true)
+
+  return (
+    <Animate.Text
+      trigger="mount"
+      animation="fadeIn"
+      show={show}
+      exitAnimation="${preset}"
+      unmountOnExit={false}
+      duration={${duration}}
+      easing="${easing}"
+      as="h2"${propertiesSnippet(properties)}
+    >
+      Exit cleanly
+    </Animate.Text>
+  )
+}`}</Code>
+    </div>
+  )
+}
+
 function TextSection({ preset, duration, easing, trigger, exitPreset, properties, presetOptions }: { preset: AnimationPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: AnimationPreset; properties?: AnimationProperties; presetOptions?: Record<string, number> }) {
-  const content = trigger === "change" ? <SearchDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
+  const content = trigger === "exit" ? <TextExitDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
+    : trigger === "change" ? <SearchDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "hover" ? <NavLinksDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "click" ? <CTADemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "scroll" ? <SectionHeadersDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
@@ -1497,8 +1579,64 @@ function MountDemo() {
   )
 }
 
+function ParagraphExitDemo({ preset, duration, easing, properties, presetOptions }: { preset: ParagraphPreset; duration: number; easing: string; properties?: AnimationProperties; presetOptions?: Record<string, number> }) {
+  const [show, setShow] = useState(true)
+  const [version, setVersion] = useState(0)
+  return (
+    <div className="real-demo">
+      <p className="demo-label">Toggle this paragraph to test line, word, and block-level exits without removing the preview frame.</p>
+      <div className="manual-controls">
+        <button className="fire-button" onClick={() => setShow((v) => !v)}>{show ? "Run Exit" : "Mount Again"}</button>
+        <button className="ghost-button" onClick={() => { setVersion((v) => v + 1); setShow(true) }}>Reset</button>
+      </div>
+      <div className="exit-preview-slot paragraph-exit-slot">
+        <ParagraphAnimate.Paragraph
+          key={version}
+          trigger="mount"
+          animation="fadeIn"
+          show={show}
+          exitAnimation={preset}
+          unmountOnExit={false}
+          duration={duration}
+          easing={easing}
+          as="div"
+          className="readmore-card"
+          properties={properties}
+          presetOptions={presetOptions as any}
+        >
+          <h3>Paragraph exit</h3>
+          <p>Exit animations should preserve the preview height, stay readable, and clean up without leaving ghost styles behind.</p>
+        </ParagraphAnimate.Paragraph>
+      </div>
+      <Code>{
+`import { Animate } from "trigr/paragraph"
+
+function ParagraphExit() {
+  const [show, setShow] = useState(true)
+
+  return (
+    <Animate.Paragraph
+      trigger="mount"
+      animation="fadeIn"
+      show={show}
+      exitAnimation="${preset}"
+      unmountOnExit={false}
+      duration={${duration}}
+      easing="${easing}"
+      as="div"${propertiesSnippet(properties)}
+    >
+      <h3>Paragraph exit</h3>
+      <p>Exit animations preserve layout while leaving.</p>
+    </Animate.Paragraph>
+  )
+}`}</Code>
+    </div>
+  )
+}
+
 function ParagraphSection({ preset, duration, easing, trigger, exitPreset, properties, presetOptions }: { preset: ParagraphPreset; duration: number; easing: string; trigger: Trigger; exitPreset?: ParagraphPreset; properties?: AnimationProperties; presetOptions?: Record<string, number> }) {
-  const content = trigger === "change" ? <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
+  const content = trigger === "exit" ? <ParagraphExitDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
+    : trigger === "change" ? <ArticlePreviewDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "scroll" ? <StoryScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "hover" ? <ParagraphHoverDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "click" ? <ReadMoreDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
@@ -1967,7 +2105,8 @@ function ListSection({ preset, duration, easing, trigger, exitPreset, properties
     return <ListMountDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} presetOptions={presetOptions} />
   }
 
-  const content = trigger === "scroll" ? <ListScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
+  const content = trigger === "exit" ? <ListChangeDemo preset={preset} duration={duration} easing={easing} exitPreset={preset} properties={properties} presetOptions={presetOptions} />
+    : trigger === "scroll" ? <ListScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "hover" || trigger === "click" || trigger === "manual" ? <ListInteractionDemo preset={preset} duration={duration} easing={easing} trigger={trigger} properties={properties} presetOptions={presetOptions} />
     : <ListChangeDemo preset={preset} duration={duration} easing={easing} exitPreset={exitPreset} properties={properties} presetOptions={presetOptions} />
 
@@ -2305,12 +2444,27 @@ function BlockExitDemo({ duration, easing, preset, properties, presetOptions }: 
     { id: 2, title: "Deployment complete", desc: "Version 2.4.1 deployed to staging successfully." },
     { id: 3, title: "New comment on PR #42", desc: "Alex requested changes to the animation module." },
   ])
+  const [exitingIds, setExitingIds] = useState<number[]>([])
   const [exitPreset, setExitPreset] = useState<BlockAnimationPreset>(preset ?? "fadeOut")
   useEffect(() => { if (preset) setExitPreset(preset) }, [preset])
   useRuntimeOptions()
 
   function dismiss(id: number) {
-    setItems((prev) => prev.filter((item) => item.id !== id))
+    if (exitingIds.includes(id)) return
+    setExitingIds((prev) => [...prev, id])
+    window.setTimeout(() => {
+      setItems((prev) => prev.filter((item) => item.id !== id))
+      setExitingIds((prev) => prev.filter((itemId) => itemId !== id))
+    }, Math.max(180, duration) + 80)
+  }
+
+  function reset() {
+    setItems([
+      { id: 1, title: "Build pipeline failed", desc: "The production build failed on commit a3f2c1d." },
+      { id: 2, title: "Deployment complete", desc: "Version 2.4.1 deployed to staging successfully." },
+      { id: 3, title: "New comment on PR #42", desc: "Alex requested changes to the animation module." },
+    ])
+    setExitingIds([])
   }
 
   return (
@@ -2330,7 +2484,7 @@ function BlockExitDemo({ duration, easing, preset, properties, presetOptions }: 
             key={item.id}
             trigger="mount"
             animation="fadeIn"
-            show={true}
+            show={!exitingIds.includes(item.id)}
             exitAnimation={exitPreset}
             duration={duration}
             easing={easing}
@@ -2350,11 +2504,7 @@ function BlockExitDemo({ duration, easing, preset, properties, presetOptions }: 
       </div>
       {items.length === 0 && (
         <div className="empty-notifs">
-          <p>All cleared! <button className="fire-button" onClick={() => setItems([
-            { id: 1, title: "Build pipeline failed", desc: "The production build failed on commit a3f2c1d." },
-            { id: 2, title: "Deployment complete", desc: "Version 2.4.1 deployed to staging successfully." },
-            { id: 3, title: "New comment on PR #42", desc: "Alex requested changes to the animation module." },
-          ])}>Reset</button></p>
+          <p>All cleared! <button className="fire-button" onClick={reset}>Reset</button></p>
         </div>
       )}
       <Code>{
@@ -2400,7 +2550,7 @@ function BlockSection({ preset, duration, easing, trigger, exitPreset, propertie
   const isExitDemo = trigger === "exit"
 
   const content = isExitDemo
-    ? <BlockExitDemo duration={duration} easing={easing} preset={exitPreset} properties={properties} presetOptions={presetOptions} />
+    ? <BlockExitDemo duration={duration} easing={easing} preset={preset} properties={properties} presetOptions={presetOptions} />
     : trigger === "change" ? <BlockChangeDemo preset={preset} duration={duration} easing={easing} onReplay={replay} properties={properties} presetOptions={presetOptions} />
     : trigger === "scroll" ? <BlockScrollDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
     : trigger === "hover" ? <BlockHoverDemo preset={preset} duration={duration} easing={easing} properties={properties} presetOptions={presetOptions} />
@@ -3423,6 +3573,7 @@ const DOC_TRIGGERS = [
   { name: "click", desc: "Runs on click or tap. Best for tactile confirmation.", best: "press, ripple, burst, shake, bounce, list item feedback." },
   { name: "manual", desc: "Runs from ref.current.animate(). Use when outside state controls the timing.", best: "Replay buttons, guided tours, command palettes, step-by-step flows." },
   { name: "mount", desc: "Runs when the component appears. Best for first paint and conditional UI.", best: "fadeIn, popIn, stackIn, staggerSlideUp, block entrances." },
+  { name: "exit", desc: "Runs when content leaves through show/unmount or keyed list removal.", best: "fadeOut, slideOut, collapseOut, blurOut, item removal, toast/modal exits." },
 ]
 
 const DOC_ANIMATION_GROUPS = [
@@ -3433,6 +3584,7 @@ const DOC_ANIMATION_GROUPS = [
       { title: "Reveal", presets: ["fadeIn", "letterDrop", "textReveal", "scatter", "splash", "splitReveal", "splitSlide", "staggerText", "textEffect", "scrollFanIn"], best: "Use on mount or scroll for headings and labels." },
       { title: "Particle and physics", presets: ["bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall", "pendulum", "centerBurst", "gravityBounce"], best: "Use sparingly for hero moments and expressive text." },
       { title: "Interaction", presets: ["bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping", "highlight", "boldFlash", "blur", "randomLetterSwap"], best: "Use with hover, click, or manual feedback." },
+      { title: "Exit", presets: ["fadeOut", "fadeOutUp", "fadeOutDown", "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight", "scaleOut", "popOut", "blurOut", "clipOut", "fadeAway"], best: "Use with show + exitAnimation when inline text leaves." },
     ],
   },
   {
@@ -3442,6 +3594,7 @@ const DOC_ANIMATION_GROUPS = [
       { title: "Content replacement", presets: ["fadeSwap", "morphText", "slideReplace", "crossFade", "expandCollapse", "morphBlur", "pushLeft", "pushRight", "flipPage"], best: "Use with change when paragraph copy updates." },
       { title: "Review and emphasis", presets: ["highlight", "diffAnimate", "flash"], best: "Use for text review, edits, changed words, or attention states." },
       { title: "Paragraph-level motion", presets: ["fadeIn", "slideUp", "slideDown", "slideLeft", "slideRight", "popIn", "expandIn", "zoomIn", "pulse", "shake"], best: "Use for paragraph-level entrances on scroll or mount — unlike Block these operate on word/line structure, not just the outer box." },
+      { title: "Exit", presets: ["paragraphFadeOut", "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight", "collapseHeight", "wordFadeOut", "wordSlideOut", "lineFadeOut", "lineSlideOut", "fadeMaskOut"], best: "Use when prose leaves a view, accordion, panel, or route." },
     ],
   },
   {
@@ -3450,6 +3603,7 @@ const DOC_ANIMATION_GROUPS = [
       { title: "Stagger", presets: ["staggerFadeIn", "staggerSlideUp", "staggerSlideLeft", "staggerZoomIn", "staggerPopIn", "stackIn"], best: "Use for cards, rows, blocks, buttons, and feature lists." },
       { title: "Cascade", presets: ["wordCascade", "wordWave", "wordDrop", "wordFadeIn"], best: "Use for compact word, tag, and button collections." },
       { title: "Presence", presets: ["itemFadeIn", "itemSlideIn", "itemPopIn", "itemBounceIn", "itemFadeOut", "itemSlideOut", "itemCollapseOut"], best: "Use when keyed children are added or removed." },
+      { title: "Exit", presets: ["itemFadeOut", "itemSlideOut", "itemCollapseOut", "itemDismissOut", "rowCollapseOut", "tagRemove", "cardRemove"], best: "Use with keyed removal for rows, cards, tags, notifications, and menus." },
       { title: "Motion systems", presets: ["marquee", "marqueeReverse", "marqueeFade", "parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll", "parallaxStagger", "flip", "smooth", "spring", "none"], best: "Use for logos, scroll-depth card groups, and keyed reorder." },
     ],
   },
@@ -3460,6 +3614,7 @@ const DOC_ANIMATION_GROUPS = [
       { title: "Scroll-linked", presets: ["parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll"], best: "Use for one hero image, card, or section moving at a different scroll speed." },
       { title: "Hover and cursor", presets: ["lift", "sink", "grow", "glow", "shadow", "borderPop", "tilt", "tilt3D", "rotate3D", "depth"], best: "Use for interactive cards, pricing panels, and clickable surfaces." },
       { title: "Feedback and overlays", presets: ["press", "ripple", "burst", "shake", "wiggle", "jello", "flash", "heartBeat", "pulse", "float", "spin", "ping", "shimmer"], best: "Use for click feedback, loading surfaces, and status moments." },
+      { title: "Exit", presets: ["fadeOut", "scaleOut", "popOut", "rotateOut", "bounceOut", "collapseOut", "blurOut", "modalOut", "drawerOutLeft", "toastOut", "dismissOut", "tabPanelOut"], best: "Use for unmounting cards, modals, drawers, tabs, and notifications." },
     ],
   },
 ]
@@ -3634,7 +3789,7 @@ function DocsSection() {
           </article>
           <article>
             <h4>show</h4>
-            <p>Controls mounted state declaratively. When <code>show</code> becomes <code>false</code> the exit animation plays, then the element unmounts. Combine with <code>exitAnimation</code> and <code>unmountOnExit</code>. Available on <code>Animate.Block</code> (List has <code>exitAnimation</code> but not <code>show</code>).</p>
+            <p>Controls mounted state declaratively. When <code>show</code> becomes <code>false</code>, <code>exitAnimation</code> plays before unmount. Available on Text, Paragraph, and Block. List exits are driven by keyed child removal.</p>
             <DocCode>{`<Animate.Block
   show={isVisible}
   animation="fadeIn"
@@ -3642,7 +3797,15 @@ function DocsSection() {
   unmountOnExit
 >
   <Card />
-</Animate.Block>`}</DocCode>
+</Animate.Block>
+
+<Animate.Text
+  show={showLabel}
+  animation="fadeIn"
+  exitAnimation="slideOutUp"
+>
+  Saved
+</Animate.Text>`}</DocCode>
           </article>
           <article>
             <h4>speed</h4>
@@ -3789,6 +3952,14 @@ export default function Playground() {
   }, [availablePresets, module, preset])
 
   useEffect(() => {
+    if (!exitPreset || module === "docs" || module === "composed") return
+    const validExits = exitPresetsFor(module)
+    if (!validExits.includes(exitPreset)) {
+      setExitPreset("")
+    }
+  }, [module, exitPreset])
+
+  useEffect(() => {
     if (typeof window === "undefined") return
     window.localStorage.setItem(PLAYGROUND_STATE_KEY, JSON.stringify({
       module,
@@ -3909,15 +4080,6 @@ export default function Playground() {
                               <span className="sidebar-trigger-count">{presetsFor(m, t).length}</span>
                             </button>
                           ))}
-                          {m === "block" && (
-                            <button
-                              className={`sidebar-trigger${trigger === "exit" ? " active" : ""}`}
-                              onClick={() => { setTrigger("exit"); setPreset("fadeOut"); }}
-                            >
-                              <span className="sidebar-trigger-name">exit</span>
-                              <span className="sidebar-trigger-count">{EXIT_PRESETS_FOR_DEMO.length}</span>
-                            </button>
-                          )}
                         </div>
                       )}
                     </div>
@@ -5358,6 +5520,7 @@ html, body {
 }
 .search-real-header input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: transparent;
   color: var(--text);
@@ -5365,6 +5528,21 @@ html, body {
   outline: none;
 }
 .search-real-header input::placeholder { color: var(--text-tertiary); }
+.search-commit-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font: 600 12px/1 var(--font);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+}
+.search-commit-btn:hover {
+  background: var(--accent);
+  color: var(--bg-elevated);
+  border-color: var(--accent);
+}
 .search-real-results { padding: 8px; }
 .search-real-result-item {
   display: flex;
@@ -5381,10 +5559,35 @@ html, body {
   flex-shrink: 0;
 }
 .search-real-result-body { flex: 1; min-width: 0; text-align: left; }
-.search-real-result-body h4 {
+.search-real-result-body h4,
+.search-result-title {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 0 4px;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+}
+.change-demo-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+.ghost-button {
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font: 600 13px/1 var(--font);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+}
+.ghost-button:hover {
+  background: var(--bg-sidebar);
   color: var(--text);
 }
 .search-real-result-body p {
