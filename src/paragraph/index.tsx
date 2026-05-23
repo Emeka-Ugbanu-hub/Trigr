@@ -615,7 +615,6 @@ function animateMorph(
   if (!newText) return
 
   if (prefersReducedMotion()) {
-    // Simple crossfade for reduced motion
     const { oldEl, newEl, cleanup } = prepareStableParagraphSwap(el, oldText, newText)
     oldEl.animate(
       [{ opacity: 1 }, { opacity: 0 }],
@@ -630,109 +629,135 @@ function animateMorph(
     return anim
   }
 
-  // Build char spans — old chars fade out in place, new chars fade in with slide
-  const maxLen = Math.max(oldText.length, newText.length)
-  const { oldEl, newEl, cleanup } = prepareStableParagraphSwap(el, oldText, newText)
+  // Word-level morph — each word gets an inline-grid slot with old word
+  // stacked over new word. Same words stay still, changed words crossfade
+  // with a gentle slide. Whitespace is preserved as text nodes so the
+  // paragraph flows naturally across lines.
+  const oldWords = splitWordsAsElements(oldText)
+  const newWords = splitWordsAsElements(newText)
+  const maxWords = Math.max(oldWords.length, newWords.length)
+
+  el.style.willChange = 'transform, opacity'
+  const prevDisplay = el.style.display
+  el.style.display = 'inline-block'
+  const rect = el.getBoundingClientRect()
+  if (rect.height > 0) el.style.minHeight = `${Math.ceil(rect.height)}px`
+
+  el.textContent = ''
+
+  const slots: { oldSpan: HTMLSpanElement | null; newSpan: HTMLSpanElement | null }[] = []
+  for (let i = 0; i < maxWords; i++) {
+    const oldPart = oldWords[i]
+    const newPart = newWords[i]
+
+    // Whitespace text nodes from either old or new — render as-is
+    if ((oldPart instanceof Text && (!newPart || newPart instanceof Text))
+        || (newPart instanceof Text && !oldPart)) {
+      el.appendChild((oldPart instanceof Text ? oldPart : newPart!).cloneNode())
+      slots.push({ oldSpan: null, newSpan: null })
+      continue
+    }
+
+    const oldText = oldPart instanceof Text ? oldPart.textContent ?? '' : (oldPart as HTMLSpanElement).textContent ?? ''
+    const newText = newPart instanceof Text ? newPart.textContent ?? '' : (newPart as HTMLSpanElement).textContent ?? ''
+    const same = oldText === newText && oldText.length > 0
+
+    const slot = document.createElement('span')
+    slot.style.display = 'inline-grid'
+    slot.style.position = 'relative'
+    slot.style.verticalAlign = 'baseline'
+    el.appendChild(slot)
+
+    if (same) {
+      slot.textContent = newText
+      slots.push({ oldSpan: null, newSpan: null })
+      continue
+    }
+
+    let oldSpan: HTMLSpanElement | null = null
+    let newSpan: HTMLSpanElement | null = null
+
+    if (oldText) {
+      oldSpan = document.createElement('span')
+      oldSpan.textContent = oldText
+      oldSpan.style.gridArea = '1 / 1'
+      oldSpan.style.willChange = 'transform, opacity'
+      oldSpan.style.opacity = '1'
+      slot.appendChild(oldSpan)
+    }
+
+    if (newText) {
+      newSpan = document.createElement('span')
+      newSpan.textContent = newText
+      newSpan.style.gridArea = '1 / 1'
+      newSpan.style.willChange = 'transform, opacity'
+      newSpan.style.opacity = '0'
+      slot.appendChild(newSpan)
+    }
+
+    slots.push({ oldSpan, newSpan })
+  }
+
+  let remaining = slots.length
+  const halfDur = Math.max(120, baseDuration * 0.4)
   let cleaned = false
-  const finish = () => {
+
+  const cleanup = () => {
     if (cleaned) return
     cleaned = true
+    el.textContent = newText
+    el.style.willChange = 'auto'
+    el.style.minHeight = ''
+    el.style.display = prevDisplay
+  }
+
+  const checkDone = () => {
+    remaining--
+    if (remaining <= 0) {
+      cleanup()
+      onEnd?.()
+    }
+  }
+
+  const stagger = Math.min(25, Math.max(10, halfDur * 0.15))
+  slots.forEach((s, i) => {
+    if (s.oldSpan) {
+      const anim = s.oldSpan.animate(
+        [
+          { opacity: 1, transform: 'translateY(0)' },
+          { opacity: 0, transform: 'translateY(-4px)' },
+        ],
+        { duration: halfDur, delay: i * stagger, easing: EASE_OUT, fill: 'forwards' },
+      )
+      anim.onfinish = checkDone
+      anim.oncancel = () => { s.oldSpan!.style.willChange = 'auto' }
+    }
+    if (s.newSpan) {
+      const anim = s.newSpan.animate(
+        [
+          { opacity: 0, transform: 'translateY(6px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+        ],
+        { duration: halfDur, delay: i * stagger + halfDur * 0.25, easing: SPRING, fill: 'forwards' },
+      )
+      anim.onfinish = checkDone
+      anim.oncancel = () => { s.newSpan!.style.willChange = 'auto' }
+    }
+    if (!s.oldSpan && !s.newSpan) {
+      remaining--
+    }
+  })
+
+  // If nothing to animate, finish immediately
+  if (remaining <= 0) {
     cleanup()
     onEnd?.()
-  }
-  const cleanupOnce = () => {
-    if (cleaned) return
-    cleaned = true
-    cleanup()
+    return
   }
 
-  const charSpans: HTMLSpanElement[] = []
-
-  // Create old chars on oldEl
-  oldEl.textContent = ''
-  for (let i = 0; i < maxLen; i++) {
-    const span = document.createElement('span')
-    span.textContent = oldText[i] || '\u00A0'
-    span.style.display = 'inline-block'
-    span.style.willChange = 'transform, opacity'
-    oldEl.appendChild(span)
-    charSpans.push(span)
-  }
-
-  // Create new chars on newEl
-  newEl.textContent = ''
-  for (let i = 0; i < maxLen; i++) {
-    const span = document.createElement('span')
-    span.textContent = newText[i] || '\u00A0'
-    span.style.display = 'inline-block'
-    span.style.willChange = 'transform, opacity'
-    span.style.opacity = '0'
-    newEl.appendChild(span)
-    // We'll push after oldEl spans — they share index via `i`
-  }
-
-  const oldChildren = Array.from(oldEl.children) as HTMLSpanElement[]
-  const newChildren = Array.from(newEl.children) as HTMLSpanElement[]
-
-  let remaining = maxLen * 2
-  const halfDur = Math.max(120, baseDuration * 0.35)
-
-  oldChildren.forEach((span, i) => {
-    const isGone = i >= newText.length || oldText[i] !== newText[i]
-    if (!isGone && i < newText.length && oldText[i] === newText[i]) {
-      // Same char — keep visible, no animation
-      remaining--
-      return
-    }
-    const anim = span.animate(
-      [
-        { opacity: 1, transform: 'translateY(0) scale(1)' },
-        { opacity: 0, transform: 'translateY(-6px) scale(0.9)' },
-      ],
-      { duration: halfDur, easing: EASE_OUT, fill: 'forwards' },
-    )
-    anim.onfinish = () => {
-      remaining--
-      if (remaining <= 0) finish()
-    }
-    anim.oncancel = cleanupOnce
-  })
-
-  newChildren.forEach((span, i) => {
-    const isNew = i >= oldText.length || oldText[i] !== newText[i]
-    if (!isNew) {
-      // Same char — set visible, skip animation
-      span.style.opacity = '1'
-      remaining--
-      return
-    }
-    const anim = span.animate(
-      [
-        { opacity: 0, transform: 'translateY(6px) scale(0.9)' },
-        { opacity: 1, transform: 'translateY(0) scale(1)' },
-      ],
-      {
-        duration: halfDur,
-        delay: Math.min(40, halfDur * 0.2),
-        easing: SPRING,
-        fill: 'forwards',
-      },
-    )
-    anim.onfinish = () => {
-      remaining--
-      if (remaining <= 0) finish()
-    }
-    anim.oncancel = cleanupOnce
-  })
-
-  if (remaining <= 0) {
-    finish()
-    return undefined
-  }
-
-  const totalDuration = halfDur + Math.min(40, halfDur * 0.2) + halfDur
-  const marker = el.animate([{ opacity: 1 }, { opacity: 1 }], { duration: totalDuration, fill: 'forwards' })
-  marker.oncancel = cleanupOnce
+  const marker = el.animate([{ opacity: 1 }, { opacity: 1 }],
+    { duration: halfDur + maxWords * stagger + halfDur + 100, fill: 'forwards' })
+  marker.oncancel = cleanup
   return marker
 }
 
