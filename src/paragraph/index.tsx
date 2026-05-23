@@ -1073,7 +1073,15 @@ function animateHighlight(
   let cleaned = false
   let cancelled = false
 
-  const cleanup = () => {
+  const finish = () => {
+    if (cleaned) return
+    cleaned = true
+    span.style.willChange = 'auto'
+    target.style.minHeight = previous.minHeight
+    target.style.overflow = previous.overflow
+  }
+
+  const abort = () => {
     if (cleaned) return
     cleaned = true
     span.style.willChange = 'auto'
@@ -1097,16 +1105,16 @@ function animateHighlight(
   )
   anim.onfinish = () => {
     if (cancelled) return
-    cleanup()
+    finish()
     onEnd?.()
   }
   anim.oncancel = () => {
     cancelled = true
-    cleanup()
+    abort()
   }
 
   const marker = target.animate([{ opacity: 1 }, { opacity: 1 }], { duration: drawDuration + 100, fill: 'forwards' })
-  marker.oncancel = cleanup
+  marker.oncancel = abort
   return marker
 }
 function animateDiff(
