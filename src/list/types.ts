@@ -1,5 +1,12 @@
 import type { CSSProperties, JSX, ReactNode } from "react"
 
+export type ListPresetOptions = {
+  distance?: number
+  scale?: number
+  blur?: number
+  stagger?: number
+}
+
 export type ListTrigger = "scroll" | "hover" | "click" | "mount" | "manual"
 export type ListTriggerInput = ListTrigger | readonly [ListTrigger, ListTrigger] | readonly ListTrigger[]
 export type ListReorderPreset = "flip" | "smooth" | "spring" | "none"
@@ -91,6 +98,7 @@ export interface AnimateListProps {
   onItemEnter?: (key: string | number) => void
   onItemExit?: (key: string | number) => void
   onReorder?: () => void
+  presetOptions?: ListPresetOptions
   children: ReactNode
   customAnimation?: { enter?: AnimationDefinition; exit?: AnimationDefinition }
 }

@@ -1,6 +1,6 @@
 import { useRef, useEffect, useLayoutEffect, useState, createElement, forwardRef, useCallback, useImperativeHandle, useMemo } from "react"
 import type { MouseEvent } from "react"
-import type { AnimateBlockHandle, AnimateBlockProps, AnimationProperties, AnimationTrigger } from "./types"
+import type { AnimateBlockHandle, AnimateBlockProps, AnimationProperties, AnimationTrigger, BlockPresetOptions } from "./types"
 import { EASE_IN, SMOOTH, SNAPPY, SPRING, presetCategory, presets } from "./animations"
 import { Parallax } from "./parallax"
 
@@ -148,32 +148,60 @@ function applyFinalState(el: HTMLElement, keyframes: Keyframe[]) {
   if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
 }
 
+function rebaseBlockKeyframes(keyframes: Keyframe[], options?: BlockPresetOptions): Keyframe[] {
+  if (!options) return keyframes
+  const { distance, scale, blur, rotate } = options
+  return keyframes.map(kf => {
+    let t = (kf as any).transform as string | undefined
+    let f = (kf as any).filter as string | undefined
+    if (distance !== undefined && t) {
+      t = t.replace(/translateY\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateY(${Math.round(Number(val) * (distance / 32))}px)`)
+      t = t.replace(/translateX\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateX(${Math.round(Number(val) * (distance / 32))}px)`)
+    }
+    if (scale !== undefined && t) {
+      t = t.replace(/scale\((-?[\d.]+(?:,\s*-?[\d.]+)?)\)/g, `scale(${scale})`)
+    }
+    if (blur !== undefined && f) {
+      f = f.replace(/blur\((\d+)px\)/g, `blur(${blur}px)`)
+    }
+    if (rotate !== undefined && t) {
+      t = t.replace(/(rotateX?Y?Z?)\((-?[\d.]+)deg\)/g, (_, axis, val) =>
+        `${axis}(${Math.round(Number(val) * (rotate / 8))}deg)`)
+    }
+    return { ...kf, transform: t, filter: f }
+  })
+}
+
 function runAnimation(
   el: HTMLElement,
   keyframes: Keyframe[],
   options: KeyframeAnimationOptions,
   onEnd?: () => void,
+  presetOptions?: BlockPresetOptions,
 ): Animation {
   el.style.willChange = "transform, opacity"
   const prevTransition = el.style.transition
   el.style.transition = "none"
-  const usesScale = hasScale(keyframes)
+  const rebased = rebaseBlockKeyframes(keyframes, presetOptions)
+  const usesScale = hasScale(rebased)
   const prevOrigin = el.style.transformOrigin
   if (usesScale) el.style.transformOrigin = "center"
 
   // Always set initial state inline — prevents flash when animations are cancelled/restarted
-  applyInitialState(el, keyframes)
+  applyInitialState(el, rebased)
 
   const kf = prefersReducedMotion()
-    ? keyframes.map(({ opacity }) => ({ opacity: opacity ?? 1 }))
-    : keyframes
+    ? rebased.map(({ opacity }) => ({ opacity: opacity ?? 1 }))
+    : rebased
   const anim = el.animate(kf, { ...options, fill: "forwards" })
   const cleanup = () => {
     el.style.transition = prevTransition
     if (usesScale) el.style.transformOrigin = prevOrigin
   }
   anim.addEventListener("finish", () => {
-    applyFinalState(el, keyframes)
+    applyFinalState(el, rebased)
     finishWillChange(el)
     cleanup()
     onEnd?.()
@@ -309,6 +337,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
   onHoverStart,
   onHoverEnd,
   onAnimationEnd: onAnimationEndProp,
+  presetOptions,
   drag,
   dragThreshold,
   dragElastic,
@@ -477,6 +506,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
         cfg.keyframes,
         { duration: loopDuration, easing: cfg.easing, delay, iterations: 1, fill: "forwards" },
         finishRun,
+        presetOptions,
       )
       if (Object.keys(savedHoverStyles).length) {
         animRef.current.addEventListener("finish", restoreHover, { once: true })
@@ -500,7 +530,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
 
     const animationEasing = name === "press" ? SNAPPY : easing
     runTimerRef.current = setTimeout(finishRun, Math.max(500, motionDuration + delay + 300))
-    animRef.current = runAnimation(el, def.in, { duration: motionDuration, easing: animationEasing, delay }, finishRun)
+    animRef.current = runAnimation(el, def.in, { duration: motionDuration, easing: animationEasing, delay }, finishRun, presetOptions)
 
     if (Object.keys(savedHoverStyles).length) {
       animRef.current.addEventListener("finish", restoreHover, { once: true })
@@ -696,7 +726,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
         delay,
       })
       runTimerRef.current = setTimeout(finishRun, Math.max(600, motionDuration + delay + 300))
-      animRef.current = runAnimation(el, def.in, { duration: motionDuration, easing, delay }, finishRun)
+      animRef.current = runAnimation(el, def.in, { duration: motionDuration, easing, delay }, finishRun, presetOptions)
     }
   }, [hasTrigger, phase, show, animation, cat, duration, easing, delay, finishRun, properties])
 
@@ -758,7 +788,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
           duration: motionDuration || cfg.duration,
           easing: cfg.easing,
           fill: "forwards",
-        }, onExitEnd)
+        }, onExitEnd, presetOptions)
       } else {
         setPhase("exited")
       }
@@ -778,7 +808,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
         duration: motionDuration,
         easing,
         fill: "forwards",
-      }, onExitEnd)
+      }, onExitEnd, presetOptions)
     }
 
     return () => {

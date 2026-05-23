@@ -1,6 +1,6 @@
 import { useRef, useEffect, useLayoutEffect, createElement, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react"
 import type { MouseEvent } from "react"
-import type { AnimationPreset, AnimateTextHandle, AnimateTextProps, AnimationProperties } from "./types"
+import type { AnimationPreset, AnimateTextHandle, AnimateTextProps, AnimationProperties, TextPresetOptions } from "./types"
 import { EASE_IN, EASE_OUT, EASE_IN_OUT, SMOOTH, SPRING, presets } from "./animations"
 import { useValueChange } from "./useValueChange"
 
@@ -47,6 +47,28 @@ function applyFinalState(el: HTMLElement, keyframes: Keyframe[]) {
   if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
 }
 
+function rebaseKeyframes(keyframes: Keyframe[], options?: TextPresetOptions): Keyframe[] {
+  if (!options) return keyframes
+  const { distance, scale, blur } = options
+  return keyframes.map(kf => {
+    let t = (kf as any).transform as string | undefined
+    let f = (kf as any).filter as string | undefined
+    if (distance !== undefined && t) {
+      t = t.replace(/translateY\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateY(${Math.round(Number(val) * (distance / 32))}px)`)
+      t = t.replace(/translateX\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateX(${Math.round(Number(val) * (distance / 32))}px)`)
+    }
+    if (scale !== undefined && t) {
+      t = t.replace(/scale\((-?[\d.]+(?:,\s*-?[\d.]+)?)\)/g, `scale(${scale})`)
+    }
+    if (blur !== undefined && f) {
+      f = f.replace(/blur\((\d+)px\)/g, `blur(${blur}px)`)
+    }
+    return { ...kf, transform: t, filter: f }
+  })
+}
+
 function runAnimation(
   el: HTMLElement,
   preset: AnimationPreset,
@@ -55,6 +77,7 @@ function runAnimation(
   oldText?: string | number | undefined,
   newText?: string | number | undefined,
   highlightColor?: string,
+  presetOptions?: TextPresetOptions,
 ): Animation {
   const hlRunId = beginAnimationRun(el)
   el.style.willChange = "transform, opacity"
@@ -75,7 +98,8 @@ function runAnimation(
   const baseFrames = mode === "change"
     ? [...def.out, ...def.in]
     : (def.in.length ? [...def.in] : [...def.out])
-  const keyframes = prefersReducedMotion() ? reducedKeyframes(baseFrames) : baseFrames
+  const rebased = rebaseKeyframes(baseFrames, presetOptions)
+  const keyframes = prefersReducedMotion() ? reducedKeyframes(rebased) : rebased
   applyInitialState(el, keyframes)
   const anim = el.animate(keyframes, { ...options, fill: "forwards" })
   anim.addEventListener("finish", () => {
@@ -2670,6 +2694,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
   onHoverStart,
   onHoverEnd,
   onAnimationEnd: onAnimationEndProp,
+  presetOptions,
   children,
 }: AnimateTextProps, forwardedRef) {
   const ref = useRef<HTMLElement>(null)
@@ -3879,6 +3904,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       effectivePrev,
       current,
       highlightColorProp,
+      presetOptions,
     )
     animRef.current = anim
     anim.onfinish = () => {

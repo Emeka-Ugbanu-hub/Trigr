@@ -1,5 +1,12 @@
 import type { CSSProperties, JSX, MouseEvent, ReactNode } from "react"
 
+export type BlockPresetOptions = {
+  distance?: number
+  scale?: number
+  blur?: number
+  rotate?: number
+}
+
 export type PresetCategory =
   | "oneshot"
   | "continuous"
@@ -73,6 +80,7 @@ export interface AnimateBlockProps {
   onHoverStart?: () => void
   onHoverEnd?: () => void
   onAnimationEnd?: () => void
+  presetOptions?: BlockPresetOptions
   drag?: "x" | "y" | "both" | boolean
   dragThreshold?: number
   dragElastic?: number

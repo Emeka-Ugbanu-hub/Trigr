@@ -10,7 +10,7 @@ import {
   createElement,
 } from 'react'
 import type { MouseEvent } from 'react'
-import type { AnimateParagraphHandle, AnimateParagraphProps, AnimationProperties, AnimationTrigger } from './types'
+import type { AnimateParagraphHandle, AnimateParagraphProps, AnimationProperties, AnimationTrigger, ParagraphPresetOptions } from './types'
 import { useValueChange } from './useValueChange'
 
 // ============================================================
@@ -1382,11 +1382,34 @@ const customAnimations: Record<string, (...args: any[]) => Animation | undefined
 
 // ─── runAnimation fallback ────────────────────────────────
 
+function rebaseParagraphKeyframes(keyframes: Keyframe[], options?: ParagraphPresetOptions): Keyframe[] {
+  if (!options) return keyframes
+  const { distance, scale, blur } = options
+  return keyframes.map(kf => {
+    let t = (kf as any).transform as string | undefined
+    let f = (kf as any).filter as string | undefined
+    if (distance !== undefined && t) {
+      t = t.replace(/translateY\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateY(${Math.round(Number(val) * (distance / 32))}px)`)
+      t = t.replace(/translateX\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateX(${Math.round(Number(val) * (distance / 32))}px)`)
+    }
+    if (scale !== undefined && t) {
+      t = t.replace(/scale\((-?[\d.]+(?:,\s*-?[\d.]+)?)\)/g, `scale(${scale})`)
+    }
+    if (blur !== undefined && f) {
+      f = f.replace(/blur\((\d+)px\)/g, `blur(${blur}px)`)
+    }
+    return { ...kf, transform: t, filter: f }
+  })
+}
+
 function runAnimation(
   el: HTMLElement,
   name: string,
   options: KeyframeAnimationOptions,
   mode: 'change' | 'single' = 'single',
+  presetOptions?: ParagraphPresetOptions,
 ): Animation {
   el.style.willChange = 'transform, opacity'
   const def = presets[name]
@@ -1401,7 +1424,8 @@ function runAnimation(
     return anim
   }
   const baseFrames = mode === 'change' ? [...def.out, ...def.in] : (def.in.length ? [...def.in] : [...def.out])
-  const kf = prefersReducedMotion() ? baseFrames.map(({ opacity }) => ({ opacity: opacity ?? 1 })) : baseFrames
+  const rebased = rebaseParagraphKeyframes(baseFrames, presetOptions)
+  const kf = prefersReducedMotion() ? rebased.map(({ opacity }) => ({ opacity: opacity ?? 1 })) : rebased
   const first = kf[0]
   if (first) {
     if ((first as any).opacity !== undefined) el.style.opacity = String((first as any).opacity)
@@ -1557,6 +1581,7 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
   onHoverStart,
   onHoverEnd,
   onAnimationEnd: onAnimationEndProp,
+  presetOptions,
   children,
 }: AnimateParagraphProps, forwardedRef) {
   const ref = useRef<HTMLElement>(null)
@@ -1859,6 +1884,7 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
       animation as string,
       { duration: motionDuration, easing, delay },
       currentRun.source === 'change' ? 'change' : 'single',
+      presetOptions,
     )
     animRef.current = anim
     anim.onfinish = onFinish

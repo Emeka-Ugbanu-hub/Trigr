@@ -1,5 +1,11 @@
 import type { CSSProperties, JSX, MouseEvent, ReactNode } from "react"
 
+export type ParagraphPresetOptions = {
+  distance?: number
+  scale?: number
+  blur?: number
+}
+
 export type ParagraphPreset =
   | "fadeIn"
   | "fadeOut"
@@ -93,6 +99,7 @@ export interface AnimateParagraphProps {
   onHoverStart?: () => void
   onHoverEnd?: () => void
   onAnimationEnd?: () => void
+  presetOptions?: ParagraphPresetOptions
   children: ReactNode
 }
 

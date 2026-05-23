@@ -1,5 +1,12 @@
 import type { CSSProperties, JSX, MouseEvent, ReactNode } from "react"
 
+export type TextPresetOptions = {
+  distance?: number
+  scale?: number
+  blur?: number
+  stagger?: number
+}
+
 export type AnimationPreset =
   | "fadeSwap"
   | "morph"
@@ -99,6 +106,7 @@ export interface AnimateTextProps {
   onHoverStart?: () => void
   onHoverEnd?: () => void
   onAnimationEnd?: () => void
+  presetOptions?: TextPresetOptions
   children: ReactNode
 }
 

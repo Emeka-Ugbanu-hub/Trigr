@@ -1,5 +1,5 @@
 import React, { createElement, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
-import type { AnimateListHandle, AnimateListProps, AnimationDefinition, AnimationProperties, GhostEntry, ListAnimationPreset, ListTrigger } from "./types"
+import type { AnimateListHandle, AnimateListProps, AnimationDefinition, AnimationProperties, GhostEntry, ListAnimationPreset, ListPresetOptions, ListTrigger } from "./types"
 import { EASE_IN, EASE_IN_OUT, EASE_OUT, presets, SPRING } from "./animations"
 import { useListDiff } from "./useListDiff"
 import { usePositionTracker } from "./usePositionTracker"
@@ -40,11 +40,34 @@ function applyFinalState(el: HTMLElement, keyframes: Keyframe[]) {
   if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
 }
 
-function runAnimation(el: HTMLElement, def: AnimationDefinition, opts: globalThis.KeyframeAnimationOptions): Animation {
+function rebaseListKeyframes(keyframes: Keyframe[], options?: ListPresetOptions): Keyframe[] {
+  if (!options) return keyframes
+  const { distance, scale, blur } = options
+  return keyframes.map(kf => {
+    let t = (kf as any).transform as string | undefined
+    let f = (kf as any).filter as string | undefined
+    if (distance !== undefined && t) {
+      t = t.replace(/translateY\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateY(${Math.round(Number(val) * (distance / 32))}px)`)
+      t = t.replace(/translateX\((-?\d+(?:\.\d+)?)(px)?\)/g, (_, val) =>
+        `translateX(${Math.round(Number(val) * (distance / 32))}px)`)
+    }
+    if (scale !== undefined && t) {
+      t = t.replace(/scale\((-?[\d.]+(?:,\s*-?[\d.]+)?)\)/g, `scale(${scale})`)
+    }
+    if (blur !== undefined && f) {
+      f = f.replace(/blur\((\d+)px\)/g, `blur(${blur}px)`)
+    }
+    return { ...kf, transform: t, filter: f }
+  })
+}
+
+function runAnimation(el: HTMLElement, def: AnimationDefinition, opts: globalThis.KeyframeAnimationOptions, presetOptions?: ListPresetOptions): Animation {
   el.style.willChange = "transform, opacity"
+  const rebased = rebaseListKeyframes(def.keyframes, presetOptions)
   const keyframes = reducedMotion()
-    ? def.keyframes.map(({ opacity }) => ({ opacity: opacity ?? 1 }))
-    : def.keyframes
+    ? rebased.map(({ opacity }) => ({ opacity: opacity ?? 1 }))
+    : rebased
   applyInitialState(el, keyframes)
   const anim = el.animate(keyframes, { ...def.options, ...opts, fill: "forwards" })
   anim.addEventListener("finish", () => {
@@ -170,6 +193,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
   onItemEnter,
   onItemExit,
   onReorder,
+  presetOptions,
   children,
   customAnimation,
 }, ref) {
@@ -303,7 +327,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
         easing: def.options?.easing ?? easing,
         delay: index * stagger,
         fill: "forwards",
-      })
+      }, presetOptions)
       runPropertyAnimation(el, properties, {
         duration: resolvedDuration,
         easing,
@@ -329,7 +353,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
       duration: dur,
       easing: def.options?.easing ?? easing,
       fill: "forwards",
-    })
+    }, presetOptions)
     runPropertyAnimation(el, properties, { duration: dur, easing })
   }, [animation, duration, easing, customAnimation, properties, triggerConfigs])
 
@@ -445,7 +469,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
             easing: def.options?.easing ?? easing,
             delay: i * stagger,
             fill: "forwards",
-          })
+          }, presetOptions)
           runPropertyAnimation(el, properties, {
             duration: dur,
             easing,
@@ -505,7 +529,7 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
           easing: def.options?.easing ?? EASE_OUT,
           delay: idx * exitStagger,
           fill: "forwards",
-        })
+        }, presetOptions)
       }
       onItemExit?.(key)
     })
