@@ -1,16 +1,16 @@
 {
-  "name": "trigr",
-  "version": "0.4.0",
+"name": "triggr-motion",
+"version": "0.4.0",
   "description": "Content-aware animation library for React. One import per content type. One prop to trigger.",
   "license": "MIT",
   "author": "Emeka Ugbanu",
-  "homepage": "https://emeka-ugbanu-hub.github.io/Trigr",
+  "homepage": "https://emeka-ugbanu-hub.github.io/triggr-motion",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Emeka-Ugbanu-hub/Trigr.git"
+    "url": "https://github.com/Emeka-Ugbanu-hub/triggr-motion.git"
   },
   "bugs": {
-    "url": "https://github.com/Emeka-Ugbanu-hub/Trigr/issues"
+    "url": "https://github.com/Emeka-Ugbanu-hub/triggr-motion/issues"
   },
   "keywords": [
     "react",

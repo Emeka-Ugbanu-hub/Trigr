@@ -1,39 +1,34 @@
-# trigr
+# triggr-motion
 
 **Content-aware animation for the web.** React components with full trigger wiring, or framework-agnostic keyframes for any stack. One import. Polished motion out of the box.
 
-- [Live Playground](https://emeka-ugbanu-hub.github.io/Trigr/) — explore 200+ presets across all modules
-- [Landing Page](https://emeka-ugbanu-hub.github.io/Trigr/example) — real-world demo showcasing every feature
+- [Live Playground](https://emeka-ugbanu-hub.github.io/triggr-motion/) — explore 200+ presets across all modules
+- [Landing Page](https://emeka-ugbanu-hub.github.io/triggr-motion/example) — real-world demo showcasing every feature
 
 ```bash
-npm install trigr
+npm install triggr-motion
 ```
 
----
-
-## How it works
-
-trigr maps content shape to animation behavior. Use the React components for full trigger/lifecycle management, or import the keyframes directly for use with Vue, Angular, Svelte, or vanilla JS via the Web Animations API.
-
 ```tsx
-import { Animate } from "trigr/text"
+import { Animate } from "triggr-motion/text"
+```
 
 <Animate.Text trigger="change" animation="fadeSwap">
   <span>{label}</span>
 </Animate.Text>
 ```
 
-The import tells trigr what kind of content is being animated. The `trigger` prop tells trigr when the animation runs.
+The import tells triggr-motion what kind of content is being animated. The `trigger` prop tells triggr-motion when the animation runs.
 
 ## Subpath imports only
 
-Each module is an independent subpath export. There is no root `import { Animate } from "trigr"` — pick the module you need:
+Each module is an independent subpath export. There is no root `import { Animate } from "triggr-motion"` — pick the module you need:
 
 ```tsx
-import { Animate } from "trigr/text"       // Animate.Text
-import { Animate } from "trigr/block"      // Animate.Block, Parallax
-import { Animate } from "trigr/paragraph"  // Animate.Paragraph
-import { Animate } from "trigr/list"       // Animate.List
+import { Animate } from "triggr-motion/text"       // Animate.Text
+import { Animate } from "triggr-motion/block"      // Animate.Block, Parallax
+import { Animate } from "triggr-motion/paragraph"  // Animate.Paragraph
+import { Animate } from "triggr-motion/list"       // Animate.List
 ```
 
 This keeps the bundle small. Import only the modules you use and bundlers tree-shake the rest.
@@ -44,8 +39,8 @@ The animation data (presets, easing constants, keyframes) is available without R
 
 ```ts
 // Any framework — no React required
-import { presets, SPRING, SMOOTH } from "trigr/text/keyframes"
-import { presets, presetCategory } from "trigr/block/keyframes"
+import { presets, SPRING, SMOOTH } from "triggr-motion/text/keyframes"
+import { presets, presetCategory } from "triggr-motion/block/keyframes"
 
 el.animate(
   presets.fadeSwap.in,
@@ -55,10 +50,10 @@ el.animate(
 
 | Keyframe subpath | Size | Exports |
 |---|---|---|
-| `trigr/text/keyframes` | 14KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
-| `trigr/paragraph/keyframes` | 8.7KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SMOOTH` |
-| `trigr/list/keyframes` | 11KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
-| `trigr/block/keyframes` | 19KB | `presets`, `presetCategory`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
+| `triggr-motion/text/keyframes` | 14KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
+| `triggr-motion/paragraph/keyframes` | 8.7KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SMOOTH` |
+| `triggr-motion/list/keyframes` | 11KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
+| `triggr-motion/block/keyframes` | 19KB | `presets`, `presetCategory`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
 
 The React components (`Animate.Text`, etc.) use these same keyframes internally — the `keyframes` subpath gives you direct access without pulling in any React code.
 
@@ -68,10 +63,10 @@ Pick the wrapper that matches the content shape, not the visual style.
 
 | Module | Import | Component | Presets | Use for |
 |--------|--------|-----------|---------|---------|
-| Text | `trigr/text` | `Animate.Text` | 75 | Words, labels, counters, headings, nav items, inline text, character-level effects |
-| Paragraph | `trigr/paragraph` | `Animate.Paragraph` | 42 | Prose, descriptions, long copy, line and word-level paragraph effects |
-| List | `trigr/list` | `Animate.List` | 55 | Repeated keyed collections: cards, buttons, rows, logos, menu items |
-| Block | `trigr/block` | `Animate.Block` | 79 | One complete element: cards, panels, hero images, modals, notifications, drag, parallax, layout transitions |
+| Text | `triggr-motion/text` | `Animate.Text` | 75 | Words, labels, counters, headings, nav items, inline text, character-level effects |
+| Paragraph | `triggr-motion/paragraph` | `Animate.Paragraph` | 42 | Prose, descriptions, long copy, line and word-level paragraph effects |
+| List | `triggr-motion/list` | `Animate.List` | 55 | Repeated keyed collections: cards, buttons, rows, logos, menu items |
+| Block | `triggr-motion/block` | `Animate.Block` | 79 | One complete element: cards, panels, hero images, modals, notifications, drag, parallax, layout transitions |
 
 ## Triggers
 
@@ -203,10 +198,10 @@ For lists, exits fire automatically when a keyed child is removed:
 
 ## Text Module
 
-`trigr/text` — 75 presets for short inline text. The animation operates on words, characters, or labels. Nested styled children like `<span className="stat-value">200+</span>` are preserved through text-replacing animations (odometer, ticker, typewriter, scramble, decoder).
+`triggr-motion/text` — 75 presets for short inline text. The animation operates on words, characters, or labels. Nested styled children like `<span className="stat-value">200+</span>` are preserved through text-replacing animations (odometer, ticker, typewriter, scramble, decoder).
 
 ```tsx
-import { Animate } from "trigr/text"
+import { Animate } from "triggr-motion/text"
 
 // Animate inside a styled child — .stat-value class stays attached
 <Animate.Text trigger="change" animation="odometer">
@@ -226,10 +221,10 @@ import { Animate } from "trigr/text"
 
 ## Paragraph Module
 
-`trigr/paragraph` — 42 presets for prose. Animations use visual-line measurement for morphText and word/line-level effects. The paragraph wrapper stays intact.
+`triggr-motion/paragraph` — 42 presets for prose. Animations use visual-line measurement for morphText and word/line-level effects. The paragraph wrapper stays intact.
 
 ```tsx
-import { Animate } from "trigr/paragraph"
+import { Animate } from "triggr-motion/paragraph"
 
 <Animate.Paragraph trigger="scroll" animation="wordFadeIn" threshold={0.4}>
   <p>Motion should support reading, not interrupt it.</p>
@@ -248,10 +243,10 @@ import { Animate } from "trigr/paragraph"
 
 ## List Module
 
-`trigr/list` — 55 presets for keyed collections. Handles staggered entrances, item presence (add/remove), reorder animation, parallax, marquee, and exit animations.
+`triggr-motion/list` — 55 presets for keyed collections. Handles staggered entrances, item presence (add/remove), reorder animation, parallax, marquee, and exit animations.
 
 ```tsx
-import { Animate } from "trigr/list"
+import { Animate } from "triggr-motion/list"
 
 <Animate.List
   trigger="scroll"
@@ -279,10 +274,10 @@ import { Animate } from "trigr/list"
 
 ## Block Module
 
-`trigr/block` — 79 presets for single elements. Supports entrance/exit, scroll-linked parallax, hover states, cursor tracking, overlays, drag gesture, and shared layout transitions.
+`triggr-motion/block` — 79 presets for single elements. Supports entrance/exit, scroll-linked parallax, hover states, cursor tracking, overlays, drag gesture, and shared layout transitions.
 
 ```tsx
-import { Animate } from "trigr/block"
+import { Animate } from "triggr-motion/block"
 
 <Animate.Block trigger="scroll" animation="slideUp" threshold={0.5}>
   <section className="card">Analytics</section>
@@ -315,7 +310,7 @@ import { Animate } from "trigr/block"
 ### Parallax
 
 ```tsx
-import { Parallax } from "trigr/block"
+import { Parallax } from "triggr-motion/block"
 
 <Parallax type="parallaxFast" strength={0.4}>
   <img src={hero} alt="" />

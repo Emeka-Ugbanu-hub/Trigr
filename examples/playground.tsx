@@ -694,7 +694,7 @@ type RuntimeOptions = {
 const MODULE_META: Record<ModuleId, { title: string; desc: string; color: string; triggers: Trigger[] }> = {
   docs: {
     title: "Docs",
-    desc: "A complete guide to trigr: mental model, modules, triggers, presets, best practices, and real-world recipes.",
+    desc: "A complete guide to triggr-motion: mental model, modules, triggers, presets, best practices, and real-world recipes.",
     color: "#111111",
     triggers: [],
   },
@@ -1005,7 +1005,7 @@ function SearchDemo({ preset, duration, easing, properties, presetOptions }: { p
         </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 function SearchResults() {
   const [query, setQuery] = useState("")
@@ -1070,7 +1070,7 @@ function NavLinksDemo({ preset, duration, easing, properties, presetOptions }: {
         <button className="app-header-cta">Get Started</button>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 function AppHeader() {
   return (
@@ -1122,7 +1122,7 @@ function CTADemo({ preset, duration, easing, properties, presetOptions }: { pres
         </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 function LandingHero() {
   return (
@@ -1166,7 +1166,7 @@ function SectionHeadersDemo({ preset, duration, easing, properties, presetOption
         ))}
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 const sections = ${JSON.stringify(HEADINGS)}
 
@@ -1230,7 +1230,7 @@ function QuoteRotatorDemo({ preset, duration, easing, properties, presetOptions 
         </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 function Testimonials() {
   const ref = useRef(null)
@@ -1303,7 +1303,7 @@ function TextMountDemo({ preset, duration, easing, exitPreset, properties, prese
         </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 function FeatureSection() {
   const [show, setShow] = useState(true)
@@ -1362,7 +1362,7 @@ function TextExitDemo({ preset, duration, easing, properties, presetOptions }: {
         </div>
       </div>
       <Code>{
-`import { Animate } from "trigr/text"
+`import { Animate } from "triggr-motion/text"
 
 function ExitExample() {
   const [show, setShow] = useState(true)
@@ -1462,7 +1462,7 @@ function ArticlePreviewDemo({ preset, duration, easing, properties, presetOption
         </div>
       </div>
       <Code>{
-        `import { Animate } from "trigr/paragraph"
+        `import { Animate } from "triggr-motion/paragraph"
 
 function ArticleCard() {
   const [article, setArticle] = useState(articles[0])
@@ -1512,7 +1512,7 @@ function StoryScrollDemo({ preset, duration, easing, properties, presetOptions }
         ))}
       </div>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+`import { Animate } from "triggr-motion/paragraph"
 
 const paragraphs = ${JSON.stringify(STORY_PARAGRAPHS)}
 
@@ -1548,7 +1548,7 @@ function ParagraphHoverDemo({ preset, duration, easing, properties, presetOption
         Hover over this paragraph to see the {preset} animation in action. The text animates each time you hover, making it perfect for interactive content and micro-copy.
       </ParagraphAnimate.Paragraph>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+`import { Animate } from "triggr-motion/paragraph"
 
 function InteractiveText() {
   return (
@@ -1601,7 +1601,7 @@ function ReadMoreDemo({ preset, duration, easing, properties, presetOptions }: {
       </ParagraphAnimate.Paragraph>
       <button className="fire-button" onClick={handleClick}>{expanded ? "Show Less" : "Read More"}</button>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+`import { Animate } from "triggr-motion/paragraph"
 
 function ReadMoreCard() {
   const [expanded, setExpanded] = useState(false)
@@ -1671,7 +1671,7 @@ function SlideDeckDemo({ preset, duration, easing, properties, presetOptions }: 
         <span className="demo-meta">{count} transitions</span>
       </div>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+`import { Animate } from "triggr-motion/paragraph"
 
 const slides = ${JSON.stringify(SLIDES, null, 2).replace(/\n/g, "\n  ")}
 
@@ -1732,7 +1732,7 @@ function ParagraphMountDemo({ preset, duration, easing, exitPreset, properties, 
         )}
       </div>
       <Code>{
-`import { Animate } from "trigr/paragraph"${hasExit ? `\nimport { Animate as BlockAnimate } from "trigr/block"` : ""}
+`import { Animate } from "triggr-motion/paragraph"${hasExit ? `\nimport { Animate as BlockAnimate } from "triggr-motion/block"` : ""}
 
 function MountDemo() {
   const [show, setShow] = useState(true)
@@ -1794,7 +1794,7 @@ function ParagraphExitDemo({ preset, duration, easing, properties, presetOptions
         </ParagraphAnimate.Paragraph>
       </div>
       <Code>{
-`import { Animate } from "trigr/paragraph"
+`import { Animate } from "triggr-motion/paragraph"
 
 function ParagraphExit() {
   const [show, setShow] = useState(true)
@@ -1922,8 +1922,8 @@ function ListChangeDemo({ preset, duration, easing, exitPreset, properties, pres
   )
 
   const code = isMarquee
-    ? `import { Animate } from "trigr/list"\n\n<Animate.List animation="${preset}" speed={${listSpeed}}>\n  {logos.map((logo) => (\n    <span key={logo}>{logo}</span>\n  ))}\n</Animate.List>`
-    : `import { Animate } from "trigr/list"\n\n<Animate.List\n  animation="${listAnim.animation}"\n  exitAnimation="${effectiveExit}"\n  duration={${duration}}\n  easing="${easing}"\n  stagger={${stagger}}\n>\n  {items.map((item) => (\n    <DashboardRow key={item.id} item={item} />\n  ))}\n</Animate.List>`
+    ? `import { Animate } from "triggr-motion/list"\n\n<Animate.List animation="${preset}" speed={${listSpeed}}>\n  {logos.map((logo) => (\n    <span key={logo}>{logo}</span>\n  ))}\n</Animate.List>`
+    : `import { Animate } from "triggr-motion/list"\n\n<Animate.List\n  animation="${listAnim.animation}"\n  exitAnimation="${effectiveExit}"\n  duration={${duration}}\n  easing="${easing}"\n  stagger={${stagger}}\n>\n  {items.map((item) => (\n    <DashboardRow key={item.id} item={item} />\n  ))}\n</Animate.List>`
 
   return (
     <div className="section">
@@ -2084,7 +2084,7 @@ function ListMountDemo({ preset, duration, easing, exitPreset, properties, prese
           </div>
         </div>
         <Code>{
-`import { Animate } from "trigr/list"
+`import { Animate } from "triggr-motion/list"
 
 function ListMountDemo() {
   const [show, setShow] = useState(true)
@@ -2153,7 +2153,7 @@ function ListScrollDemo({ preset, duration, easing, properties, presetOptions }:
           ))}
         </ListAnimate.List>
         <Code>{
-`import { Animate } from "trigr/list"
+`import { Animate } from "triggr-motion/list"
 
 function CollectionParallax({ cards }) {
   return (
@@ -2195,7 +2195,7 @@ function CollectionParallax({ cards }) {
         </div>
       ))}
       <Code>{
-`import { Animate } from "trigr/list"
+`import { Animate } from "triggr-motion/list"
 
 function ScrollCollection() {
   return (
@@ -2257,7 +2257,7 @@ function ListInteractionDemo({ preset, duration, easing, trigger, properties, pr
       </div>
       <span className="demo-meta">{isManual ? `${fires} manual fires` : `${trigger} trigger`}</span>
       <Code>{
-`import { Animate } from "trigr/list"
+`import { Animate } from "triggr-motion/list"
 
 function MenuMotion() {
   const ref = useRef(null)
@@ -2332,7 +2332,7 @@ function BlockChangeDemo({ preset, duration, easing, onReplay, properties, prese
         </BlockAnimate.Block>
       </div>
       <Code>{
-`import { Animate } from "trigr/block"
+`import { Animate } from "triggr-motion/block"
 
 function NotificationFeed() {
   const [tick, setTick] = useState(0)
@@ -2391,7 +2391,7 @@ function BlockScrollDemo({ preset, duration, easing, properties, presetOptions }
             </div>
           </BlockAnimate.Block>
         </div>
-        <Code>{`import { Animate } from "trigr/block"
+        <Code>{`import { Animate } from "triggr-motion/block"
 
 function HeroParallax() {
   return (
@@ -2422,7 +2422,7 @@ function HeroParallax() {
         </div>
       ))}
       <Code>{
-`import { Animate } from "trigr/block"
+`import { Animate } from "triggr-motion/block"
 
 const sections = ["Features", "Pricing", "FAQ"]
 
@@ -2462,7 +2462,7 @@ function BlockHoverDemo({ preset, duration, easing, properties, presetOptions }:
         </BlockAnimate.Block>
       </div>
       <Code>{
-`import { Animate } from "trigr/block"
+`import { Animate } from "triggr-motion/block"
 
 const plans = [
   { title: "Basic Plan", desc: "..." },
@@ -2498,7 +2498,7 @@ function BlockClickDemo({ preset, duration, easing, properties, presetOptions }:
         <BlockCard title={`Clicked ${count} times`} desc={`The "${preset}" animation plays each time you click this card.`} />
       </BlockAnimate.Block>
       <Code>{
-`import { Animate } from "trigr/block"
+`import { Animate } from "triggr-motion/block"
 
 function InteractiveCard() {
   const ref = useRef(null)
@@ -2547,7 +2547,7 @@ function BlockManualDemo({ preset, duration, easing, properties, presetOptions }
         <span className="demo-meta">Step {step + 1} of {STEPS.length}</span>
       </div>
       <Code>{
-`import { Animate } from "trigr/block"
+`import { Animate } from "triggr-motion/block"
 
 const steps = ${JSON.stringify(STEPS)}
 
@@ -2600,7 +2600,7 @@ function BlockMountDemo({ preset, duration, easing, exitPreset, properties, pres
         </BlockAnimate.Block>
       ) : content}
       <Code>{
-`import { Animate } from "trigr/block"
+`import { Animate } from "triggr-motion/block"
 
 function PageEntrance() {
   const [show, setShow] = useState(true)
@@ -2693,7 +2693,7 @@ function BlockExitDemo({ duration, easing, preset, properties, presetOptions }: 
       )}
       <Code>{
 `import { useState } from "react"
-import { Animate } from "trigr/block"
+import { Animate } from "triggr-motion/block"
 
 const notifications = [
   { id: 1, title: "Build failed", desc: "..." },
@@ -2755,7 +2755,7 @@ function BlockSection({ preset, duration, easing, trigger, exitPreset, propertie
 const DOC_MODULES = [
   {
     title: "Text",
-    importPath: "trigr/text",
+    importPath: "triggr-motion/text",
     component: "Animate.Text",
     defaults: "trigger=\"change\", duration=300, easing=SPRING, as=\"span\"",
     presets: 75,
@@ -2764,7 +2764,7 @@ const DOC_MODULES = [
   },
   {
     title: "Paragraph",
-    importPath: "trigr/paragraph",
+    importPath: "triggr-motion/paragraph",
     component: "Animate.Paragraph",
     defaults: "trigger=\"change\", duration=300, easing=SMOOTH, as=\"div\"",
     presets: 42,
@@ -2773,7 +2773,7 @@ const DOC_MODULES = [
   },
   {
     title: "List",
-    importPath: "trigr/list",
+    importPath: "triggr-motion/list",
     component: "Animate.List",
     defaults: "animation=\"staggerFadeIn\", duration=300, trigger=\"mount\", stagger=60, reorder=\"flip\", exitAnimation=\"itemFadeOut\"",
     presets: 55,
@@ -2782,7 +2782,7 @@ const DOC_MODULES = [
   },
   {
     title: "Block",
-    importPath: "trigr/block",
+    importPath: "triggr-motion/block",
     component: "Animate.Block",
     defaults: "trigger=\"change\", duration=400, easing=SPRING, as=\"div\"",
     presets: 79,
@@ -2903,11 +2903,11 @@ function DocsSection() {
           </p>
           <div className="docs-hero-actions">
             <a href="#modules" className="docs-hero-btn docs-hero-btn-primary">Explore Modules</a>
-            <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener noreferrer" className="docs-hero-btn">View on GitHub</a>
+            <a href="https://github.com/Emeka-Ugbanu-hub/triggr-motion" target="_blank" rel="noopener noreferrer" className="docs-hero-btn">View on GitHub</a>
           </div>
         </div>
         <div className="docs-hero-preview">
-          <DocCode>{`import { Animate } from "trigr/text"
+          <DocCode>{`import { Animate } from "triggr-motion/text"
 
 <Animate.Text
   trigger="change"
@@ -3188,7 +3188,7 @@ function DocsSection() {
           <article>
             <h4>Parallax (Block export)</h4>
             <p>A standalone scroll-linked parallax wrapper exported from <code>trigr/block</code>. Uses <code>position: sticky</code> + <code>100dvh</code> frames for smooth parallax without scroll listeners. Respects <code>prefers-reduced-motion</code>.</p>
-            <DocCode>{`import { Parallax } from "trigr/block"
+            <DocCode>{`import { Parallax } from "triggr-motion/block"
 
 <Parallax type="parallaxFast" strength={0.4}>
   <img src={hero} alt="" />
@@ -3284,13 +3284,13 @@ function DocsSection() {
           <article>
             <h4>Subpath imports only</h4>
             <p>trigr has no root entry. Import from the module you need — each is independent and tree-shakeable. <code>import { Animate } from "trigr"</code> does not exist.</p>
-            <DocCode>{`import { Animate } from "trigr/text"       // Animate.Text
-import { Animate } from "trigr/block"      // Animate.Block, Parallax
-import { Animate } from "trigr/paragraph"  // Animate.Paragraph
-import { Animate } from "trigr/list"       // Animate.List
+            <DocCode>{`import { Animate } from "triggr-motion/text"       // Animate.Text
+import { Animate } from "triggr-motion/block"      // Animate.Block, Parallax
+import { Animate } from "triggr-motion/paragraph"  // Animate.Paragraph
+import { Animate } from "triggr-motion/list"       // Animate.List
 
 // Framework-agnostic keyframes (Vue, Angular, vanilla JS)
-import { presets, SPRING } from "trigr/text/keyframes
+import { presets, SPRING } from "triggr-motion/text/keyframes
 el.animate(presets.fadeSwap.in, { duration: 400, easing: SPRING })`}</DocCode>
           </article>
         </div>
@@ -3319,8 +3319,8 @@ el.animate(presets.fadeSwap.in, { duration: 400, easing: SPRING })`}</DocCode>
             <strong>Tree-shakeable subpath exports</strong>
             <p>Import only what you use. <code>trigr/text</code>, <code>trigr/paragraph</code>, <code>trigr/list</code>, and <code>trigr/block</code> are independent subpath exports. A minimal Text-only import is ~77KB (28KB gzip). Package.json declares <code>"sideEffects": false</code>.</p>
             <DocCode>{`// ✅ Only imports what you need
-import { Animate } from "trigr/text"
-import { Animate } from "trigr/block"`}</DocCode>
+import { Animate } from "triggr-motion/text"
+import { Animate } from "triggr-motion/block"`}</DocCode>
           </article>
           <article>
             <strong>Per-preset default overrides</strong>
@@ -3504,12 +3504,12 @@ export default function Playground() {
                 <rect x="20" y="42" width="8" height="8" />
                 <rect x="30" y="42" width="8" height="8" />
               </g>
-              <text x="50" y="48" fontFamily="'Courier New', monospace" fontSize="36" fontWeight="bold" fill="var(--logo-fill)" letterSpacing="2">trigr</text>
+              <text x="50" y="48" fontFamily="'Courier New', monospace" fontSize="36" fontWeight="bold" fill="var(--logo-fill)" letterSpacing="2">triggr</text>
             </svg>
           </span>
           <nav className="topbar-nav">
             <a href={`${window.location.origin}${import.meta.env.BASE_URL}example.html`}>Example</a>
-            <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://github.com/Emeka-Ugbanu-hub/triggr-motion" target="_blank" rel="noopener noreferrer">GitHub</a>
             <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">
               {dark ? <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> : <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>}
             </button>

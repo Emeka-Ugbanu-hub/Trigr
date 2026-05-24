@@ -23,7 +23,7 @@ const PRICING = [
 ]
 
 const TESTIMONIALS = [
-  { name: "Sarah Chen", role: "Lead Engineer at Vercel", quote: "trigr replaced three animation libraries in our design system. The content-aware approach just makes sense." },
+  { name: "Sarah Chen", role: "Lead Engineer at Vercel", quote: "triggr replaced three animation libraries in our design system. The content-aware approach just makes sense." },
   { name: "Marcus Rivera", role: "Design Director at Linear", quote: "Finally, an animation library where the defaults actually look good. We ship faster because we don't tweak keyframes." },
   { name: "Aiko Tanaka", role: "Frontend Lead at Notion", quote: "The exit animation system alone saved us weeks of edge-case handling. Lifecycle-controlled exits are the way." },
 ]
@@ -31,7 +31,7 @@ const TESTIMONIALS = [
 const LOGOS = ["Stripe", "Vercel", "Linear", "Notion", "Figma", "Raycast", "Supabase", "Planetscale"]
 
 const CODE_SNIPPETS = [
-  `import { Animate } from "trigr/text"
+  `import { Animate } from "triggr-motion/text"
 
 <Animate.Text
   trigger="change"
@@ -39,7 +39,7 @@ const CODE_SNIPPETS = [
 >
   {label}
 </Animate.Text>`,
-  `import { Animate } from "trigr/block"
+  `import { Animate } from "triggr-motion/block"
 
 <Animate.Block
   animation="slideUp"
@@ -49,7 +49,7 @@ const CODE_SNIPPETS = [
 >
   <Card />
 </Animate.Block>`,
-  `import { Animate } from "trigr/list"
+  `import { Animate } from "triggr-motion/list"
 
 <Animate.List
   animation="staggerFadeIn"
@@ -72,7 +72,7 @@ export default function Landing() {
   const [demoText, setDemoText] = useState("crafted")
   const [demoShow, setDemoShow] = useState(true)
   const [proseText, setProseText] = useState(0)
-  const [copyLabel, setCopyLabel] = useState("npm install trigr")
+  const [copyLabel, setCopyLabel] = useState("npm install triggr-motion")
 
   useEffect(() => {
     function onScroll() { setScrolled(window.scrollY > 40) }
@@ -93,7 +93,7 @@ export default function Landing() {
   const proseSamples = [
     "Animation is not decoration — it is communication. Every motion should tell the user what changed, where it came from, and where it's going next.",
     "Great interfaces feel alive because they respond. A button that presses, a card that lifts, text that flows in — these micro-moments build trust.",
-    "Trigr gives you 200+ presets across four modules. From a single character swap to a full-page transition, one import, one prop, done.",
+    "triggr-motion gives you 200+ presets across four modules. From a single character swap to a full-page transition, one import, one prop, done.",
   ]
 
   const scrollTo = useCallback((id: string) => {
@@ -108,7 +108,7 @@ export default function Landing() {
       <nav className={`lnav${scrolled ? " scrolled" : ""}`}>
         <div className="lnav-inner">
           <AnimateBlock trigger="mount" animation="slideDown" duration={500} easing="cubic-bezier(0.22, 1, 0.36, 1)">
-            <a href="#" className="lnav-logo">trigr</a>
+            <a href="#" className="lnav-logo">triggr</a>
           </AnimateBlock>
           <div className="lnav-links">
             {["Features", "Code", "Pricing", "Demo"].map((l, i) => (
@@ -121,7 +121,7 @@ export default function Landing() {
           </div>
           <div className="lnav-actions">
             <AnimateBlock trigger="mount" animation="popIn" duration={450} delay={300}>
-              <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener" className="lnav-gh">
+              <a href="https://github.com/Emeka-Ugbanu-hub/triggr-motion" target="_blank" rel="noopener" className="lnav-gh">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 GitHub
               </a>
@@ -163,7 +163,7 @@ export default function Landing() {
                 <AnimateText trigger="click" animation="copyConfirm" duration={400}>
                   <button
                     className="hero-btn hero-btn-secondary"
-                    onClick={() => { navigator.clipboard?.writeText("npm install trigr"); setCopyLabel("Copied!"); setTimeout(() => setCopyLabel("npm install trigr"), 2000) }}
+                    onClick={() => { navigator.clipboard?.writeText("npm install triggr-motion"); setCopyLabel("Copied!"); setTimeout(() => setCopyLabel("npm install triggr-motion"), 2000) }}
                   >
                     {copyLabel}
                   </button>
@@ -202,7 +202,7 @@ export default function Landing() {
       <section className="section" id="features">
         <div className="section-header">
           <AnimateBlock trigger="scroll" animation="fadeIn" duration={500} threshold={0.3}>
-            <span className="section-kicker">Why trigr</span>
+            <span className="section-kicker">Why triggr</span>
           </AnimateBlock>
           <AnimateBlock trigger="scroll" animation="slideUp" duration={550} threshold={0.3} delay={60}>
             <h2 className="section-title">Animation that belongs in your product</h2>
@@ -473,10 +473,10 @@ export default function Landing() {
           </AnimateParagraph>
           <div className="cta-actions">
             <AnimateBlock trigger="scroll" animation="fadeIn" duration={500} delay={200} threshold={0.4}>
-              <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener" className="cta-btn cta-btn-primary">Get Started</a>
+              <a href="https://github.com/Emeka-Ugbanu-hub/triggr-motion" target="_blank" rel="noopener" className="cta-btn cta-btn-primary">Get Started</a>
             </AnimateBlock>
             <AnimateBlock trigger="scroll" animation="fadeIn" duration={500} delay={300} threshold={0.4}>
-              <a href="/Trigr/" className="cta-btn">Try Playground</a>
+              <a href="/triggr-motion/" className="cta-btn">Try Playground</a>
             </AnimateBlock>
           </div>
         </div>
@@ -487,7 +487,7 @@ export default function Landing() {
         <div className="footer-grid">
           <AnimateBlock trigger="scroll" animation="fadeIn" duration={500} threshold={0.4}>
             <div className="footer-brand">
-              <span className="footer-logo">trigr</span>
+              <span className="footer-logo">triggr</span>
               <p className="footer-tagline">Content-aware animation for React.</p>
             </div>
           </AnimateBlock>
@@ -504,8 +504,8 @@ export default function Landing() {
           <AnimateBlock trigger="scroll" animation="slideUp" duration={500} delay={120} threshold={0.4}>
             <div className="footer-col">
               <strong>Resources</strong>
-              <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener" className="footer-link">GitHub</a>
-              <a href="/Trigr/" className="footer-link">Playground</a>
+              <a href="https://github.com/Emeka-Ugbanu-hub/triggr-motion" target="_blank" rel="noopener" className="footer-link">GitHub</a>
+              <a href="/triggr-motion/" className="footer-link">Playground</a>
               <a href="#" className="footer-link">Documentation</a>
             </div>
           </AnimateBlock>
@@ -519,7 +519,7 @@ export default function Landing() {
         </div>
         <div className="footer-bottom">
           <AnimateBlock trigger="scroll" animation="fadeIn" duration={500} threshold={0.5}>
-            <p>© {new Date().getFullYear()} trigr. Built with trigr.</p>
+            <p>© {new Date().getFullYear()} triggr. Built with triggr.</p>
           </AnimateBlock>
         </div>
       </footer>
