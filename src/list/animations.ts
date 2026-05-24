@@ -133,7 +133,7 @@ const extended: Record<string, AnimationDefinition> = {
 
   staggerBlurIn: {
     keyframes: [
-      { filter: 'blur(8px)', opacity: 0 },
+      { filter: 'blur(4px)', opacity: 0 },
       { filter: 'blur(0px)', opacity: 1 },
     ],
     options: { duration: 400, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
@@ -215,14 +215,14 @@ const extended: Record<string, AnimationDefinition> = {
   itemBlurOut: {
     keyframes: [
       { filter: 'blur(0)', opacity: 1 },
-      { filter: 'blur(8px)', opacity: 0 },
+      { filter: 'blur(4px)', opacity: 0 },
     ],
     options: { duration: 270, easing: 'cubic-bezier(0.4, 0.0, 1, 1)', fill: 'forwards' },
   },
   itemDismissOut: {
     keyframes: [
       { transform: 'translateX(0)', opacity: 1, filter: 'blur(0px)' },
-      { transform: 'translateX(36px)', opacity: 0, filter: 'blur(2.5px)' },
+      { transform: 'translateX(24px)', opacity: 0, filter: 'blur(2.5px)' },
     ],
     options: { duration: 270, easing: 'cubic-bezier(0.4, 0.0, 1, 1)', fill: 'forwards' },
   },
@@ -239,6 +239,13 @@ const extended: Record<string, AnimationDefinition> = {
       { transform: 'translateY(-10px) scale(0.94)', opacity: 0, filter: 'blur(2.5px)' },
     ],
     options: { duration: 260, easing: 'cubic-bezier(0.4, 0.0, 1, 1)', fill: 'forwards' },
+  },
+  rowCollapseOut: {
+    keyframes: [
+      { maxHeight: '200px', opacity: 1, marginBottom: '8px', overflow: 'hidden' },
+      { maxHeight: '0px', opacity: 0, marginBottom: '0px', overflow: 'hidden', padding: '0 16px' },
+    ],
+    options: { duration: 280, easing: 'cubic-bezier(0.4, 0.0, 0.2, 1)', fill: 'forwards' },
   },
 }
 

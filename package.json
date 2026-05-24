@@ -34,20 +34,40 @@
       "import": "./dist/text/index.js",
       "require": "./dist/text/index.cjs"
     },
+    "./text/keyframes": {
+      "types": "./dist/text/animations.d.ts",
+      "import": "./dist/text/animations.js",
+      "require": "./dist/text/animations.cjs"
+    },
     "./paragraph": {
       "types": "./dist/paragraph/index.d.ts",
       "import": "./dist/paragraph/index.js",
       "require": "./dist/paragraph/index.cjs"
+    },
+    "./paragraph/keyframes": {
+      "types": "./dist/paragraph/animations.d.ts",
+      "import": "./dist/paragraph/animations.js",
+      "require": "./dist/paragraph/animations.cjs"
     },
     "./list": {
       "types": "./dist/list/index.d.ts",
       "import": "./dist/list/index.js",
       "require": "./dist/list/index.cjs"
     },
+    "./list/keyframes": {
+      "types": "./dist/list/animations.d.ts",
+      "import": "./dist/list/animations.js",
+      "require": "./dist/list/animations.cjs"
+    },
     "./block": {
       "types": "./dist/block/index.d.ts",
       "import": "./dist/block/index.js",
       "require": "./dist/block/index.cjs"
+    },
+    "./block/keyframes": {
+      "types": "./dist/block/animations.d.ts",
+      "import": "./dist/block/animations.js",
+      "require": "./dist/block/animations.cjs"
     }
   },
   "scripts": {

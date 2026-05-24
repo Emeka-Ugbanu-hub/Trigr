@@ -1,6 +1,6 @@
 # trigr
 
-**Content-aware animation for React.** One import per content type. One prop to trigger. Polished motion out of the box.
+**Content-aware animation for the web.** React components with full trigger wiring, or framework-agnostic keyframes for any stack. One import. Polished motion out of the box.
 
 - [Live Playground](https://emeka-ugbanu-hub.github.io/Trigr/) — explore 200+ presets across all modules
 - [Landing Page](https://emeka-ugbanu-hub.github.io/Trigr/example) — real-world demo showcasing every feature
@@ -13,7 +13,7 @@ npm install trigr
 
 ## How it works
 
-trigr maps content shape to animation behavior. You pick the module that matches your content (text, paragraph, list, or block), choose a preset, and set a trigger. The library handles the rest — wiring, cleanup, reduced motion, and restart safety.
+trigr maps content shape to animation behavior. Use the React components for full trigger/lifecycle management, or import the keyframes directly for use with Vue, Angular, Svelte, or vanilla JS via the Web Animations API.
 
 ```tsx
 import { Animate } from "trigr/text"
@@ -37,6 +37,30 @@ import { Animate } from "trigr/list"       // Animate.List
 ```
 
 This keeps the bundle small. Import only the modules you use and bundlers tree-shake the rest.
+
+## Framework-agnostic keyframes
+
+The animation data (presets, easing constants, keyframes) is available without React. Import the `keyframes` subpath from any framework — Vue, Angular, Svelte, vanilla JS — and use `el.animate()` directly:
+
+```ts
+// Any framework — no React required
+import { presets, SPRING, SMOOTH } from "trigr/text/keyframes"
+import { presets, presetCategory } from "trigr/block/keyframes"
+
+el.animate(
+  presets.fadeSwap.in,
+  { duration: 400, easing: SPRING, fill: "forwards" }
+)
+```
+
+| Keyframe subpath | Size | Exports |
+|---|---|---|
+| `trigr/text/keyframes` | 14KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
+| `trigr/paragraph/keyframes` | 8.7KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SMOOTH` |
+| `trigr/list/keyframes` | 11KB | `presets`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
+| `trigr/block/keyframes` | 19KB | `presets`, `presetCategory`, `EASE_IN`, `EASE_OUT`, `EASE_IN_OUT`, `SPRING`, `SNAPPY`, `SMOOTH` |
+
+The React components (`Animate.Text`, etc.) use these same keyframes internally — the `keyframes` subpath gives you direct access without pulling in any React code.
 
 ## Modules
 
@@ -344,13 +368,14 @@ All modules export named easing constants:
 
 ---
 
-## Production Notes
+## Works everywhere
 
-- **Tree-shakeable**: `trigr/text` is ~80KB minified. Import only the modules you use — bundlers eliminate the rest.
-- **Reduced motion**: All modules detect `prefers-reduced-motion: reduce` and degrade to opacity-only transitions.
-- **Layout stable**: All animations use composited properties (transform, opacity, filter). Display, position, width, and height changes are avoided or fully restored.
-- **Nested styling**: When `Animate.Text` wraps a single styled child, text-replacing animations preserve the child's class and styles.
-- **Stable keys**: Every list child needs a stable `key` for presence, reorder, and exit tracking.
+- **React/Next.js**: Full components (`Animate.Text`, `.Paragraph`, `.List`, `.Block`) with trigger wiring, lifecycle management, and exit animations.
+- **Vue, Angular, Svelte, vanilla JS**: Import the keyframes and call `el.animate()` directly.
+- **TypeScript**: Fully typed — every preset, easing, and keyframe object has IDE autocomplete.
+- **Tree-shakeable**: Each module is independent. Import only what you use.
+- **Reduced motion**: Detects `prefers-reduced-motion: reduce` and degrades to opacity-only transitions.
+- **Layout stable**: All animations use composited properties (transform, opacity, filter).
 
 ---
 

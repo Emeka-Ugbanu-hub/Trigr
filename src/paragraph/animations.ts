@@ -1,4 +1,3 @@
-// Re-exported from index.tsx for backward compatibility
 export {
   EASE_IN,
   EASE_OUT,
@@ -6,6 +5,6 @@ export {
   SPRING,
   SMOOTH,
   presets,
-} from './index'
+} from './presets'
 
 export type { ParagraphPreset } from './types'

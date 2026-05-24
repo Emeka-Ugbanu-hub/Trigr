@@ -66,35 +66,35 @@ export const presets: Record<string, AnimationDefinition> = {
   },
   slideUp: {
     in: [
-      { opacity: 0, transform: "translateY(36px)", filter: "blur(3px)" },
+      { opacity: 0, transform: "translateY(28px)", filter: "blur(3px)" },
       { opacity: 0.76, transform: "translateY(6px)", filter: "blur(0.5px)", offset: 0.62 },
       { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
     ],
-    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-28px)", filter: "blur(3px)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-24px)", filter: "blur(3px)" }],
   },
   slideDown: {
     in: [
-      { opacity: 0, transform: "translateY(-36px)", filter: "blur(3px)" },
+      { opacity: 0, transform: "translateY(-28px)", filter: "blur(3px)" },
       { opacity: 0.76, transform: "translateY(-6px)", filter: "blur(0.5px)", offset: 0.62 },
       { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
     ],
-    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(28px)", filter: "blur(3px)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(24px)", filter: "blur(3px)" }],
   },
   slideLeft: {
     in: [
-      { opacity: 0, transform: "translateX(-36px)", filter: "blur(3px)" },
+      { opacity: 0, transform: "translateX(-28px)", filter: "blur(3px)" },
       { opacity: 0.76, transform: "translateX(-6px)", filter: "blur(0.5px)", offset: 0.62 },
       { opacity: 1, transform: "translateX(0)", filter: "blur(0px)" },
     ],
-    out: [{ opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateX(-28px)", filter: "blur(3px)" }],
+    out: [{ opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateX(-24px)", filter: "blur(3px)" }],
   },
   slideRight: {
     in: [
-      { opacity: 0, transform: "translateX(36px)", filter: "blur(3px)" },
+      { opacity: 0, transform: "translateX(28px)", filter: "blur(3px)" },
       { opacity: 0.76, transform: "translateX(6px)", filter: "blur(0.5px)", offset: 0.62 },
       { opacity: 1, transform: "translateX(0)", filter: "blur(0px)" },
     ],
-    out: [{ opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateX(28px)", filter: "blur(3px)" }],
+    out: [{ opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateX(24px)", filter: "blur(3px)" }],
   },
   scaleIn: {
     in: [{ opacity: 0, transform: "scale(0.88)", filter: "blur(2.5px)" }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }],
@@ -208,12 +208,12 @@ export const presets: Record<string, AnimationDefinition> = {
     out: [{ opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-22px) scale(0.96)", filter: "blur(3px)" }],
   },
   dropIn: {
-    in: [{ opacity: 0, transform: "translateY(-36px)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(3px)", filter: "blur(0px)", offset: 0.68 }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
-    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-36px)", filter: "blur(4px)" }],
+    in: [{ opacity: 0, transform: "translateY(-28px)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(3px)", filter: "blur(0px)", offset: 0.68 }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-28px)", filter: "blur(4px)" }],
   },
   riseUp: {
-    in: [{ opacity: 0, transform: "translateY(36px)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(-3px)", filter: "blur(0px)", offset: 0.68 }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
-    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(36px)", filter: "blur(4px)" }],
+    in: [{ opacity: 0, transform: "translateY(28px)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(-3px)", filter: "blur(0px)", offset: 0.68 }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(28px)", filter: "blur(4px)" }],
   },
   expandIn: {
     in: [{ opacity: 0, transform: "scaleX(0.86)", filter: "blur(2px)" }, { opacity: 1, transform: "scaleX(1)", filter: "blur(0px)" }],
@@ -264,57 +264,57 @@ export const presets: Record<string, AnimationDefinition> = {
     out: [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(0.82)", filter: "blur(3px)" }],
   },
   zoomOut: {
-    in: [{ opacity: 0, transform: "scale(1.18)", filter: "blur(3px)" }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }],
-    out: [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(1.18)", filter: "blur(3px)" }],
+    in: [{ opacity: 0, transform: "scale(1.12)", filter: "blur(3px)" }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }],
+    out: [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(1.12)", filter: "blur(3px)" }],
   },
   springBounce: {
     in: [
-      { transform: "scale(0)", opacity: 0, filter: "blur(6px)" },
-      { transform: "scale(1.15)", opacity: 1, filter: "blur(0px)", offset: 0.52 },
-      { transform: "scale(0.91)", opacity: 1, filter: "blur(0px)", offset: 0.7 },
-      { transform: "scale(1.03)", opacity: 1, filter: "blur(0px)", offset: 0.84 },
+      { transform: "scale(0.3)", opacity: 0, filter: "blur(4px)" },
+      { transform: "scale(1.12)", opacity: 1, filter: "blur(0px)", offset: 0.52 },
+      { transform: "scale(0.93)", opacity: 1, filter: "blur(0px)", offset: 0.7 },
+      { transform: "scale(1.02)", opacity: 1, filter: "blur(0px)", offset: 0.84 },
       { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
     ],
     out: [
       { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
-      { transform: "scale(1.1)", opacity: 0.35, filter: "blur(0px)", offset: 0.28 },
-      { transform: "scale(0)", opacity: 0, filter: "blur(4px)" },
+      { transform: "scale(1.08)", opacity: 0.4, filter: "blur(0px)", offset: 0.28 },
+      { transform: "scale(0.3)", opacity: 0, filter: "blur(3px)" },
     ],
   },
   springScale: {
     in: [
-      { transform: "scale(0.55)", opacity: 0, filter: "blur(4px)" },
-      { transform: "scale(1.1)", opacity: 1, filter: "blur(0px)", offset: 0.58 },
-      { transform: "scale(0.95)", opacity: 1, filter: "blur(0px)", offset: 0.78 },
+      { transform: "scale(0.7)", opacity: 0, filter: "blur(3px)" },
+      { transform: "scale(1.08)", opacity: 1, filter: "blur(0px)", offset: 0.58 },
+      { transform: "scale(0.96)", opacity: 1, filter: "blur(0px)", offset: 0.78 },
       { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
     ],
     out: [
       { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
-      { transform: "scale(0.55)", opacity: 0, filter: "blur(4px)" },
+      { transform: "scale(0.7)", opacity: 0, filter: "blur(3px)" },
     ],
   },
   springSlideUp: {
     in: [
-      { transform: "translateY(48px)", opacity: 0, filter: "blur(4px)" },
+      { transform: "translateY(36px)", opacity: 0, filter: "blur(4px)" },
       { transform: "translateY(-6px)", opacity: 1, filter: "blur(0px)", offset: 0.6 },
       { transform: "translateY(3px)", opacity: 1, filter: "blur(0px)", offset: 0.78 },
       { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" },
     ],
     out: [
       { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" },
-      { transform: "translateY(-24px)", opacity: 0, filter: "blur(4px)" },
+      { transform: "translateY(-20px)", opacity: 0, filter: "blur(4px)" },
     ],
   },
   springSlideDown: {
     in: [
-      { transform: "translateY(-48px)", opacity: 0, filter: "blur(4px)" },
+      { transform: "translateY(-36px)", opacity: 0, filter: "blur(4px)" },
       { transform: "translateY(6px)", opacity: 1, filter: "blur(0px)", offset: 0.6 },
       { transform: "translateY(-3px)", opacity: 1, filter: "blur(0px)", offset: 0.78 },
       { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" },
     ],
     out: [
       { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" },
-      { transform: "translateY(24px)", opacity: 0, filter: "blur(4px)" },
+      { transform: "translateY(20px)", opacity: 0, filter: "blur(4px)" },
     ],
   },
   morphRadius: {
@@ -362,7 +362,7 @@ export const presets: Record<string, AnimationDefinition> = {
   },
   popoverIn: {
     in: [
-      { transform: 'scale(0)', opacity: 0, filter: 'blur(6px)' },
+      { transform: 'scale(0.5)', opacity: 0, filter: 'blur(4px)' },
       { transform: 'scale(1.06)', opacity: 1, filter: 'blur(0px)', offset: 0.68 },
       { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
     ],
@@ -398,14 +398,14 @@ export const presets: Record<string, AnimationDefinition> = {
   },
   successCheckIn: {
     in: [
-      { transform: 'scale(0.35)', opacity: 0, filter: 'blur(8px)' },
-      { transform: 'scale(1.18)', opacity: 1, filter: 'blur(0px)', offset: 0.52 },
-      { transform: 'scale(0.91)', opacity: 1, filter: 'blur(0px)', offset: 0.74 },
+      { transform: 'scale(0.5)', opacity: 0, filter: 'blur(4px)' },
+      { transform: 'scale(1.1)', opacity: 1, filter: 'blur(0px)', offset: 0.52 },
+      { transform: 'scale(0.93)', opacity: 1, filter: 'blur(0px)', offset: 0.74 },
       { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
     ],
     out: [
       { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
-      { transform: 'scale(0.55)', opacity: 0, filter: 'blur(4px)' },
+      { transform: 'scale(0.6)', opacity: 0, filter: 'blur(3px)' },
     ],
   },
   buttonLoading: {
@@ -449,13 +449,13 @@ export const presets: Record<string, AnimationDefinition> = {
   },
   checkboxCheck: {
     in: [
-      { transform: 'scale(0) rotate(-50deg)', opacity: 0, filter: 'blur(4px)' },
-      { transform: 'scale(1.2) rotate(0deg)', opacity: 1, filter: 'blur(0px)', offset: 0.58 },
+      { transform: 'scale(0.4) rotate(-50deg)', opacity: 0, filter: 'blur(3px)' },
+      { transform: 'scale(1.15) rotate(0deg)', opacity: 1, filter: 'blur(0px)', offset: 0.58 },
       { transform: 'scale(1) rotate(0deg)', opacity: 1, filter: 'blur(0px)' },
     ],
     out: [
       { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
-      { transform: 'scale(0)', opacity: 0, filter: 'blur(2px)' },
+      { transform: 'scale(0.4)', opacity: 0, filter: 'blur(2px)' },
     ],
   },
   dialogOut: {

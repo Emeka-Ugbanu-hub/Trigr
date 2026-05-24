@@ -2894,11 +2894,12 @@ function DocsSection() {
     <div className="docs-page">
       <section className="docs-hero">
         <div className="docs-hero-content">
-          <span className="docs-kicker">React Animation System</span>
+          <span className="docs-kicker">Animation System</span>
           <h2>Animation that feels like it belongs in your product.</h2>
           <p className="docs-hero-subtitle">
-            trigr is a content-aware animation library for React. One import per
-            content type. One prop to trigger. Polished motion out of the box.
+            trigr is a content-aware animation library for the web. React components
+            with full trigger wiring, or keyframes for any framework. One import.
+            Polished motion out of the box.
           </p>
           <div className="docs-hero-actions">
             <a href="#modules" className="docs-hero-btn docs-hero-btn-primary">Explore Modules</a>
@@ -3283,10 +3284,14 @@ function DocsSection() {
           <article>
             <h4>Subpath imports only</h4>
             <p>trigr has no root entry. Import from the module you need — each is independent and tree-shakeable. <code>import { Animate } from "trigr"</code> does not exist.</p>
-            <DocCode>{`import { Animate } from "trigr/text"
-import { Animate } from "trigr/block"
-import { Animate } from "trigr/paragraph"
-import { Animate } from "trigr/list"`}</DocCode>
+            <DocCode>{`import { Animate } from "trigr/text"       // Animate.Text
+import { Animate } from "trigr/block"      // Animate.Block, Parallax
+import { Animate } from "trigr/paragraph"  // Animate.Paragraph
+import { Animate } from "trigr/list"       // Animate.List
+
+// Framework-agnostic keyframes (Vue, Angular, vanilla JS)
+import { presets, SPRING } from "trigr/text/keyframes
+el.animate(presets.fadeSwap.in, { duration: 400, easing: SPRING })`}</DocCode>
           </article>
         </div>
       </section>
@@ -3503,7 +3508,6 @@ export default function Playground() {
             </svg>
           </span>
           <nav className="topbar-nav">
-            <button type="button" onClick={() => selectModule("docs")}>Docs</button>
             <a href={`${window.location.origin}${import.meta.env.BASE_URL}example.html`}>Example</a>
             <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener noreferrer">GitHub</a>
             <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">
@@ -6289,12 +6293,14 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
   .docs-section-head span { grid-row: auto; }
   .docs-api-grid { grid-template-columns: 1fr; }
   .mobile-controls-btn { display: flex; }
+  .topbar-nav { gap: 4px; }
 }
 
 @media (max-width: 600px) {
   .topbar-inner { padding: 0 16px; }
   .topbar-nav a,
-  .topbar-nav button { font-size: 12px; }
+  .topbar-nav button { font-size: 11px; padding: 4px 8px; }
+  .topbar-nav { gap: 2px; }
   .main { padding: 20px 16px 48px; }
   .main-header h1 { font-size: 22px; }
   .main-desc { font-size: 13.5px; }
