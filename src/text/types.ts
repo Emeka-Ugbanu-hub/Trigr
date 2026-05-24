@@ -95,6 +95,8 @@ export interface AnimateTextProps {
   easing?: string
   delay?: number
   highlightColor?: string
+  highlightMode?: "persist" | "pulse" | "erase"
+  highlightHold?: number
   threshold?: number
   repeat?: boolean
   once?: boolean

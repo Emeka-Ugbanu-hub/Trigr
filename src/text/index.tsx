@@ -46,11 +46,22 @@ function applyInitialState(el: HTMLElement, keyframes: Keyframe[]) {
 }
 
 function applyFinalState(el: HTMLElement, keyframes: Keyframe[]) {
+  const first = keyframes[0]
   const last = keyframes[keyframes.length - 1]
   if (!last) return
-  if ((last as any).opacity !== undefined) el.style.opacity = String((last as any).opacity)
+  const hadOpacity = (first as any).opacity !== undefined
+  const hadFilter = (first as any).filter !== undefined
+  if ((last as any).opacity !== undefined) {
+    el.style.opacity = String((last as any).opacity)
+  } else if (hadOpacity) {
+    el.style.opacity = "1"
+  }
   if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
-  if ((last as any).filter !== undefined) el.style.filter = String((last as any).filter)
+  if ((last as any).filter !== undefined) {
+    el.style.filter = String((last as any).filter)
+  } else if (hadFilter) {
+    el.style.filter = "blur(0px)"
+  }
   if ((last as any).backgroundImage !== undefined) el.style.backgroundImage = String((last as any).backgroundImage)
   if ((last as any).backgroundSize !== undefined) el.style.backgroundSize = String((last as any).backgroundSize)
   if ((last as any).backgroundPosition !== undefined) el.style.backgroundPosition = String((last as any).backgroundPosition)
@@ -117,6 +128,7 @@ function runAnimation(
     if (isActiveAnimationRun(el, hlRunId)) el.style.willChange = "auto"
   })
   anim.addEventListener("cancel", () => {
+    applyFinalState(el, keyframes)
     if (isActiveAnimationRun(el, hlRunId)) el.style.willChange = "auto"
   })
   return anim
@@ -162,6 +174,11 @@ function runPropertyAnimation(
   anim.addEventListener("finish", () => {
     for (const [property, pair] of Object.entries(properties)) {
       ;(el.style as any)[property] = String(pair[1])
+    }
+  })
+  anim.addEventListener("cancel", () => {
+    for (const [property, value] of Object.entries(from)) {
+      ;(el.style as any)[property] = value
     }
   })
   return anim
@@ -229,33 +246,35 @@ function prepareStableTextSwap(el: HTMLElement, oldText: string, newText: string
   const computed = getComputedStyle(el)
   const oldSize = measureInlineText(el, oldText)
   const newSize = measureInlineText(el, newText)
-  const width = Math.max(oldSize.width, newSize.width, el.getBoundingClientRect().width)
-  const height = Math.max(oldSize.height, newSize.height, el.getBoundingClientRect().height)
+  const currentRect = el.getBoundingClientRect()
+  const previousMinWidth = Number.parseFloat(el.style.minWidth || "0")
+  const width = Math.ceil(Math.max(oldSize.width, newSize.width, currentRect.width, previousMinWidth))
   const justifyContent = resolveInlineJustify(computed.textAlign)
   const previous = {
     position: el.style.position,
-    overflow: el.style.overflow,
+    clipPath: el.style.clipPath,
     display: el.style.display,
-    width: el.style.width,
-    minWidth: el.style.minWidth,
-    height: el.style.height,
-    verticalAlign: el.style.verticalAlign,
     willChange: el.style.willChange,
   }
 
   el.style.position = "relative"
-  el.style.overflow = "hidden"
   el.style.display = "inline-block"
-  el.style.verticalAlign = previous.verticalAlign || "baseline"
-  el.style.width = `${width}px`
+  el.style.clipPath = "inset(0)"
   el.style.minWidth = `${width}px`
-  const containerHeight = el.getBoundingClientRect().height
-  el.style.height = `${containerHeight}px`
-  el.innerHTML = ""
+
+  // Keeper span maintains natural height — minWidth prevents collapse,
+  // but no explicit width so the element doesn't snap at cleanup.
+  const savedText = el.textContent ?? ""
+  el.textContent = ""
+  const keeper = document.createElement("span")
+  keeper.textContent = oldText || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
 
   const oldEl = document.createElement("span")
   oldEl.textContent = oldText
-  oldEl.style.display = "flex"
+  oldEl.style.display = "inline-flex"
   oldEl.style.alignItems = "center"
   oldEl.style.justifyContent = justifyContent
   oldEl.style.whiteSpace = "pre"
@@ -268,7 +287,7 @@ function prepareStableTextSwap(el: HTMLElement, oldText: string, newText: string
 
   const newEl = document.createElement("span")
   newEl.textContent = newText
-  newEl.style.display = "flex"
+  newEl.style.display = "inline-flex"
   newEl.style.alignItems = "center"
   newEl.style.justifyContent = justifyContent
   newEl.style.whiteSpace = "pre"
@@ -284,8 +303,11 @@ function prepareStableTextSwap(el: HTMLElement, oldText: string, newText: string
 
   function cleanup() {
     if (runId && !isActiveAnimationRun(el, runId)) return
+    el.style.position = previous.position
+    el.style.display = previous.display
+    el.style.clipPath = previous.clipPath
+    el.style.willChange = previous.willChange
     el.textContent = newText
-    Object.assign(el.style, previous)
   }
 
   return { oldEl, newEl, cleanup }
@@ -295,13 +317,9 @@ function reserveStableTextSize(el: HTMLElement, oldText: string, newText: string
   const oldSize = measureInlineText(el, oldText)
   const newSize = measureInlineText(el, newText)
   const currentWidth = el.getBoundingClientRect().width
-  const storedWidth = Number.parseFloat(el.dataset.trigrStableWidth ?? "0")
-  const width = Math.ceil(Math.max(oldSize.width, newSize.width, currentWidth, storedWidth))
+  const width = Math.ceil(Math.max(oldSize.width, newSize.width, currentWidth))
   if (width > 0) {
-    el.dataset.trigrStableWidth = String(width)
     el.style.minWidth = `${width}px`
-    el.style.overflow = "visible"
-    if (getComputedStyle(el).display === "inline") el.style.display = "inline-block"
   }
 }
 
@@ -355,6 +373,14 @@ function textFromNode(node: React.ReactNode): string {
   return ""
 }
 
+function findTextHost(el: HTMLElement): HTMLElement {
+  const elementChildren = Array.from(el.children).filter(
+    (c): c is HTMLElement => c instanceof HTMLElement
+  )
+  if (elementChildren.length === 1) return elementChildren[0]
+  return el
+}
+
 function appendRollingCharSlots(el: HTMLElement, text: string, slotHeightEm = 1.35): HTMLElement[] {
   const inners: HTMLElement[] = []
   el.textContent = ""
@@ -370,7 +396,7 @@ function appendRollingCharSlots(el: HTMLElement, text: string, slotHeightEm = 1.
       outer.style.overflow = "hidden"
       outer.style.height = `${slotHeightEm}em`
       outer.style.lineHeight = `${slotHeightEm}`
-      outer.style.verticalAlign = "baseline"
+      outer.style.verticalAlign = "top"
       const inner = document.createElement("span")
       inner.textContent = char
       inner.style.display = "block"
@@ -451,7 +477,7 @@ function animateSplitReveal(
   const previous = {
     position: el.style.position,
     display: el.style.display,
-    overflow: el.style.overflow,
+    clipPath: el.style.clipPath,
     color: el.style.color,
     textShadow: el.style.textShadow,
     minWidth: el.style.minWidth,
@@ -459,12 +485,13 @@ function animateSplitReveal(
   }
   el.dataset.trigrSplitRevealPrevious = JSON.stringify(previous)
 
+  const savedWidth = Math.ceil(el.getBoundingClientRect().width)
   el.style.position = "relative"
   el.style.display = "inline-block"
-  el.style.overflow = "hidden"
+  el.style.clipPath = "inset(0)"
   el.style.color = "transparent"
   el.style.textShadow = `0 0 0 ${visibleColor}`
-  el.style.minWidth = `${Math.ceil(el.getBoundingClientRect().width)}px`
+  el.style.minWidth = `${savedWidth}px`
   el.style.willChange = "transform, opacity"
   el.innerHTML = ""
 
@@ -548,8 +575,8 @@ function animateSplitReveal(
       if (animation.playState !== "idle") animation.cancel()
     })
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
     delete el.dataset.trigrSplitRevealPrevious
   }
 
@@ -592,16 +619,17 @@ function animateSplitSlide(
   const rightText = text.slice(splitAt)
   const previous = {
     display: el.style.display,
-    overflow: el.style.overflow,
+    clipPath: el.style.clipPath,
     whiteSpace: el.style.whiteSpace,
     minWidth: el.style.minWidth,
     willChange: el.style.willChange,
   }
 
+  const savedWidth = Math.ceil(el.getBoundingClientRect().width)
   el.style.display = "inline-flex"
-  el.style.overflow = "hidden"
+  el.style.clipPath = "inset(0)"
   el.style.whiteSpace = "pre"
-  el.style.minWidth = `${Math.ceil(el.getBoundingClientRect().width)}px`
+  el.style.minWidth = `${savedWidth}px`
   el.style.willChange = "transform, opacity"
   el.innerHTML = ""
 
@@ -631,14 +659,14 @@ function animateSplitSlide(
 
   anim.onfinish = () => {
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
     onAnimationEnd?.()
   }
   anim.oncancel = () => {
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   return anim
@@ -761,8 +789,8 @@ function animateBigBang(
     finished = true
     cancelAnimationFrame(frameId)
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function frame(now: number) {
@@ -909,8 +937,8 @@ function animateScatterAssemble(
     finished = true
     cancelAnimationFrame(frameId)
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function frame(now: number) {
@@ -1058,8 +1086,8 @@ function animatePixelRain(
     finished = true
     cancelAnimationFrame(frameId)
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function frame(now: number) {
@@ -1214,8 +1242,8 @@ function animateVortex(
     finished = true
     cancelAnimationFrame(frameId)
     if (!isActiveAnimationRun(el, runId)) return
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function frame(now: number) {
@@ -1277,46 +1305,34 @@ function animateDominoFall(
   const previous = {
     display: el.style.display,
     position: el.style.position,
-    flexWrap: el.style.flexWrap,
+    clipPath: el.style.clipPath,
     whiteSpace: el.style.whiteSpace,
-    width: el.style.width,
-    minWidth: el.style.minWidth,
-    height: el.style.height,
-    minHeight: el.style.minHeight,
-    overflow: el.style.overflow,
-    boxSizing: el.style.boxSizing,
     willChange: el.style.willChange,
   }
   const computed = getComputedStyle(el)
   const justifyContent = resolveInlineJustify(computed.textAlign)
-  const stage = stableTextStageSize(el, text, 1.2, 1.15)
 
   el.style.display = "inline-block"
   el.style.position = "relative"
+  el.style.clipPath = "inset(0)"
   el.style.whiteSpace = "pre-wrap"
-  el.style.overflow = "visible"
-  el.style.boxSizing = "border-box"
-  el.style.width = `${stage.width}px`
-  el.style.minWidth = `${stage.width}px`
-  el.style.height = `${stage.height}px`
-  el.style.minHeight = `${stage.height}px`
   el.style.willChange = "transform, opacity"
-  el.innerHTML = ""
+  const savedText = el.textContent ?? ""
+  el.textContent = ""
+  const keeper = document.createElement("span")
+  keeper.textContent = text || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
 
   const row = document.createElement("span")
   row.style.display = "flex"
-  row.style.width = "100%"
-  row.style.height = `${stage.innerHeight}px`
   row.style.justifyContent = justifyContent
   row.style.whiteSpace = "pre"
   row.style.textAlign = computed.textAlign
   row.style.alignItems = "baseline"
   row.style.position = "absolute"
-  row.style.left = "0"
-  row.style.top = `${stage.verticalSafe}px`
-  row.style.paddingLeft = `${stage.sideSafe}px`
-  row.style.paddingRight = `${stage.sideSafe}px`
-  row.style.boxSizing = "border-box"
+  row.style.inset = "0"
   el.appendChild(row)
 
   const chars = Array.from(text).map((char) => {
@@ -1345,8 +1361,8 @@ function animateDominoFall(
     cancelAnimationFrame(frameId)
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function complete() {
@@ -1419,46 +1435,31 @@ function animatePendulum(
 
   const previous = {
     display: el.style.display,
-    position: el.style.position,
     whiteSpace: el.style.whiteSpace,
-    width: el.style.width,
-    minWidth: el.style.minWidth,
-    height: el.style.height,
-    minHeight: el.style.minHeight,
-    overflow: el.style.overflow,
-    boxSizing: el.style.boxSizing,
     willChange: el.style.willChange,
   }
   const computed = getComputedStyle(el)
   const justifyContent = resolveInlineJustify(computed.textAlign)
-  const stage = stableTextStageSize(el, text, 1.25, 1.05)
 
   el.style.display = "inline-block"
-  el.style.position = "relative"
   el.style.whiteSpace = "pre-wrap"
-  el.style.overflow = "visible"
-  el.style.boxSizing = "border-box"
-  el.style.width = `${stage.width}px`
-  el.style.minWidth = `${stage.width}px`
-  el.style.height = `${stage.height}px`
-  el.style.minHeight = `${stage.height}px`
   el.style.willChange = "transform, opacity"
-  el.innerHTML = ""
+  const savedText = el.textContent ?? ""
+  el.textContent = ""
+  const keeper = document.createElement("span")
+  keeper.textContent = text || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
 
   const row = document.createElement("span")
   row.style.display = "flex"
   row.style.width = "100%"
-  row.style.height = `${stage.innerHeight}px`
   row.style.justifyContent = justifyContent
   row.style.whiteSpace = "pre"
   row.style.textAlign = computed.textAlign
-  row.style.alignItems = "baseline"
   row.style.position = "absolute"
-  row.style.left = "0"
-  row.style.top = `${stage.verticalSafe}px`
-  row.style.paddingLeft = `${stage.sideSafe}px`
-  row.style.paddingRight = `${stage.sideSafe}px`
-  row.style.boxSizing = "border-box"
+  row.style.inset = "0"
   el.appendChild(row)
 
   const chars = Array.from(text).map((char) => {
@@ -1489,8 +1490,8 @@ function animatePendulum(
     cancelAnimationFrame(frameId)
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function complete() {
@@ -1551,47 +1552,31 @@ function animateCenterBurst(
   const previous = {
     display: el.style.display,
     position: el.style.position,
-    alignItems: el.style.alignItems,
-    justifyContent: el.style.justifyContent,
     whiteSpace: el.style.whiteSpace,
-    width: el.style.width,
-    minWidth: el.style.minWidth,
-    height: el.style.height,
-    minHeight: el.style.minHeight,
-    overflow: el.style.overflow,
-    boxSizing: el.style.boxSizing,
     willChange: el.style.willChange,
   }
   const computed = getComputedStyle(el)
   const justifyContent = resolveInlineJustify(computed.textAlign)
-  const stage = stableTextStageSize(el, text, 1.15, 0.75)
 
   el.style.display = "inline-block"
   el.style.position = "relative"
   el.style.whiteSpace = "pre-wrap"
-  el.style.overflow = "visible"
-  el.style.boxSizing = "border-box"
-  el.style.width = `${stage.width}px`
-  el.style.minWidth = `${stage.width}px`
-  el.style.height = `${stage.height}px`
-  el.style.minHeight = `${stage.height}px`
   el.style.willChange = "transform, opacity"
-  el.innerHTML = ""
+  const savedText = el.textContent ?? ""
+  el.textContent = ""
+  const keeper = document.createElement("span")
+  keeper.textContent = text || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
 
   const row = document.createElement("span")
   row.style.display = "flex"
-  row.style.width = "100%"
-  row.style.height = `${stage.innerHeight}px`
   row.style.justifyContent = justifyContent
   row.style.whiteSpace = "pre"
   row.style.textAlign = computed.textAlign
-  row.style.alignItems = "baseline"
   row.style.position = "absolute"
-  row.style.left = "0"
-  row.style.top = `${stage.verticalSafe}px`
-  row.style.paddingLeft = `${stage.sideSafe}px`
-  row.style.paddingRight = `${stage.sideSafe}px`
-  row.style.boxSizing = "border-box"
+  row.style.inset = "0"
   el.appendChild(row)
 
   const chars = Array.from(text).map((char) => {
@@ -1627,8 +1612,8 @@ function animateCenterBurst(
     cancelAnimationFrame(frameId)
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function complete() {
@@ -1692,47 +1677,31 @@ function animateGravityBounce(
   const previous = {
     display: el.style.display,
     position: el.style.position,
-    alignItems: el.style.alignItems,
-    justifyContent: el.style.justifyContent,
-    whiteSpace: el.style.whiteSpace,
-    width: el.style.width,
-    minWidth: el.style.minWidth,
-    height: el.style.height,
-    minHeight: el.style.minHeight,
-    overflow: el.style.overflow,
-    boxSizing: el.style.boxSizing,
     willChange: el.style.willChange,
   }
   const computed = getComputedStyle(el)
+  const currentRect = el.getBoundingClientRect()
   const justifyContent = resolveInlineJustify(computed.textAlign)
-  const stage = stableTextStageSize(el, text, 1.05, 1.45)
 
-  el.style.display = "inline-block"
   el.style.position = "relative"
-  el.style.whiteSpace = "pre-wrap"
-  el.style.overflow = "visible"
-  el.style.boxSizing = "border-box"
-  el.style.width = `${stage.width}px`
-  el.style.minWidth = `${stage.width}px`
-  el.style.height = `${stage.height}px`
-  el.style.minHeight = `${stage.height}px`
+  el.style.display = "inline-block"
   el.style.willChange = "transform, opacity"
-  el.innerHTML = ""
+  const savedText = el.textContent ?? ""
+  el.textContent = ""
+  const keeper = document.createElement("span")
+  keeper.textContent = text || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
 
   const row = document.createElement("span")
   row.style.display = "flex"
-  row.style.width = "100%"
-  row.style.height = `${stage.innerHeight}px`
   row.style.justifyContent = justifyContent
   row.style.whiteSpace = "pre"
   row.style.textAlign = computed.textAlign
   row.style.alignItems = "baseline"
   row.style.position = "absolute"
-  row.style.left = "0"
-  row.style.top = `${stage.verticalSafe}px`
-  row.style.paddingLeft = `${stage.sideSafe}px`
-  row.style.paddingRight = `${stage.sideSafe}px`
-  row.style.boxSizing = "border-box"
+  row.style.inset = "0"
   el.appendChild(row)
 
   const chars = Array.from(text).map((char) => {
@@ -1766,8 +1735,8 @@ function animateGravityBounce(
     cancelAnimationFrame(frameId)
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   function complete() {
@@ -1901,8 +1870,8 @@ function animateScrollFanIn(
     if (!isActiveAnimationRun(el, runId)) return
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
   }
 
   spans.forEach(({ span, x, rotateX }) => {
@@ -1952,34 +1921,27 @@ function animateTextRotate(
   const currentRect = el.getBoundingClientRect()
   const computed = getComputedStyle(el)
   const justifyContent = resolveInlineJustify(computed.textAlign)
-  const fontSize = Number.parseFloat(computed.fontSize) || 16
-  const buffer = Math.ceil(fontSize * 0.3) * 2
-  const stableWidth = Math.ceil(Math.max(oldSize.width, newSize.width, currentRect.width)) + buffer
-  const stableHeight = Math.ceil(Math.max(oldSize.height, newSize.height, currentRect.height))
+  const stableWidth = Math.ceil(Math.max(oldSize.width, newSize.width, currentRect.width))
   const previous = {
     position: el.style.position,
     display: el.style.display,
-    overflow: el.style.overflow,
-    whiteSpace: el.style.whiteSpace,
-    width: el.style.width,
-    minWidth: el.style.minWidth,
-    height: el.style.height,
-    minHeight: el.style.minHeight,
+    clipPath: el.style.clipPath,
     perspective: el.style.perspective,
     willChange: el.style.willChange,
   }
 
   el.style.position = "relative"
   el.style.display = "inline-block"
-  el.style.overflow = "hidden"
-  el.style.whiteSpace = "pre-wrap"
-  el.style.width = `${stableWidth}px`
-  el.style.minWidth = `${stableWidth}px`
-  el.style.height = `${stableHeight}px`
-  el.style.minHeight = `${stableHeight}px`
-  el.style.perspective = "600px"
+  el.style.clipPath = "inset(0)"
+  el.style.perspective = "800px"
   el.style.willChange = "transform, opacity"
-  el.innerHTML = ""
+  const savedText = el.textContent ?? ""
+  el.textContent = ""
+  const keeper = document.createElement("span")
+  keeper.textContent = newText || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
 
   function makeRow(text: string) {
     const row = document.createElement("span")
@@ -2246,13 +2208,13 @@ function animateRandomLetterSwap(
     display: el.style.display,
     alignItems: el.style.alignItems,
     justifyContent: el.style.justifyContent,
-    overflow: el.style.overflow,
+    clipPath: el.style.clipPath,
     whiteSpace: el.style.whiteSpace,
     willChange: el.style.willChange,
   }
 
   el.style.display = "inline-block"
-  el.style.overflow = "hidden"
+  el.style.clipPath = "inset(0)"
   el.style.whiteSpace = "pre"
   el.style.willChange = "transform, opacity"
   el.innerHTML = ""
@@ -2409,8 +2371,8 @@ function animateTextEffect(
     if (!isActiveAnimationRun(el, runId)) return
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
     el.style.minWidth = `${settledMinWidth}px`
   }
 
@@ -2515,8 +2477,8 @@ function animateStaggerText(
     if (!isActiveAnimationRun(el, runId)) return
     if (finished) return
     finished = true
-    el.textContent = text
     Object.assign(el.style, previous)
+    el.textContent = text
     el.style.minWidth = `${settledMinWidth}px`
   }
 
@@ -2697,6 +2659,8 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
   animation: baseAnimation,
   scrollAnimation,
   highlightColor: highlightColorProp,
+  highlightMode = "persist" as "persist" | "pulse" | "erase",
+  highlightHold = 800,
   properties,
   exitAnimation,
   show,
@@ -2844,8 +2808,9 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
 
   useEffect(() => {
     if (!hasTrigger("mount")) return
+    if (phase !== "entered") return
     requestRun("mount")
-  }, [hasTrigger, requestRun])
+  }, [hasTrigger, requestRun, phase])
 
   useEffect(() => {
     if (show === undefined) return
@@ -2872,6 +2837,10 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
     }
 
     animRef.current?.cancel()
+    animRef.current = null
+    runningRef.current = false
+    queueRef.current = []
+    setCurrentRun(null)
 
     const motionDuration = validDuration(duration, 300)
     const def = presets[exitPreset]
@@ -2904,6 +2873,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       onExitEnd()
     })
     exitAnimRef.current.addEventListener("cancel", () => {
+      applyFinalState(el, exitFrames)
       el.style.willChange = "auto"
     })
 
@@ -2993,6 +2963,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       const charDur = motionDuration * 0.7
       const staggerGap = n > 1 ? (motionDuration * 0.3) / (n - 1) : 0
       const startTime = performance.now()
+      const host = findTextHost(ref.current!)
 
       function tick(now: number) {
         const elapsed = now - startTime
@@ -3013,7 +2984,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
           }
         }
 
-        if (ref.current) ref.current.textContent = result
+        host.textContent = result
 
         if (!done) {
           rafRef.current = requestAnimationFrame(tick)
@@ -3100,7 +3071,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       const containerWidth = el.getBoundingClientRect().width
       const runId = beginAnimationRun(el)
       const { oldEl, newEl, cleanup } = prepareStableTextSwap(el, old, next, runId)
-      newEl.style.transform = `translateX(${containerWidth}px)`
+      newEl.style.transform = "translateX(120%)"
 
       const line = document.createElement("span")
       line.style.position = "absolute"
@@ -3125,12 +3096,12 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       line.style.bottom = "0"
 
       oldEl.animate(
-        [{ transform: "translateX(0)" }, { transform: `translateX(-${containerWidth}px)` }],
+        [{ transform: "translateX(0)" }, { transform: "translateX(-120%)" }],
         { duration: outDuration, easing: EASE_IN, fill: "forwards" },
       )
 
       const anim = newEl.animate(
-        [{ transform: `translateX(${containerWidth}px)` }, { transform: "translateX(0)" }],
+        [{ transform: "translateX(120%)" }, { transform: "translateX(0)" }],
         { duration: inDuration, easing: SPRING, fill: "forwards" },
       )
 
@@ -3379,12 +3350,13 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
 
       const numChars = text.length || 1
       const el = ref.current
+      const host = findTextHost(el)
       const runId = beginAnimationRun(el)
       const measure = measureInlineText(el, text)
       const origDisplay = el.style.display
 
       el.style.display = "inline-flex"
-      el.textContent = ""
+      host.textContent = ""
 
       const textSpan = document.createElement("span")
       textSpan.textContent = text
@@ -3400,7 +3372,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       cursor.style.marginLeft = "1px"
       cursor.style.opacity = "0"
 
-      el.appendChild(textSpan)
+      host.appendChild(textSpan)
       el.appendChild(cursor)
 
       const revealAnim = textSpan.animate(
@@ -3430,7 +3402,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       const cleanup = () => {
         if (!isActiveAnimationRun(el, runId)) return
         finish()
-        el.textContent = text
+        host.textContent = text
         el.style.display = origDisplay
       }
 
@@ -3440,7 +3412,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
         finish()
         setTimeout(() => {
           if (animRef.current) return
-          el.textContent = text
+          host.textContent = text
           el.style.display = origDisplay
           onAnimationEnd?.()
         }, 150)
@@ -3642,10 +3614,11 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
 
       const chars = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`¡™£¢∞§¶•ªº–≠åß∂ƒ©˙∆˚¬…æ≈ç√∫˜µ≤≥÷/░▒▓<>"
       const el = ref.current
+      const host = findTextHost(el!)
       const runId = beginAnimationRun(el)
 
       const finalChars: string[] = []
-      const spans = appendCharSpans(el, text, (span, char) => {
+      const spans = appendCharSpans(host, text, (span, char) => {
         finalChars.push(char)
         span.style.willChange = "transform, opacity"
       })
@@ -3661,7 +3634,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
             span.textContent = finalChars[i]
             span.style.willChange = "auto"
           })
-          el.textContent = text
+          host.textContent = text
           rafRef.current = null
           onAnimationEnd?.()
           return
@@ -3797,7 +3770,8 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
     if (animation === "odometer") {
       const text = String(current)
       if (!text) return
-      const inners = appendRollingCharSlots(ref.current, text)
+      const host = findTextHost(ref.current!)
+      const inners = appendRollingCharSlots(host, text)
       const stagger = presetOptions?.stagger ?? 40
       inners.forEach((s, i) => {
         s.animate(
@@ -3810,7 +3784,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
         )
       })
       const t = setTimeout(() => {
-        ref.current!.textContent = text
+        host.textContent = text
         onAnimationEnd?.()
       }, motionDuration * 0.5 + inners.length * stagger + 50)
       timerRef.current = t
@@ -3820,7 +3794,8 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
     if (animation === "ticker") {
       const text = String(current)
       if (!text) return
-      const inners = appendRollingCharSlots(ref.current, text)
+      const host = findTextHost(ref.current!)
+      const inners = appendRollingCharSlots(host, text)
       const stagger = presetOptions?.stagger ?? 30
       inners.forEach((s, i) => {
         s.animate(
@@ -3829,7 +3804,7 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
         )
       })
       const t = setTimeout(() => {
-        ref.current!.textContent = text
+        host.textContent = text
         onAnimationEnd?.()
       }, motionDuration * 0.6 + inners.length * stagger + 50)
       timerRef.current = t
@@ -3894,9 +3869,6 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
       const hlColor = highlightColorProp ?? colorWithAlpha(getComputedStyle(hlEl).color, 0.55)
       const hlDuration = motionDuration
 
-      // Start and end keyframes carry all background properties so the
-      // animation fully controls the element — no stale fill:forwards from
-      // a previous run can block the new sweep.
       const anim = hlEl.animate(
         [
           {
@@ -3915,22 +3887,55 @@ const AnimateText = forwardRef<AnimateTextHandle, AnimateTextProps>(function Ani
         { duration: hlDuration, easing: SMOOTH, fill: "forwards", delay },
       )
 
-      animRef.current = anim
-      anim.onfinish = () => {
-        if (!isActiveAnimationRun(hlEl, hlRunId)) return
-        animRef.current = null
+      const setPersist = () => {
         hlEl.style.backgroundImage = `linear-gradient(120deg, ${hlColor} 50%, transparent 50%)`
         hlEl.style.backgroundSize = "200% 100%"
         hlEl.style.backgroundRepeat = "no-repeat"
         hlEl.style.backgroundPosition = "0% 0"
-        hlEl.style.willChange = "auto"
-        onAnimationEnd?.()
       }
-      anim.oncancel = () => {
+      const clearBg = () => {
         hlEl.style.backgroundImage = ""
         hlEl.style.backgroundSize = ""
         hlEl.style.backgroundRepeat = ""
         hlEl.style.backgroundPosition = ""
+      }
+
+      animRef.current = anim
+      anim.onfinish = () => {
+        if (!isActiveAnimationRun(hlEl, hlRunId)) return
+        animRef.current = null
+        hlEl.style.willChange = "auto"
+
+        if (highlightMode === "pulse") {
+          setPersist()
+          const hold = (highlightHold ?? 800)
+          const fadeAnim = hlEl.animate(
+            [
+              { backgroundPosition: "0% 0" },
+              { backgroundPosition: "120% 0" },
+            ],
+            { duration: Math.min(500, hold * 0.5), easing: EASE_IN, fill: "forwards", delay: hold },
+          )
+          fadeAnim.onfinish = () => { clearBg(); hlEl.style.willChange = "auto" }
+          fadeAnim.oncancel = () => { clearBg(); hlEl.style.willChange = "auto" }
+        } else if (highlightMode === "erase") {
+          setPersist()
+          const eraseAnim = hlEl.animate(
+            [
+              { backgroundPosition: "0% 0" },
+              { backgroundPosition: "120% 0" },
+            ],
+            { duration: hlDuration * 0.7, easing: EASE_IN, fill: "forwards", delay: 200 },
+          )
+          eraseAnim.onfinish = () => { clearBg() }
+          eraseAnim.oncancel = () => { clearBg() }
+        } else {
+          setPersist()
+        }
+        onAnimationEnd?.()
+      }
+      anim.oncancel = () => {
+        clearBg()
         hlEl.style.willChange = "auto"
       }
       return

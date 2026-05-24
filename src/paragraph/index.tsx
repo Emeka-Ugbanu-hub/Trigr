@@ -20,7 +20,7 @@ export const EASE_IN = 'cubic-bezier(0.0, 0.0, 0.2, 1)'
 export const EASE_OUT = 'cubic-bezier(0.4, 0.0, 1, 1)'
 export const EASE_IN_OUT = 'cubic-bezier(0.4, 0.0, 0.2, 1)'
 export const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
-export const SMOOTH = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+export const SMOOTH = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 function validDuration(value: unknown, fallback = 300): number {
   const n = Number(value)
@@ -28,12 +28,12 @@ function validDuration(value: unknown, fallback = 300): number {
 }
 
 const fadeIn: Keyframe[] = [
-  { opacity: 0, transform: 'translateY(4px)' },
-  { opacity: 1, transform: 'translateY(0)' },
+  { opacity: 0, transform: 'translateY(6px)', filter: 'blur(3px)' },
+  { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
 ]
 const fadeOut: Keyframe[] = [
-  { opacity: 1, transform: 'translateY(0)' },
-  { opacity: 0, transform: 'translateY(-4px)' },
+  { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+  { opacity: 0, transform: 'translateY(-6px)', filter: 'blur(3px)' },
 ]
 
 // ============================================================
@@ -47,103 +47,104 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   morphText: { out: fadeOut, in: fadeIn },
   slideUp: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(-14px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(-16px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(14px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(16px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   slideDown: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(14px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(16px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(-14px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(-16px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   slideLeft: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(-14px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(-18px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(14px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(18px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   slideRight: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(14px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(18px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(-14px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(-18px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   slideReplace: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(-12px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(-14px)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(12px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(14px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   popIn: {
     out: [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.94)' },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scale(0.93)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'scale(0.92)' },
-      { opacity: 1, transform: 'scale(1.05)', offset: 0.62 },
-      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.9)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'scale(1.06)', filter: 'blur(0px)', offset: 0.6 },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
     ],
   },
   popOut: {
     out: [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.94)' },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scale(0.93)', filter: 'blur(2px)' },
     ],
     in: [],
   },
   expandIn: {
     out: [
-      { opacity: 1, transform: 'scaleY(1)', transformOrigin: 'top' },
-      { opacity: 0, transform: 'scaleY(0.92)', transformOrigin: 'top' },
+      { opacity: 1, transform: 'scaleY(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scaleY(0.9)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'scaleY(0.92)', transformOrigin: 'top' },
-      { opacity: 1, transform: 'scaleY(1)', transformOrigin: 'top' },
+      { opacity: 0, transform: 'scaleY(0.9)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'scaleY(1)', filter: 'blur(0px)' },
     ],
   },
   collapseOut: {
     out: [
-      { opacity: 1, transform: 'scaleY(1)', transformOrigin: 'top' },
-      { opacity: 0, transform: 'scaleY(0)', transformOrigin: 'top' },
+      { opacity: 1, transform: 'scaleY(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scaleY(0)', filter: 'blur(2px)' },
     ],
     in: [],
   },
   zoomIn: {
     out: [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.96)' },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scale(0.94)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'scale(0.96)' },
-      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.94)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'scale(1.03)', filter: 'blur(0px)', offset: 0.6 },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
     ],
   },
   zoomOut: {
     out: [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.96)' },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scale(0.94)', filter: 'blur(2px)' },
     ],
     in: [],
   },
@@ -154,19 +155,19 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   wordSlideUp: {
     out: fadeOut,
     in: [
-      { opacity: 0, transform: 'translateY(10px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(12px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   wordPop: {
     out: [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.96)' },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'scale(0.94)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'scale(0.92)' },
-      { opacity: 1, transform: 'scale(1.05)', offset: 0.62 },
-      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.9)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'scale(1.06)', filter: 'blur(0px)', offset: 0.6 },
+      { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' },
     ],
   },
   lineFadeIn: {
@@ -176,8 +177,8 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   lineSlideUp: {
     out: fadeOut,
     in: [
-      { opacity: 0, transform: 'translateY(12px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(14px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   streamIn: {
@@ -191,8 +192,8 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   streamSlide: {
     out: fadeOut,
     in: [
-      { opacity: 0, transform: 'translateY(8px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(10px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   cursorBlink: {
@@ -226,10 +227,10 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
     out: fadeOut,
     in: [
       { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 1, transform: 'translateX(-6px)', offset: 0.2 },
-      { opacity: 1, transform: 'translateX(6px)', offset: 0.4 },
-      { opacity: 1, transform: 'translateX(-4px)', offset: 0.6 },
-      { opacity: 1, transform: 'translateX(4px)', offset: 0.8 },
+      { opacity: 1, transform: 'translateX(-7px)', offset: 0.18 },
+      { opacity: 1, transform: 'translateX(7px)', offset: 0.36 },
+      { opacity: 1, transform: 'translateX(-5px)', offset: 0.56 },
+      { opacity: 1, transform: 'translateX(3px)', offset: 0.72 },
       { opacity: 1, transform: 'translateX(0)' },
     ],
   },
@@ -251,22 +252,22 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   },
   pushLeft: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(-18px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(-22px)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(18px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(22px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   pushRight: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(18px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(22px)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(-18px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(-22px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   flipPage: {
@@ -301,10 +302,10 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   errorMessageIn: {
     out: [],
     in: [
-      { transform: 'translateX(-4px)', opacity: 0 },
-      { transform: 'translateX(4px)', opacity: 1, offset: 0.25 },
-      { transform: 'translateX(-2px)', offset: 0.5 },
-      { transform: 'translateX(1px)', offset: 0.75 },
+      { transform: 'translateX(-6px)', opacity: 0, filter: 'blur(2px)' },
+      { transform: 'translateX(5px)', opacity: 1, filter: 'blur(0px)', offset: 0.22 },
+      { transform: 'translateX(-3px)', offset: 0.48 },
+      { transform: 'translateX(2px)', offset: 0.72 },
       { transform: 'translateX(0)' },
     ],
   },
@@ -320,42 +321,42 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   },
   slideOutUp: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(-16px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(-18px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(-16px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(-18px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   slideOutDown: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(16px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(18px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(16px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(18px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   slideOutLeft: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(-18px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(-22px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(-18px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(-22px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   slideOutRight: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(18px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(22px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(18px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(22px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   collapseHeight: {
@@ -374,12 +375,12 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   },
   wordSlideOut: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(-10px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(-12px)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(-10px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(-12px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   lineFadeOut: {
@@ -388,12 +389,12 @@ export const presets: Record<string, { out: Keyframe[]; in: Keyframe[] }> = {
   },
   lineSlideOut: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(-12px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(-14px)', filter: 'blur(2px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(-12px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(-14px)', filter: 'blur(2px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   fadeMaskOut: {
@@ -493,6 +494,11 @@ function runPropertyAnimation(
   anim.addEventListener('finish', () => {
     for (const [property, pair] of Object.entries(properties)) {
       ;(el.style as any)[property] = String(pair[1])
+    }
+  })
+  anim.addEventListener('cancel', () => {
+    for (const [property, value] of Object.entries(from)) {
+      ;(el.style as any)[property] = value
     }
   })
   return anim
@@ -629,105 +635,76 @@ function animateMorph(
     return anim
   }
 
-  // Word-level morph — each word gets an inline-grid slot with old word
-  // stacked over new word. Same words stay still, changed words crossfade
-  // with a gentle slide. Whitespace is preserved as text nodes so the
-  // paragraph flows naturally across lines.
-  const oldWords = splitWordsAsElements(oldText)
-  const newWords = splitWordsAsElements(newText)
-  const maxWords = Math.max(oldWords.length, newWords.length)
+  // Line-level morph — split old and new text into visual lines, stack
+  // them in containers, and crossfade only changed lines. Unchanged lines
+  // stay still, preserving paragraph layout.
+  const oldLines = getVisualLines(oldText || '', el)
+  const newLines = getVisualLines(newText || '', el)
+  const maxLines = Math.max(oldLines.length, newLines.length)
 
   el.style.willChange = 'transform, opacity'
   const prevDisplay = el.style.display
-  el.style.display = 'inline-block'
   const rect = el.getBoundingClientRect()
+  el.style.display = 'inline-block'
+  el.style.width = `${Math.ceil(rect.width)}px`
   if (rect.height > 0) el.style.minHeight = `${Math.ceil(rect.height)}px`
 
   el.textContent = ''
 
-  const slots: { oldSpan: HTMLSpanElement | null; newSpan: HTMLSpanElement | null }[] = []
-  for (let i = 0; i < maxWords; i++) {
-    const oldPart = oldWords[i]
-    const newPart = newWords[i]
+  // Line containers — each holds old + new stacked via inline-grid
+  const lines: { oldEl: HTMLSpanElement | null; newEl: HTMLSpanElement | null; same: boolean }[] = []
+  for (let i = 0; i < maxLines; i++) {
+    const oldLine = oldLines[i] ?? ''
+    const newLine = newLines[i] ?? ''
+    const same = oldLine === newLine
 
-    // One side is missing — treat as word addition/removal
-    if (!oldPart || !newPart) {
-      const span = document.createElement('span')
-      span.style.display = 'inline-grid'
-      span.style.position = 'relative'
-      span.style.verticalAlign = 'baseline'
-      const content = (oldPart && !(oldPart instanceof Text) ? oldPart.textContent : newPart && !(newPart instanceof Text) ? newPart.textContent : '') ?? ''
-      if (content) span.textContent = content
-      el.appendChild(span)
-      slots.push({ oldSpan: null, newSpan: null })
+    const container = document.createElement('span')
+    container.style.display = 'block'
+    container.style.lineHeight = 'inherit'
+    el.appendChild(container)
+
+    if (same && newLine) {
+      container.textContent = newLine
+      lines.push({ oldEl: null, newEl: null, same: true })
       continue
     }
 
-    // Both are text (whitespace) nodes — render as-is, no animation
-    if (oldPart instanceof Text && newPart instanceof Text) {
-      el.appendChild(oldPart.cloneNode())
-      slots.push({ oldSpan: null, newSpan: null })
-      continue
-    }
+    // Both sides present — create grid slot for crossfade
+    if (oldLine && newLine) {
+      container.style.display = 'inline-grid'
+      container.style.position = 'relative'
+      container.style.width = '100%'
 
-    // One is text, one is a word — render the word directly
-    if (oldPart instanceof Text || newPart instanceof Text) {
-      const wordPart = (oldPart instanceof Text ? newPart : oldPart) as HTMLSpanElement
-      const text = wordPart.textContent ?? ''
-      if (text) {
-        const span = document.createElement('span')
-        span.textContent = text
-        span.style.display = 'inline-grid'
-        span.style.position = 'relative'
-        span.style.verticalAlign = 'baseline'
-        el.appendChild(span)
-      }
-      slots.push({ oldSpan: null, newSpan: null })
-      continue
-    }
-
-    const oldText = (oldPart as HTMLSpanElement).textContent ?? ''
-    const newText = (newPart as HTMLSpanElement).textContent ?? ''
-    const same = oldText === newText && oldText.length > 0
-
-    const slot = document.createElement('span')
-    slot.style.display = 'inline-grid'
-    slot.style.position = 'relative'
-    slot.style.verticalAlign = 'baseline'
-    el.appendChild(slot)
-
-    if (same) {
-      slot.textContent = newText
-      slots.push({ oldSpan: null, newSpan: null })
-      continue
-    }
-
-    let oldSpan: HTMLSpanElement | null = null
-    let newSpan: HTMLSpanElement | null = null
-
-    if (oldText) {
-      oldSpan = document.createElement('span')
-      oldSpan.textContent = oldText
+      const oldSpan = document.createElement('span')
+      oldSpan.textContent = oldLine
       oldSpan.style.gridArea = '1 / 1'
-      oldSpan.style.willChange = 'transform, opacity'
+      oldSpan.style.willChange = 'transform, opacity, filter'
       oldSpan.style.opacity = '1'
-      slot.appendChild(oldSpan)
-    }
+      container.appendChild(oldSpan)
 
-    if (newText) {
-      newSpan = document.createElement('span')
-      newSpan.textContent = newText
+      const newSpan = document.createElement('span')
+      newSpan.textContent = newLine
       newSpan.style.gridArea = '1 / 1'
-      newSpan.style.willChange = 'transform, opacity'
+      newSpan.style.willChange = 'transform, opacity, filter'
       newSpan.style.opacity = '0'
-      slot.appendChild(newSpan)
-    }
+      container.appendChild(newSpan)
 
-    slots.push({ oldSpan, newSpan })
+      lines.push({ oldEl: oldSpan, newEl: newSpan, same: false })
+    } else if (oldLine) {
+      container.textContent = oldLine
+      lines.push({ oldEl: null, newEl: null, same: true })
+    } else if (newLine) {
+      container.style.opacity = '0'
+      container.textContent = newLine
+      lines.push({ oldEl: null, newEl: container, same: false })
+    } else {
+      lines.push({ oldEl: null, newEl: null, same: true })
+    }
   }
 
-  let remaining = slots.length
-  const halfDur = Math.max(120, baseDuration * 0.4)
+  let unfinished = 0
+  const halfDur = Math.max(120, Math.min(280, baseDuration * 0.43))
+  const stagger = Math.min(20, Math.max(8, halfDur * 0.12))
   let cleaned = false
 
   const cleanup = () => {
@@ -736,55 +713,54 @@ function animateMorph(
     el.textContent = newText
     el.style.willChange = 'auto'
     el.style.minHeight = ''
+    el.style.width = ''
     el.style.display = prevDisplay
   }
 
-  const checkDone = () => {
-    remaining--
-    if (remaining <= 0) {
+  const track = () => {
+    unfinished--
+    if (unfinished <= 0) {
       cleanup()
       onEnd?.()
     }
   }
 
-  const stagger = Math.min(25, Math.max(10, halfDur * 0.15))
-  slots.forEach((s, i) => {
-    if (s.oldSpan) {
-      const anim = s.oldSpan.animate(
+  lines.forEach((line, i) => {
+    if (line.same) return
+    if (line.oldEl) {
+      unfinished++
+      const anim = line.oldEl.animate(
         [
-          { opacity: 1, transform: 'translateY(0)' },
-          { opacity: 0, transform: 'translateY(-4px)' },
+          { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+          { opacity: 0, transform: 'translateY(-6px)', filter: 'blur(1.5px)' },
         ],
         { duration: halfDur, delay: i * stagger, easing: EASE_OUT, fill: 'forwards' },
       )
-      anim.onfinish = checkDone
-      anim.oncancel = () => { s.oldSpan!.style.willChange = 'auto' }
+      anim.onfinish = track
+      anim.oncancel = () => { line.oldEl!.style.willChange = 'auto' }
     }
-    if (s.newSpan) {
-      const anim = s.newSpan.animate(
+    if (line.newEl) {
+      unfinished++
+      const anim = line.newEl.animate(
         [
-          { opacity: 0, transform: 'translateY(6px)' },
-          { opacity: 1, transform: 'translateY(0)' },
+          { opacity: 0, transform: 'translateY(8px)', filter: 'blur(2px)' },
+          { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
         ],
-        { duration: halfDur, delay: i * stagger + halfDur * 0.25, easing: SPRING, fill: 'forwards' },
+        { duration: halfDur, delay: i * stagger + halfDur * 0.3, easing: SPRING, fill: 'forwards' },
       )
-      anim.onfinish = checkDone
-      anim.oncancel = () => { s.newSpan!.style.willChange = 'auto' }
-    }
-    if (!s.oldSpan && !s.newSpan) {
-      remaining--
+      anim.onfinish = track
+      anim.oncancel = () => { line.newEl!.style.willChange = 'auto' }
     }
   })
 
-  // If nothing to animate, finish immediately
-  if (remaining <= 0) {
+  if (unfinished <= 0) {
     cleanup()
     onEnd?.()
     return
   }
 
   const marker = el.animate([{ opacity: 1 }, { opacity: 1 }],
-    { duration: halfDur + maxWords * stagger + halfDur + 100, fill: 'forwards' })
+    { duration: halfDur + maxLines * stagger + halfDur + 120, fill: 'forwards' })
   marker.oncancel = cleanup
   return marker
 }
@@ -1090,6 +1066,8 @@ function animateHighlight(
   duration: number,
   highlightColor: string | undefined,
   onEnd?: () => void,
+  mode: "persist" | "pulse" | "erase" = "persist",
+  hold = 800,
 ): Animation | undefined {
   const target = findTextChild(el) ?? el
   const content = text || target.textContent || ''
@@ -1154,12 +1132,29 @@ function animateHighlight(
       { backgroundPosition: '100% 0' },
       { backgroundPosition: '0% 0' },
     ],
-    { duration: drawDuration, fill: 'forwards', easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' },
+    { duration: drawDuration, fill: 'forwards', easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
   )
   anim.onfinish = () => {
     if (cancelled) return
-    finish()
     onEnd?.()
+
+    if (mode === "pulse") {
+      const fadeAnim = span.animate(
+        [{ backgroundPosition: "0% 0" }, { backgroundPosition: "120% 0" }],
+        { duration: Math.min(500, hold * 0.5), easing: EASE_IN, fill: "forwards", delay: hold },
+      )
+      fadeAnim.onfinish = () => { abort() }
+      fadeAnim.oncancel = () => { abort() }
+    } else if (mode === "erase") {
+      const eraseAnim = span.animate(
+        [{ backgroundPosition: "0% 0" }, { backgroundPosition: "120% 0" }],
+        { duration: drawDuration * 0.6, easing: EASE_IN, fill: "forwards", delay: 200 },
+      )
+      eraseAnim.onfinish = () => { abort() }
+      eraseAnim.oncancel = () => { abort() }
+    } else {
+      finish()
+    }
   }
   anim.oncancel = () => {
     cancelled = true
@@ -1360,7 +1355,13 @@ function findTextChild(el: HTMLElement): HTMLElement | null {
 function prepareStableParagraphSwap(el: HTMLElement, oldText: string, newText: string): { oldEl: HTMLDivElement; newEl: HTMLDivElement; cleanup: () => void } {
   const containerHeight = el.getBoundingClientRect().height
   el.style.minHeight = containerHeight + 'px'
+  const savedText = el.textContent ?? ""
   el.textContent = ''
+  const keeper = document.createElement("span")
+  keeper.textContent = oldText || "\u00A0"
+  keeper.style.opacity = "0"
+  keeper.style.pointerEvents = "none"
+  el.appendChild(keeper)
   el.style.position = 'relative'
   const oldEl = document.createElement('div')
   const newEl = document.createElement('div')
@@ -1377,7 +1378,6 @@ function prepareStableParagraphSwap(el: HTMLElement, oldText: string, newText: s
     newEl,
     cleanup: () => {
       el.style.position = ''
-      el.style.minHeight = ''
       el.textContent = newText
     },
   }
@@ -1404,8 +1404,8 @@ const customAnimations: Record<string, (...args: any[]) => Animation | undefined
   crossFade: animateCrossFade,
   fadeMask: (el: HTMLElement, _prev: string | undefined, _text: string | undefined, duration: number, onEnd?: () => void) =>
     animateFadeMask(el, duration, onEnd),
-  highlight: (el: HTMLElement, _prev: string | undefined, text: string | undefined, duration: number, onEnd?: () => void, highlightColor?: string) =>
-    animateHighlight(el, text ?? '', duration, highlightColor, onEnd),
+  highlight: (el: HTMLElement, _prev: string | undefined, text: string | undefined, duration: number, onEnd?: () => void, highlightColor?: string, highlightMode?: "persist" | "pulse" | "erase", highlightHold?: number) =>
+    animateHighlight(el, text ?? '', duration, highlightColor, onEnd, highlightMode, highlightHold),
   diffAnimate: animateDiff,
   heightAuto: animateHeightAuto,
   cursorBlink: animateCursorBlink,
@@ -1442,7 +1442,7 @@ function runAnimation(
   mode: 'change' | 'single' = 'single',
   presetOptions?: ParagraphPresetOptions,
 ): Animation {
-  el.style.willChange = 'transform, opacity'
+  el.style.willChange = 'transform, opacity, filter'
   const def = presets[name]
   if (!def) {
     if (!warned.has(name)) {
@@ -1457,21 +1457,47 @@ function runAnimation(
   const baseFrames = mode === 'change' ? [...def.out, ...def.in] : (def.in.length ? [...def.in] : [...def.out])
   const rebased = rebaseParagraphKeyframes(baseFrames, presetOptions)
   const kf = prefersReducedMotion() ? rebased.map(({ opacity }) => ({ opacity: opacity ?? 1 })) : rebased
+  const prevOrigin = el.style.transformOrigin
+  const hasScaleY = rebased.some((k: any) => k.transform?.includes("scaleY"))
+  if (hasScaleY) el.style.transformOrigin = "top"
   const first = kf[0]
   if (first) {
     if ((first as any).opacity !== undefined) el.style.opacity = String((first as any).opacity)
     if ((first as any).transform !== undefined) el.style.transform = String((first as any).transform)
+    if ((first as any).filter !== undefined) el.style.filter = String((first as any).filter)
   }
   const anim = el.animate(kf, { ...options, fill: 'forwards' })
   anim.addEventListener('finish', () => {
+    const first = kf[0]
+    const last = kf[kf.length - 1]
+    if (last) {
+      const hadOpacity = (first as any).opacity !== undefined
+      const hadFilter = (first as any).filter !== undefined
+      if ((last as any).opacity !== undefined) {
+        el.style.opacity = String((last as any).opacity)
+      } else if (hadOpacity) {
+        el.style.opacity = '1'
+      }
+      if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
+      if ((last as any).filter !== undefined) {
+        el.style.filter = String((last as any).filter)
+      } else if (hadFilter) {
+        el.style.filter = 'blur(0px)'
+      }
+    }
+    if (hasScaleY) el.style.transformOrigin = prevOrigin
+    el.style.willChange = 'auto'
+  })
+  anim.addEventListener('cancel', () => {
     const last = kf[kf.length - 1]
     if (last) {
       if ((last as any).opacity !== undefined) el.style.opacity = String((last as any).opacity) ?? 1
       if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
+      if ((last as any).filter !== undefined) el.style.filter = String((last as any).filter)
     }
+    if (hasScaleY) el.style.transformOrigin = prevOrigin
     el.style.willChange = 'auto'
   })
-  anim.addEventListener('cancel', () => { el.style.willChange = 'auto' })
   return anim
 }
 
@@ -1491,8 +1517,9 @@ function setupScrollWordReveal(el: HTMLElement, text: string, threshold = 0.4, o
 
     if (wordSpans.length === 0) { onEnd?.(); return }
 
-    el.style.width = prevWidth || `${Math.ceil(el.getBoundingClientRect().width)}px`
-    el.style.minHeight = prevMinHeight || `${Math.ceil(el.getBoundingClientRect().height)}px`
+    const rect = el.getBoundingClientRect()
+    el.style.width = prevWidth || `${Math.ceil(rect.width)}px`
+    el.style.minHeight = prevMinHeight || `${Math.ceil(rect.height)}px`
     el.style.overflow = 'hidden'
 
     const originalInnerHTML = textChild.innerHTML
@@ -1542,8 +1569,9 @@ function setupScrollWordReveal(el: HTMLElement, text: string, threshold = 0.4, o
       const prevOverflow = el.style.overflow
       const originalInnerHTML = refEl.innerHTML
 
-      el.style.width = prevWidth || `${Math.ceil(el.getBoundingClientRect().width)}px`
-      el.style.minHeight = prevMinHeight || `${Math.ceil(el.getBoundingClientRect().height)}px`
+      const rect = el.getBoundingClientRect()
+      el.style.width = prevWidth || `${Math.ceil(rect.width)}px`
+      el.style.minHeight = prevMinHeight || `${Math.ceil(rect.height)}px`
       el.style.overflow = 'hidden'
 
       refEl.textContent = ''
@@ -1651,6 +1679,8 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
   show,
   unmountOnExit = true,
   highlightColor: highlightColorProp,
+  highlightMode = "persist" as "persist" | "pulse" | "erase",
+  highlightHold = 800,
   duration = 300,
   easing = SMOOTH,
   delay = 0,
@@ -1812,6 +1842,9 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
     }
 
     animRef.current?.cancel()
+    animRef.current = null
+    runningRef.current = false
+    queueRef.current = []
 
     const motionDuration = validDuration(duration, 300)
     const def = presets[exitAnimation]
@@ -1830,11 +1863,15 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
     setPhase("exiting")
 
     const exitFrames = def.out.length ? def.out : def.in.length ? def.in : [{ opacity: 0 }]
-    el.style.willChange = "transform, opacity"
+    el.style.willChange = "transform, opacity, filter"
+    const exitPrevOrigin = el.style.transformOrigin
+    const exitHasScaleY = exitFrames.some((k: any) => k.transform?.includes("scaleY"))
+    if (exitHasScaleY) el.style.transformOrigin = "top"
     const first = exitFrames[0]
     if (first) {
       if ((first as any).opacity !== undefined) el.style.opacity = String((first as any).opacity)
       if ((first as any).transform !== undefined) el.style.transform = String((first as any).transform)
+      if ((first as any).filter !== undefined) el.style.filter = String((first as any).filter)
     }
     const kf = prefersReducedMotion() ? exitFrames.map(({ opacity }: any) => ({ opacity: opacity ?? 1 })) : exitFrames
     exitAnimRef.current = el.animate(kf, {
@@ -1847,11 +1884,14 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
       if (last) {
         if ((last as any).opacity !== undefined) el.style.opacity = String((last as any).opacity)
         if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
+        if ((last as any).filter !== undefined) el.style.filter = String((last as any).filter)
       }
+      if (exitHasScaleY) el.style.transformOrigin = exitPrevOrigin
       el.style.willChange = "auto"
       onExitEnd()
     })
     exitAnimRef.current.addEventListener("cancel", () => {
+      if (exitHasScaleY) el.style.transformOrigin = exitPrevOrigin
       el.style.willChange = "auto"
     })
 
@@ -1959,7 +1999,7 @@ export const AnimateParagraph = forwardRef<AnimateParagraphHandle, AnimateParagr
     // Try registry
     const handler = customAnimations[animation as string]
     if (handler) {
-      animRef.current = handler(el, effectivePrev !== undefined ? String(effectivePrev) : undefined, text, motionDuration, onFinish, highlightColorProp) ?? null
+      animRef.current = handler(el, effectivePrev !== undefined ? String(effectivePrev) : undefined, text, motionDuration, onFinish, highlightColorProp, highlightMode, highlightHold) ?? null
       return
     }
 

@@ -31,13 +31,26 @@ function applyInitialState(el: HTMLElement, keyframes: Keyframe[]) {
   if (!first) return
   if ((first as any).opacity !== undefined) el.style.opacity = String((first as any).opacity)
   if ((first as any).transform !== undefined) el.style.transform = String((first as any).transform)
+  if ((first as any).filter !== undefined) el.style.filter = String((first as any).filter)
 }
 
 function applyFinalState(el: HTMLElement, keyframes: Keyframe[]) {
+  const first = keyframes[0]
   const last = keyframes[keyframes.length - 1]
   if (!last) return
-  if ((last as any).opacity !== undefined) el.style.opacity = String((last as any).opacity)
+  const hadOpacity = (first as any).opacity !== undefined
+  const hadFilter = (first as any).filter !== undefined
+  if ((last as any).opacity !== undefined) {
+    el.style.opacity = String((last as any).opacity)
+  } else if (hadOpacity) {
+    el.style.opacity = "1"
+  }
   if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
+  if ((last as any).filter !== undefined) {
+    el.style.filter = String((last as any).filter)
+  } else if (hadFilter) {
+    el.style.filter = "blur(0px)"
+  }
 }
 
 function rebaseListKeyframes(keyframes: Keyframe[], options?: ListPresetOptions): Keyframe[] {
@@ -63,18 +76,29 @@ function rebaseListKeyframes(keyframes: Keyframe[], options?: ListPresetOptions)
 }
 
 function runAnimation(el: HTMLElement, def: AnimationDefinition, opts: globalThis.KeyframeAnimationOptions, presetOptions?: ListPresetOptions): Animation {
-  el.style.willChange = "transform, opacity"
+  el.style.willChange = "transform, opacity, filter"
   const rebased = rebaseListKeyframes(def.keyframes, presetOptions)
   const keyframes = reducedMotion()
     ? rebased.map(({ opacity }) => ({ opacity: opacity ?? 1 }))
     : rebased
+  const prevOrigin = el.style.transformOrigin
+  const hasScaleY = rebased.some((k: any) => k.transform?.includes("scaleY"))
+  if (hasScaleY) el.style.transformOrigin = "top"
   applyInitialState(el, keyframes)
   const anim = el.animate(keyframes, { ...def.options, ...opts, fill: "forwards" })
+  const cleanup = () => {
+    if (hasScaleY) el.style.transformOrigin = prevOrigin
+  }
   anim.addEventListener("finish", () => {
     applyFinalState(el, keyframes)
     el.style.willChange = "auto"
+    cleanup()
   })
-  anim.addEventListener("cancel", () => { el.style.willChange = "auto" })
+  anim.addEventListener("cancel", () => {
+    applyFinalState(el, keyframes)
+    el.style.willChange = "auto"
+    cleanup()
+  })
   return anim
 }
 
@@ -107,6 +131,11 @@ function runPropertyAnimation(
   anim.addEventListener("finish", () => {
     for (const [property, pair] of Object.entries(properties)) {
       ;(el.style as any)[property] = String(pair[1])
+    }
+  })
+  anim.addEventListener("cancel", () => {
+    for (const [property, value] of Object.entries(from)) {
+      ;(el.style as any)[property] = value
     }
   })
   return anim
@@ -454,6 +483,11 @@ const AnimateList = forwardRef<AnimateListHandle, AnimateListProps>(function Ani
         anim.onfinish = () => {
           el.style.zIndex = ""
           el.style.willChange = "auto"
+        }
+        anim.oncancel = () => {
+          el.style.zIndex = ""
+          el.style.willChange = "auto"
+          el.style.transform = ""
         }
         el.style.transform = ""
       }

@@ -84,6 +84,8 @@ export interface AnimateParagraphProps {
   show?: boolean
   unmountOnExit?: boolean
   highlightColor?: string
+  highlightMode?: "persist" | "pulse" | "erase"
+  highlightHold?: number
   duration?: number
   easing?: string
   delay?: number

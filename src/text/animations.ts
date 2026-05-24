@@ -5,12 +5,12 @@ export const EASE_OUT = "cubic-bezier(0.4, 0.0, 1, 1)"
 export const EASE_IN_OUT = "cubic-bezier(0.4, 0.0, 0.2, 1)"
 export const SPRING = "cubic-bezier(0.34, 1.56, 0.64, 1)"
 export const SNAPPY = "cubic-bezier(0.2, 0, 0, 1)"
-export const SMOOTH = "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+export const SMOOTH = "cubic-bezier(0.22, 1, 0.36, 1)"
 
-const fadeOut: Keyframe[] = [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-4px)" }]
-const fadeIn: Keyframe[] = [{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "translateY(0)" }]
-const neutralOut: Keyframe[] = [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(0.96)" }]
-const neutralIn: Keyframe[] = [{ opacity: 0, transform: "scale(0.96)" }, { opacity: 1, transform: "scale(1)" }]
+const fadeOut: Keyframe[] = [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-6px)", filter: "blur(3px)" }]
+const fadeIn: Keyframe[] = [{ opacity: 0, transform: "translateY(6px)", filter: "blur(3px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }]
+const neutralOut: Keyframe[] = [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(0.95)", filter: "blur(2.5px)" }]
+const neutralIn: Keyframe[] = [{ opacity: 0, transform: "scale(0.95)", filter: "blur(2.5px)" }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }]
 
 export const presets: Record<AnimationPreset, AnimationDefinition> = {
   fadeSwap: {
@@ -30,19 +30,19 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
     in: neutralIn,
   },
   slideUp: {
-    out: [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-10px)" }],
-    in: [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "translateY(0)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-12px)", filter: "blur(2.5px)" }],
+    in: [{ opacity: 0, transform: "translateY(12px)", filter: "blur(2.5px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
   },
   slideDown: {
-    out: [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(10px)" }],
-    in: [{ opacity: 0, transform: "translateY(-10px)" }, { opacity: 1, transform: "translateY(0)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(12px)", filter: "blur(2.5px)" }],
+    in: [{ opacity: 0, transform: "translateY(-12px)", filter: "blur(2.5px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
   },
   highlight: {
     out: [{ opacity: 1, transform: "translateY(0)" }, { opacity: 1, transform: "translateY(0)" }],
     in: [],
   },
   bump: {
-    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 1, transform: "scale(1.08)", offset: 0.45 }, { opacity: 1, transform: "scale(1)" }],
+    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 1, transform: "scale(1.12)", offset: 0.4 }, { opacity: 1, transform: "scale(0.97)", offset: 0.72 }, { opacity: 1, transform: "scale(1)" }],
     in: [],
   },
   blur: {
@@ -66,28 +66,28 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
     in: fadeIn,
   },
   slideReplace: {
-    out: [{ opacity: 1, transform: "translateX(0)" }, { opacity: 0, transform: "translateX(-10px)" }],
-    in: [{ opacity: 0, transform: "translateX(10px)" }, { opacity: 1, transform: "translateX(0)" }],
+    out: [{ opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateX(-12px)", filter: "blur(2px)" }],
+    in: [{ opacity: 0, transform: "translateX(12px)", filter: "blur(2px)" }, { opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }],
   },
   letterDrop: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateY(-18px)" }, { opacity: 1, transform: "translateY(2px)", offset: 0.72 }, { opacity: 1, transform: "translateY(0)" }],
+    in: [{ opacity: 0, transform: "translateY(-24px)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(2px)", filter: "blur(0px)", offset: 0.72 }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
   },
   glitch: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateX(-3px)" }, { opacity: 1, transform: "translateX(3px)", offset: 0.45 }, { opacity: 1, transform: "translateX(0)" }],
+    in: [{ opacity: 0, transform: "translateX(-4px)", filter: "blur(2px)" }, { opacity: 1, transform: "translateX(3px)", filter: "blur(0px)", offset: 0.45 }, { opacity: 1, transform: "translateX(0)", filter: "blur(0px)" }],
   },
   textReveal: {
     out: fadeOut,
     in: fadeIn,
   },
   liftReveal: {
-    out: [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-10px)" }],
-    in: [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "translateY(0)" }],
+    out: [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-12px)", filter: "blur(2.5px)" }],
+    in: [{ opacity: 0, transform: "translateY(12px)", filter: "blur(2.5px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
   },
   scatter: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateY(8px) scale(0.96)" }, { opacity: 1, transform: "translateY(0) scale(1)" }],
+    in: [{ opacity: 0, transform: "translateY(10px) scale(0.95)", filter: "blur(2px)" }, { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }],
   },
   typewriter: {
     out: fadeOut,
@@ -95,23 +95,22 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
   },
   splash: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateY(12px) scale(0.92)" }, { opacity: 1, transform: "translateY(0) scale(1)" }],
+    in: [{ opacity: 0, transform: "translateY(14px) scale(0.9)", filter: "blur(3px)" }, { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }],
   },
   jitter: {
     out: fadeOut,
     in: [
       { transform: "translateX(0)", opacity: 1 },
-      { transform: "translateX(-2px)", opacity: 1, offset: 0.15 },
-      { transform: "translateX(2px)", opacity: 1, offset: 0.3 },
-      { transform: "translateX(-2px)", opacity: 1, offset: 0.45 },
-      { transform: "translateX(1px)", opacity: 1, offset: 0.6 },
-      { transform: "translateX(-1px)", opacity: 1, offset: 0.75 },
+      { transform: "translateX(-3px)", opacity: 1, offset: 0.18 },
+      { transform: "translateX(3px)", opacity: 1, offset: 0.36 },
+      { transform: "translateX(-2px)", opacity: 1, offset: 0.54 },
+      { transform: "translateX(1px)", opacity: 1, offset: 0.72 },
       { transform: "translateX(0)", opacity: 1 },
     ],
   },
   popUp: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateY(10px) scale(0.92)" }, { opacity: 1, transform: "translateY(-2px) scale(1.04)", offset: 0.65 }, { opacity: 1, transform: "translateY(0) scale(1)" }],
+    in: [{ opacity: 0, transform: "translateY(12px) scale(0.9)", filter: "blur(2px)" }, { opacity: 1, transform: "translateY(-2px) scale(1.06)", filter: "blur(0px)", offset: 0.62 }, { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }],
   },
   jello: {
     out: fadeOut,
@@ -128,55 +127,55 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
     in: fadeIn,
   },
   flip: {
-    out: [{ opacity: 1, transform: "perspective(600px) rotateY(0deg)" }, { opacity: 0, transform: "perspective(600px) rotateY(-36deg)" }],
-    in: [{ opacity: 0, transform: "perspective(600px) rotateY(36deg)" }, { opacity: 1, transform: "perspective(600px) rotateY(0deg)" }],
+    out: [{ opacity: 1, transform: "perspective(800px) rotateY(0deg)" }, { opacity: 0, transform: "perspective(800px) rotateY(-36deg)" }],
+    in: [{ opacity: 0, transform: "perspective(800px) rotateY(36deg)" }, { opacity: 1, transform: "perspective(800px) rotateY(0deg)" }],
   },
   bounce: {
-    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(0.92)" }],
-    in: [{ opacity: 0, transform: "scale(0.88)" }, { opacity: 1, transform: "scale(1.06)", offset: 0.55 }, { opacity: 1, transform: "scale(1)" }],
+    out: [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(0.9)", filter: "blur(2px)" }],
+    in: [{ opacity: 0, transform: "scale(0.86)", filter: "blur(2px)" }, { opacity: 1, transform: "scale(1.07)", filter: "blur(0px)", offset: 0.5 }, { opacity: 1, transform: "scale(0.97)", filter: "blur(0px)", offset: 0.74 }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }],
   },
   shake: {
     out: fadeOut,
     in: [
       { opacity: 1, transform: "translateX(0)" },
-      { opacity: 1, transform: "translateX(-6px)", offset: 0.2 },
-      { opacity: 1, transform: "translateX(6px)", offset: 0.4 },
-      { opacity: 1, transform: "translateX(-4px)", offset: 0.6 },
-      { opacity: 1, transform: "translateX(4px)", offset: 0.8 },
+      { opacity: 1, transform: "translateX(-7px)", offset: 0.16, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      { opacity: 1, transform: "translateX(7px)", offset: 0.32, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      { opacity: 1, transform: "translateX(-5px)", offset: 0.56, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      { opacity: 1, transform: "translateX(3px)", offset: 0.72, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
       { opacity: 1, transform: "translateX(0)" },
     ],
   },
   pulse: {
-    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 1, transform: "scale(0.98)" }],
-    in: [{ opacity: 1, transform: "scale(1)" }, { opacity: 1, transform: "scale(1.04)", offset: 0.5 }, { opacity: 1, transform: "scale(1)" }],
+    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 1, transform: "scale(0.97)" }],
+    in: [{ opacity: 1, transform: "scale(1)" }, { opacity: 1, transform: "scale(1.06)", offset: 0.42 }, { opacity: 1, transform: "scale(0.98)", offset: 0.72 }, { opacity: 1, transform: "scale(1)" }],
   },
   blink: {
     out: [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0)" }],
-    in: [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0.28, transform: "translateY(0)", offset: 0.5 }, { opacity: 1, transform: "translateY(0)" }],
+    in: [{ opacity: 0, transform: "translateY(0)" }, { opacity: 0.3, transform: "translateY(0)", offset: 0.5 }, { opacity: 1, transform: "translateY(0)" }],
   },
   wave: {
     out: fadeOut,
     in: fadeIn,
   },
   ping: {
-    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.12)" }],
-    in: [{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "scale(1.08)", offset: 0.52 }, { opacity: 1, transform: "scale(1)" }],
+    out: [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(1.15)", filter: "blur(0px)" }],
+    in: [{ opacity: 0, transform: "scale(0.88)", filter: "blur(2px)" }, { opacity: 1, transform: "scale(1.1)", filter: "blur(0px)", offset: 0.48 }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }],
   },
   popIn: {
-    out: [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(0.92)" }],
-    in: [{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "scale(1.06)", offset: 0.65 }, { opacity: 1, transform: "scale(1)" }],
+    out: [{ opacity: 1, transform: "scale(1)", filter: "blur(0px)" }, { opacity: 0, transform: "scale(0.9)", filter: "blur(2px)" }],
+    in: [{ opacity: 0, transform: "scale(0.9)", filter: "blur(2px)" }, { opacity: 1, transform: "scale(1.07)", filter: "blur(0px)", offset: 0.62 }, { opacity: 1, transform: "scale(1)", filter: "blur(0px)" }],
   },
   dropIn: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateY(-20px)" }, { opacity: 1, transform: "translateY(2px)", offset: 0.72 }, { opacity: 1, transform: "translateY(0)" }],
+    in: [{ opacity: 0, transform: "translateY(-28px)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(2px)", filter: "blur(0px)", offset: 0.68 }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
   },
   riseUp: {
     out: fadeOut,
-    in: [{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "translateY(0)" }],
+    in: [{ opacity: 0, transform: "translateY(22px)", filter: "blur(3px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
   },
   expandIn: {
     out: neutralOut,
-    in: [{ opacity: 0, transform: "scaleX(0.92)" }, { opacity: 1, transform: "scaleX(1)" }],
+    in: [{ opacity: 0, transform: "scaleX(0.88)", filter: "blur(2px)" }, { opacity: 1, transform: "scaleX(1.02)", filter: "blur(0px)", offset: 0.65 }, { opacity: 1, transform: "scaleX(1)", filter: "blur(0px)" }],
   },
   shrinkOut: {
     out: neutralOut,
@@ -285,9 +284,10 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
   copyConfirm: {
     out: [],
     in: [
-      { transform: 'scale(0.9)', opacity: 0 },
-      { transform: 'scale(1.08)', opacity: 1, offset: 0.6 },
-      { transform: 'scale(1)', opacity: 1 },
+      { transform: 'scale(0.88)', opacity: 0, filter: 'blur(2px)' },
+      { transform: 'scale(1.1)', opacity: 1, filter: 'blur(0px)', offset: 0.55 },
+      { transform: 'scale(0.97)', opacity: 1, filter: 'blur(0px)', offset: 0.74 },
+      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
     ],
   },
   brightnessShift: {
@@ -312,86 +312,87 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
 
   fadeOutUp: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(-8px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(-10px)', filter: 'blur(3px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(-8px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(-10px)', filter: 'blur(3px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   fadeOutDown: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(8px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(10px)', filter: 'blur(3px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(8px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(10px)', filter: 'blur(3px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
 
   slideOutUp: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(-12px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(-16px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(-12px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(-16px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   slideOutDown: {
     out: [
-      { opacity: 1, transform: 'translateY(0)' },
-      { opacity: 0, transform: 'translateY(12px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateY(16px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateY(12px)' },
-      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(16px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' },
     ],
   },
   slideOutLeft: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(-14px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(-18px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(-14px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(-18px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
   slideOutRight: {
     out: [
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(14px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
+      { opacity: 0, transform: 'translateX(18px)', filter: 'blur(2.5px)' },
     ],
     in: [
-      { opacity: 0, transform: 'translateX(14px)' },
-      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: 'translateX(18px)', filter: 'blur(2.5px)' },
+      { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' },
     ],
   },
 
   scaleOut: {
     out: [
-      { transform: 'scale(1)', opacity: 1 },
-      { transform: 'scale(0.9)', opacity: 0 },
+      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
+      { transform: 'scale(0.88)', opacity: 0, filter: 'blur(3px)' },
     ],
     in: [
-      { transform: 'scale(0.9)', opacity: 0 },
-      { transform: 'scale(1)', opacity: 1 },
+      { transform: 'scale(0.88)', opacity: 0, filter: 'blur(3px)' },
+      { transform: 'scale(1.04)', opacity: 1, filter: 'blur(0px)', offset: 0.55 },
+      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
     ],
   },
   popOut: {
     out: [
-      { transform: 'scale(1)', opacity: 1 },
-      { transform: 'scale(1.05)', opacity: 0.3, offset: 0.4 },
-      { transform: 'scale(0.9)', opacity: 0 },
+      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
+      { transform: 'scale(1.06)', opacity: 0.35, filter: 'blur(1px)', offset: 0.38 },
+      { transform: 'scale(0.88)', opacity: 0, filter: 'blur(3px)' },
     ],
     in: [
-      { transform: 'scale(0.9)', opacity: 0 },
-      { transform: 'scale(1.05)', opacity: 1, offset: 0.6 },
-      { transform: 'scale(1)', opacity: 1 },
+      { transform: 'scale(0.88)', opacity: 0, filter: 'blur(3px)' },
+      { transform: 'scale(1.06)', opacity: 1, filter: 'blur(0px)', offset: 0.58 },
+      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
     ],
   },
 
@@ -418,9 +419,9 @@ export const presets: Record<AnimationPreset, AnimationDefinition> = {
 
   strikeOut: {
     out: [
-      { opacity: 1, transform: "translateY(0)", textDecorationColor: "currentColor" },
-      { opacity: 0.72, transform: "translateY(0)", textDecorationColor: "currentColor", offset: 0.45 },
-      { opacity: 0, transform: "translateY(-4px)", textDecorationColor: "currentColor" },
+      { opacity: 1, transform: "translateY(0)", filter: "blur(0px)", textDecorationColor: "currentColor" },
+      { opacity: 0.68, transform: "translateY(0)", filter: "blur(1px)", textDecorationColor: "currentColor", offset: 0.45 },
+      { opacity: 0, transform: "translateY(-6px)", filter: "blur(3px)", textDecorationColor: "currentColor" },
     ],
     in: fadeIn,
   },

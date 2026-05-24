@@ -133,20 +133,41 @@ function hasScale(kf: Keyframe[]): boolean {
   })
 }
 
+function hasScaleY(kf: Keyframe[]): boolean {
+  return kf.some((k) => {
+    const t = (k as any).transform as string | undefined
+    return t ? /\bscaleY\(/.test(t) : false
+  })
+}
+
 // Apply first keyframe as inline styles to prevent flash during cancel→restart transitions
 function applyInitialState(el: HTMLElement, keyframes: Keyframe[]) {
   const first = keyframes[0]
   if (!first) return
   if ((first as any).opacity !== undefined) el.style.opacity = String((first as any).opacity)
   if ((first as any).transform !== undefined) el.style.transform = String((first as any).transform)
+  if ((first as any).filter !== undefined) el.style.filter = String((first as any).filter)
 }
 
 // Apply last keyframe as inline styles to capture final state after animation finishes
 function applyFinalState(el: HTMLElement, keyframes: Keyframe[]) {
+  const first = keyframes[0]
   const last = keyframes[keyframes.length - 1]
   if (!last) return
-  if ((last as any).opacity !== undefined) el.style.opacity = String((last as any).opacity)
+  // If the first keyframe set these but the last doesn't, default to visible values
+  const hadOpacity = (first as any).opacity !== undefined
+  const hadFilter = (first as any).filter !== undefined
+  if ((last as any).opacity !== undefined) {
+    el.style.opacity = String((last as any).opacity)
+  } else if (hadOpacity) {
+    el.style.opacity = "1"
+  }
   if ((last as any).transform !== undefined) el.style.transform = String((last as any).transform)
+  if ((last as any).filter !== undefined) {
+    el.style.filter = String((last as any).filter)
+  } else if (hadFilter) {
+    el.style.filter = "blur(0px)"
+  }
 }
 
 function rebaseBlockKeyframes(keyframes: Keyframe[], options?: BlockPresetOptions): Keyframe[] {
@@ -182,13 +203,15 @@ function runAnimation(
   onEnd?: () => void,
   presetOptions?: BlockPresetOptions,
 ): Animation {
-  el.style.willChange = "transform, opacity"
+  el.style.willChange = "transform, opacity, filter"
   const prevTransition = el.style.transition
   el.style.transition = "none"
   const rebased = rebaseBlockKeyframes(keyframes, presetOptions)
   const usesScale = hasScale(rebased)
+  const usesScaleY = hasScaleY(rebased)
   const prevOrigin = el.style.transformOrigin
   if (usesScale) el.style.transformOrigin = "center"
+  if (usesScaleY) el.style.transformOrigin = "top"
 
   // Always set initial state inline — prevents flash when animations are cancelled/restarted
   applyInitialState(el, rebased)
@@ -199,7 +222,7 @@ function runAnimation(
   const anim = el.animate(kf, { ...options, fill: "forwards" })
   const cleanup = () => {
     el.style.transition = prevTransition
-    if (usesScale) el.style.transformOrigin = prevOrigin
+    if (usesScale || usesScaleY) el.style.transformOrigin = prevOrigin
   }
   anim.addEventListener("finish", () => {
     applyFinalState(el, rebased)
@@ -208,6 +231,7 @@ function runAnimation(
     onEnd?.()
   })
   anim.addEventListener("cancel", () => {
+    applyFinalState(el, rebased)
     cleanup()
   })
   return anim
@@ -247,6 +271,11 @@ function runPropertyAnimation(
       ;(el.style as any)[property] = String(pair[1])
     }
   })
+  anim.addEventListener("cancel", () => {
+    for (const [property, value] of Object.entries(from)) {
+      ;(el.style as any)[property] = value
+    }
+  })
   return anim
 }
 
@@ -257,10 +286,10 @@ function spawnOverlay(el: HTMLElement, preset: string, x: number, y: number) {
   const prevPosition = el.style.position
   const prevOverflow = el.style.overflow
 
+  const overlayColor = getComputedStyle(el).getPropertyValue("--trigr-overlay-color") || "currentColor"
+
   el.style.position = "relative"
   el.style.overflow = "hidden"
-
-  const overlayColor = getComputedStyle(el).getPropertyValue("--trigr-overlay-color") || "currentColor"
 
   let pending = 0
   function done() {
@@ -282,10 +311,12 @@ function spawnOverlay(el: HTMLElement, preset: string, x: number, y: number) {
       opacity: 1;
     `
     el.appendChild(dot)
-    dot.animate(
+    const dotAnim = dot.animate(
       [{ width: "0", height: "0", opacity: 1 }, { width: `${size}px`, height: `${size}px`, opacity: 0 }],
-      { duration: 400, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", fill: "forwards" },
-    ).onfinish = () => { dot.remove(); done() }
+      { duration: 400, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" },
+    )
+    dotAnim.onfinish = () => { dot.remove(); done() }
+    dotAnim.oncancel = () => { dot.remove(); done() }
   }
 
   if (preset === "burst") {
@@ -301,13 +332,15 @@ function spawnOverlay(el: HTMLElement, preset: string, x: number, y: number) {
       el.appendChild(particle)
       const dx = Math.cos(angle) * 60
       const dy = Math.sin(angle) * 60
-      particle.animate(
+      const pa = particle.animate(
         [
           { transform: "translate(-50%, -50%) scale(1)", opacity: 1 },
           { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 },
         ],
         { duration: 360, easing: "cubic-bezier(0.4, 0.0, 1, 1)", fill: "forwards" },
-      ).onfinish = () => { particle.remove(); done() }
+      )
+      pa.onfinish = () => { particle.remove(); done() }
+      pa.oncancel = () => { particle.remove(); done() }
     }
   }
 }
@@ -662,7 +695,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
       el.style.backgroundSize = "200% 100%"
     }
 
-    el.style.willChange = "transform, opacity"
+    el.style.willChange = "transform, opacity, filter"
     animRef.current = el.animate(cfg.keyframes, {
       duration: cfg.duration,
       iterations: Infinity,
@@ -696,7 +729,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
     if (cat === "continuous") {
       const cfg = CONTINUOUS_KEYFRAMES[animation]
       if (!cfg || prefersReducedMotion()) return
-      el.style.willChange = "transform, opacity"
+      el.style.willChange = "transform, opacity, filter"
       animRef.current = el.animate(cfg.keyframes, {
         duration: cfg.duration,
         iterations: Infinity,
@@ -761,6 +794,9 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
     }
 
     animRef.current?.cancel()
+    animRef.current = null
+    runningRef.current = false
+    queueRef.current = []
 
     const motionDuration = effectiveDuration(duration)
     const exitCat = presetCategory[exitAnimation] ?? "oneshot"
@@ -1121,7 +1157,7 @@ const AnimateBlock = forwardRef<AnimateBlockHandle, AnimateBlockProps>(function 
       const cfg = CONTINUOUS_KEYFRAMES[hoverAnimation]
       if (cfg && !prefersReducedMotion()) {
         animRef.current?.cancel()
-        el.style.willChange = "transform, opacity"
+        el.style.willChange = "transform, opacity, filter"
         animRef.current = el.animate(cfg.keyframes, {
           duration: cfg.duration,
           iterations: Infinity,

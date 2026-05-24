@@ -16,93 +16,264 @@ type SecondaryTrigger = "none" | Trigger
 type AnimationProperties = Record<string, [string | number, string | number]>
 
 const SPRING_EASE = SPRING
-const SMOOTH_EASE = SMOOTH
+const SMOOTH_EASE = "cubic-bezier(0.22, 1, 0.36, 1)"
 const EASE_IN = "cubic-bezier(0.0, 0.0, 0.2, 1)"
 const SNAPPY_EASE = "cubic-bezier(0.2, 0, 0, 1)"
 
 const ANIMATION_DEFAULTS: Record<string, { duration: number; easing: string }> = {
-  springBounce: { duration: 500, easing: SMOOTH_EASE },
-  springScale: { duration: 450, easing: SMOOTH_EASE },
-  springSlideUp: { duration: 450, easing: SMOOTH_EASE },
-  springSlideDown: { duration: 450, easing: SMOOTH_EASE },
-  morphRadius: { duration: 400, easing: SMOOTH_EASE },
-  morphCircle: { duration: 400, easing: SMOOTH_EASE },
+  // ── Text — change / swap ────────────────────────
+  fadeSwap: { duration: 350, easing: SMOOTH_EASE },
+  morph: { duration: 400, easing: SPRING_EASE },
+  slideReplace: { duration: 280, easing: SMOOTH_EASE },
+  typewriter: { duration: 350, easing: SMOOTH_EASE },
+  decoder: { duration: 420, easing: SMOOTH_EASE },
+  scramble: { duration: 350, easing: SMOOTH_EASE },
+  odometer: { duration: 500, easing: SMOOTH_EASE },
+  ticker: { duration: 400, easing: SMOOTH_EASE },
+  // ── Text — entrance / reveal ────────────────────
+  fadeIn: { duration: 420, easing: SMOOTH_EASE },
+  letterDrop: { duration: 450, easing: SPRING_EASE },
+  textReveal: { duration: 450, easing: SMOOTH_EASE },
+  scatter: { duration: 420, easing: SPRING_EASE },
+  splash: { duration: 450, easing: SPRING_EASE },
+  glitch: { duration: 320, easing: SNAPPY_EASE },
+  bounce: { duration: 450, easing: SPRING_EASE },
+  popIn: { duration: 420, easing: SPRING_EASE },
+  dropIn: { duration: 450, easing: SPRING_EASE },
+  riseUp: { duration: 400, easing: SPRING_EASE },
+  popUp: { duration: 400, easing: SPRING_EASE },
+  expandIn: { duration: 380, easing: SMOOTH_EASE },
+  flip: { duration: 450, easing: SMOOTH_EASE },
+  slideUp: { duration: 350, easing: SMOOTH_EASE },
+  slideDown: { duration: 350, easing: SMOOTH_EASE },
+  boldFlash: { duration: 250, easing: SNAPPY_EASE },
+  blur: { duration: 320, easing: SMOOTH_EASE },
+  strikeThrough: { duration: 320, easing: SMOOTH_EASE },
+  shrinkOut: { duration: 220, easing: EASE_IN },
+  // ── Text — interaction ──────────────────────────
+  bump: { duration: 200, easing: SPRING_EASE },
+  jitter: { duration: 200, easing: SNAPPY_EASE },
+  jello: { duration: 300, easing: SNAPPY_EASE },
+  shake: { duration: 280, easing: SNAPPY_EASE },
+  pulse: { duration: 280, easing: SPRING_EASE },
+  blink: { duration: 200, easing: EASE_IN },
+  wave: { duration: 350, easing: SMOOTH_EASE },
+  ping: { duration: 300, easing: SPRING_EASE },
+  highlight: { duration: 400, easing: SMOOTH_EASE },
+  // ── Text — canvas-based ─────────────────────────
+  bigBang: { duration: 600, easing: SMOOTH_EASE },
+  scatterAssemble: { duration: 600, easing: SMOOTH_EASE },
+  pixelRain: { duration: 600, easing: SMOOTH_EASE },
+  vortex: { duration: 600, easing: SMOOTH_EASE },
+  dominoFall: { duration: 500, easing: SMOOTH_EASE },
+  pendulum: { duration: 500, easing: SMOOTH_EASE },
+  centerBurst: { duration: 600, easing: SMOOTH_EASE },
+  gravityBounce: { duration: 500, easing: SMOOTH_EASE },
+  scrollFanIn: { duration: 500, easing: SMOOTH_EASE },
+  textRotate: { duration: 450, easing: SMOOTH_EASE },
+  gooeyMorph: { duration: 400, easing: SMOOTH_EASE },
+  randomLetterSwap: { duration: 350, easing: SMOOTH_EASE },
+  textEffect: { duration: 400, easing: SMOOTH_EASE },
+  staggerText: { duration: 400, easing: SMOOTH_EASE },
+  splitReveal: { duration: 500, easing: SMOOTH_EASE },
+  splitSlide: { duration: 450, easing: SMOOTH_EASE },
+  // ── Text — underline / color ────────────────────
   underlineDraw: { duration: 500, easing: SMOOTH_EASE },
   underlineSlide: { duration: 250, easing: SMOOTH_EASE },
-  copyConfirm: { duration: 300, easing: SPRING_EASE },
+  copyConfirm: { duration: 350, easing: SPRING_EASE },
   brightnessShift: { duration: 350, easing: SMOOTH_EASE },
   activeTabText: { duration: 250, easing: SMOOTH_EASE },
-  staggerBlurIn: { duration: 450, easing: SMOOTH_EASE },
-  feedAppend: { duration: 350, easing: SPRING_EASE },
-  filterIn: { duration: 300, easing: SPRING_EASE },
-  emptyToList: { duration: 400, easing: SMOOTH_EASE },
-  modalIn: { duration: 400, easing: SPRING_EASE },
-  modalOut: { duration: 200, easing: EASE_IN },
-  popoverIn: { duration: 300, easing: SPRING_EASE },
-  popoverOut: { duration: 150, easing: EASE_IN },
-  toastIn: { duration: 400, easing: SPRING_EASE },
-  toastOut: { duration: 200, easing: EASE_IN },
-  successCheckIn: { duration: 500, easing: SPRING_EASE },
+  // ── Block — entrance ────────────────────────────
+  blockFadeIn: { duration: 400, easing: SMOOTH_EASE }, // NOTE: this key is NOT used — block falls back via its own defaults
+  blockSlideUp: { duration: 450, easing: SMOOTH_EASE },
+  blockSlideDown: { duration: 450, easing: SMOOTH_EASE },
+  blockSlideLeft: { duration: 450, easing: SMOOTH_EASE },
+  blockSlideRight: { duration: 450, easing: SMOOTH_EASE },
+  blockScaleIn: { duration: 380, easing: SMOOTH_EASE },
+  blockPopIn: { duration: 400, easing: SPRING_EASE },
+  blockBounceIn: { duration: 420, easing: SPRING_EASE },
+  blockRotateIn: { duration: 400, easing: SPRING_EASE },
+  blockFlipX: { duration: 450, easing: SMOOTH_EASE },
+  blockFlipY: { duration: 450, easing: SMOOTH_EASE },
+  blockBlurIn: { duration: 450, easing: SMOOTH_EASE },
+  blockZoomIn: { duration: 400, easing: SMOOTH_EASE },
+  blockClipUp: { duration: 400, easing: SMOOTH_EASE },
+  blockClipLeft: { duration: 400, easing: SMOOTH_EASE },
+  blockDropIn: { duration: 420, easing: SPRING_EASE },
+  blockRiseUp: { duration: 420, easing: SPRING_EASE },
+  blockGlideIn: { duration: 350, easing: SMOOTH_EASE },
+  blockExpandIn: { duration: 350, easing: SMOOTH_EASE },
+  blockExpandHeight: { duration: 400, easing: SMOOTH_EASE },
+  blockFadeSlideUp: { duration: 380, easing: SMOOTH_EASE },
+  // ── Block — spring ──────────────────────────────
+  springBounce: { duration: 500, easing: SPRING_EASE },
+  springScale: { duration: 450, easing: SPRING_EASE },
+  springSlideUp: { duration: 450, easing: SPRING_EASE },
+  springSlideDown: { duration: 450, easing: SPRING_EASE },
+  morphRadius: { duration: 400, easing: SMOOTH_EASE },
+  morphCircle: { duration: 400, easing: SMOOTH_EASE },
+  // ── Block — UI patterns ─────────────────────────
+  modalIn: { duration: 420, easing: SPRING_EASE },
+  modalOut: { duration: 220, easing: EASE_IN },
+  popoverIn: { duration: 320, easing: SPRING_EASE },
+  popoverOut: { duration: 160, easing: EASE_IN },
+  toastIn: { duration: 420, easing: SPRING_EASE },
+  toastOut: { duration: 210, easing: EASE_IN },
+  successCheckIn: { duration: 550, easing: SPRING_EASE },
   buttonLoading: { duration: 600, easing: SMOOTH_EASE },
   focusRingPulse: { duration: 2000, easing: SMOOTH_EASE },
   selectionPulse: { duration: 400, easing: SMOOTH_EASE },
-  insertItem: { duration: 350, easing: SPRING_EASE },
-  emptyStateToList: { duration: 500, easing: SMOOTH_EASE },
-  errorMessageIn: { duration: 300, easing: SNAPPY_EASE },
   tabPanelIn: { duration: 300, easing: SMOOTH_EASE },
   tabPanelOut: { duration: 200, easing: EASE_IN },
-  successToast: { duration: 400, easing: SPRING_EASE },
-  checkboxCheck: { duration: 350, easing: SPRING_EASE },
-  fadeAway: { duration: 350, easing: SMOOTH_EASE },
-  liftReveal: { duration: 400, easing: SMOOTH_EASE },
+  successToast: { duration: 420, easing: SPRING_EASE },
+  checkboxCheck: { duration: 380, easing: SPRING_EASE },
+  // ── Block — interaction ─────────────────────────
+  blockShake: { duration: 280, easing: SNAPPY_EASE },
+  blockWiggle: { duration: 280, easing: SNAPPY_EASE },
+  blockJello: { duration: 300, easing: SNAPPY_EASE },
+  blockFlash: { duration: 250, easing: SNAPPY_EASE },
+  blockHeartBeat: { duration: 350, easing: SPRING_EASE },
+  // ── Block — hover states ────────────────────────
+  lift: { duration: 250, easing: SPRING_EASE },
+  sink: { duration: 250, easing: SPRING_EASE },
+  grow: { duration: 250, easing: SPRING_EASE },
+  glow: { duration: 300, easing: SMOOTH_EASE },
+  shadow: { duration: 300, easing: SMOOTH_EASE },
+  borderPop: { duration: 250, easing: SPRING_EASE },
+  // ── Block — continuous ──────────────────────────
+  blockPulse: { duration: 500, easing: SPRING_EASE },
+  blockFloat: { duration: 2000, easing: SMOOTH_EASE },
+  blockSpin: { duration: 2000, easing: "linear" },
+  blockPing: { duration: 400, easing: SMOOTH_EASE },
+  blockShimmer: { duration: 1500, easing: SMOOTH_EASE },
+  // ── Block — overlay ─────────────────────────────
+  ripple: { duration: 400, easing: EASE_IN },
+  burst: { duration: 300, easing: EASE_IN },
+  press: { duration: 150, easing: SNAPPY_EASE },
+  // ── Block — exit ────────────────────────────────
+  fadeOut: { duration: 300, easing: EASE_IN },
+  scaleOut: { duration: 280, easing: EASE_IN },
+  popOut: { duration: 300, easing: EASE_IN },
+  rotateOut: { duration: 300, easing: EASE_IN },
+  bounceOut: { duration: 300, easing: EASE_IN },
+  glideOut: { duration: 280, easing: EASE_IN },
+  collapseOut: { duration: 300, easing: EASE_IN },
+  blurOut: { duration: 320, easing: EASE_IN },
+  zoomOut: { duration: 280, easing: EASE_IN },
+  // ── Paragraph — change ──────────────────────────
+  paraFadeIn: { duration: 400, easing: SMOOTH_EASE },
+  paraSlideUp: { duration: 400, easing: SMOOTH_EASE },
+  paraSlideDown: { duration: 400, easing: SMOOTH_EASE },
+  paraPopIn: { duration: 400, easing: SPRING_EASE },
+  paraExpandIn: { duration: 350, easing: SMOOTH_EASE },
+  paraZoomIn: { duration: 380, easing: SMOOTH_EASE },
+  paraWordFadeIn: { duration: 300, easing: SMOOTH_EASE },
+  paraWordSlideUp: { duration: 320, easing: SPRING_EASE },
+  paraWordPop: { duration: 320, easing: SPRING_EASE },
+  paraLineFadeIn: { duration: 300, easing: SMOOTH_EASE },
+  paraLineSlideUp: { duration: 320, easing: SPRING_EASE },
+  paraStreamIn: { duration: 350, easing: SMOOTH_EASE },
+  paraStreamSlide: { duration: 350, easing: SMOOTH_EASE },
+  paraFadeSwap: { duration: 350, easing: SMOOTH_EASE },
+  paramorphText: { duration: 400, easing: SMOOTH_EASE },
+  paraSlideReplace: { duration: 300, easing: SMOOTH_EASE },
+  paraCrossFade: { duration: 350, easing: SMOOTH_EASE },
+  paraMorphBlur: { duration: 400, easing: SMOOTH_EASE },
+  paraPushLeft: { duration: 300, easing: SMOOTH_EASE },
+  paraPushRight: { duration: 300, easing: SMOOTH_EASE },
+  paraFlipPage: { duration: 400, easing: SMOOTH_EASE },
+  paraPulse: { duration: 280, easing: SPRING_EASE },
+  paraShake: { duration: 280, easing: SNAPPY_EASE },
+  paraFlash: { duration: 250, easing: SNAPPY_EASE },
+  paraErrorMsgIn: { duration: 300, easing: SNAPPY_EASE }, // fallback — errorMessageIn overrides
+  errorMessageIn: { duration: 300, easing: SNAPPY_EASE },
+  fadeAway: { duration: 400, easing: SMOOTH_EASE },
+  liftReveal: { duration: 450, easing: SMOOTH_EASE },
   fadeMask: { duration: 500, easing: SMOOTH_EASE },
   streamFade: { duration: 400, easing: SMOOTH_EASE },
   heightAuto: { duration: 350, easing: SMOOTH_EASE },
-  fadeOutUp: { duration: 200, easing: EASE_IN },
-  fadeOutDown: { duration: 200, easing: EASE_IN },
-  slideOutUp: { duration: 220, easing: EASE_IN },
-  slideOutDown: { duration: 220, easing: EASE_IN },
-  slideOutLeft: { duration: 220, easing: EASE_IN },
-  slideOutRight: { duration: 220, easing: EASE_IN },
-  scaleOut: { duration: 200, easing: EASE_IN },
-  blurOut: { duration: 250, easing: EASE_IN },
-  clipOut: { duration: 250, easing: EASE_IN },
-  strikeOut: { duration: 300, easing: EASE_IN },
-  typeOut: { duration: 400, easing: EASE_IN },
-  scrambleOut: { duration: 400, easing: EASE_IN },
-  paragraphFadeOut: { duration: 200, easing: EASE_IN },
-  collapseHeight: { duration: 300, easing: EASE_IN },
-  wordFadeOut: { duration: 200, easing: EASE_IN },
-  wordSlideOut: { duration: 220, easing: EASE_IN },
-  lineFadeOut: { duration: 200, easing: EASE_IN },
-  lineSlideOut: { duration: 220, easing: EASE_IN },
-  fadeMaskOut: { duration: 300, easing: EASE_IN },
-  itemSlideOutLeft: { duration: 220, easing: EASE_IN },
-  itemSlideOutRight: { duration: 220, easing: EASE_IN },
-  itemScaleOut: { duration: 200, easing: EASE_IN },
-  itemPopOut: { duration: 220, easing: EASE_IN },
-  itemBlurOut: { duration: 250, easing: EASE_IN },
-  itemDismissOut: { duration: 250, easing: EASE_IN },
-  rowCollapseOut: { duration: 280, easing: EASE_IN },
-  tagRemove: { duration: 180, easing: EASE_IN },
-  cardRemove: { duration: 240, easing: EASE_IN },
-  dialogOut: { duration: 200, easing: EASE_IN },
-  drawerOutLeft: { duration: 250, easing: EASE_IN },
-  drawerOutRight: { duration: 250, easing: EASE_IN },
-  drawerOutTop: { duration: 250, easing: EASE_IN },
-  drawerOutBottom: { duration: 250, easing: EASE_IN },
-  menuOut: { duration: 150, easing: EASE_IN },
-  toastOutRight: { duration: 200, easing: EASE_IN },
-  toastOutUp: { duration: 200, easing: EASE_IN },
-  collapseWidth: { duration: 300, easing: EASE_IN },
-  dismissOut: { duration: 200, easing: EASE_IN },
-  errorOut: { duration: 300, easing: EASE_IN },
-  successOut: { duration: 250, easing: EASE_IN },
+  // ── List — enter ────────────────────────────────
+  listFadeIn: { duration: 320, easing: SMOOTH_EASE },
+  listSlideIn: { duration: 350, easing: SMOOTH_EASE },
+  listPopIn: { duration: 360, easing: SPRING_EASE },
+  listBounceIn: { duration: 380, easing: SPRING_EASE },
+  listExpandIn: { duration: 330, easing: SPRING_EASE },
+  listFlipIn: { duration: 420, easing: SMOOTH_EASE },
+  listGlideIn: { duration: 300, easing: SMOOTH_EASE },
+  listStaggerFadeIn: { duration: 320, easing: SPRING_EASE },
+  listStaggerSlideUp: { duration: 340, easing: SPRING_EASE },
+  listStaggerSlideLeft: { duration: 340, easing: SPRING_EASE },
+  listStaggerZoomIn: { duration: 360, easing: SPRING_EASE },
+  staggerFadeIn: { duration: 320, easing: SPRING_EASE },
+  staggerSlideUp: { duration: 340, easing: SPRING_EASE },
+  staggerSlideLeft: { duration: 340, easing: SPRING_EASE },
+  staggerZoomIn: { duration: 360, easing: SPRING_EASE },
+  staggerPopIn: { duration: 380, easing: SPRING_EASE },
+  staggerBlurIn: { duration: 450, easing: SMOOTH_EASE },
+  stackIn: { duration: 400, easing: SMOOTH_EASE },
+  wordCascade: { duration: 300, easing: SMOOTH_EASE },
+  wordWave: { duration: 400, easing: SMOOTH_EASE },
+  wordDrop: { duration: 360, easing: SMOOTH_EASE },
+  wordFadeIn: { duration: 280, easing: SMOOTH_EASE },
+  feedAppend: { duration: 380, easing: SPRING_EASE },
+  filterIn: { duration: 340, easing: SPRING_EASE },
+  emptyToList: { duration: 450, easing: SMOOTH_EASE },
+  emptyStateToList: { duration: 550, easing: SMOOTH_EASE },
+  insertItem: { duration: 380, easing: SPRING_EASE },
+  itemFadeIn: { duration: 250, easing: SPRING_EASE },
+  itemSlideIn: { duration: 280, easing: SPRING_EASE },
+  itemPopIn: { duration: 280, easing: SNAPPY_EASE },
+  itemBounceIn: { duration: 350, easing: SPRING_EASE },
+  // ── List — exit ─────────────────────────────────
+  fadeOutUp: { duration: 280, easing: EASE_IN },
+  fadeOutDown: { duration: 280, easing: EASE_IN },
+  slideOutUp: { duration: 300, easing: EASE_IN },
+  slideOutDown: { duration: 300, easing: EASE_IN },
+  slideOutLeft: { duration: 300, easing: EASE_IN },
+  slideOutRight: { duration: 300, easing: EASE_IN },
+  clipOut: { duration: 320, easing: EASE_IN },
+  strikeOut: { duration: 350, easing: EASE_IN },
+  typeOut: { duration: 450, easing: EASE_IN },
+  scrambleOut: { duration: 450, easing: EASE_IN },
+  paragraphFadeOut: { duration: 280, easing: EASE_IN },
+  collapseHeight: { duration: 350, easing: EASE_IN },
+  wordFadeOut: { duration: 280, easing: EASE_IN },
+  wordSlideOut: { duration: 300, easing: EASE_IN },
+  lineFadeOut: { duration: 280, easing: EASE_IN },
+  lineSlideOut: { duration: 300, easing: EASE_IN },
+  fadeMaskOut: { duration: 350, easing: EASE_IN },
+  itemFadeOut: { duration: 280, easing: EASE_IN },
+  itemSlideOut: { duration: 300, easing: EASE_IN },
+  itemCollapseOut: { duration: 300, easing: EASE_IN },
+  itemSlideOutLeft: { duration: 300, easing: EASE_IN },
+  itemSlideOutRight: { duration: 300, easing: EASE_IN },
+  itemScaleOut: { duration: 280, easing: EASE_IN },
+  itemPopOut: { duration: 300, easing: EASE_IN },
+  itemBlurOut: { duration: 320, easing: EASE_IN },
+  itemDismissOut: { duration: 320, easing: EASE_IN },
+  rowCollapseOut: { duration: 320, easing: EASE_IN },
+  tagRemove: { duration: 280, easing: EASE_IN },
+  cardRemove: { duration: 300, easing: EASE_IN },
+  slideOut: { duration: 300, easing: EASE_IN },
+  flipOut: { duration: 300, easing: EASE_IN },
+  // ── Block — exit ────────────────────────────────
+  dialogOut: { duration: 280, easing: EASE_IN },
+  drawerOutLeft: { duration: 320, easing: EASE_IN },
+  drawerOutRight: { duration: 320, easing: EASE_IN },
+  drawerOutTop: { duration: 320, easing: EASE_IN },
+  drawerOutBottom: { duration: 320, easing: EASE_IN },
+  menuOut: { duration: 250, easing: EASE_IN },
+  toastOutRight: { duration: 280, easing: EASE_IN },
+  toastOutUp: { duration: 280, easing: EASE_IN },
+  collapseWidth: { duration: 350, easing: EASE_IN },
+  dismissOut: { duration: 280, easing: EASE_IN },
+  errorOut: { duration: 400, easing: EASE_IN },
+  successOut: { duration: 320, easing: EASE_IN },
 }
 
 const EASINGS: [string, string][] = [
   ["Spring", "cubic-bezier(0.34, 1.56, 0.64, 1)"],
-  ["Smooth", "cubic-bezier(0.25, 0.46, 0.45, 0.94)"],
+  ["Smooth", "cubic-bezier(0.22, 1, 0.36, 1)"],
   ["Ease In", "cubic-bezier(0.0, 0.0, 0.2, 1)"],
   ["Ease Out", "cubic-bezier(0.4, 0.0, 1, 1)"],
   ["Ease In Out", "cubic-bezier(0.4, 0.0, 0.2, 1)"],
@@ -140,18 +311,32 @@ const TEXT_CHANGE_PRESETS: AnimationPreset[] = [
   "popIn", "dropIn", "riseUp", "expandIn",
   "fadeIn", "underlineDraw", "underlineSlide", "brightnessShift",
   "liftReveal",
+  "textEffect", "staggerText", "scrollFanIn",
+  "textRotate", "gooeyMorph", "randomLetterSwap",
+  "letterDrop", "textReveal", "scatter", "splash",
+  "bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall",
+  "pendulum", "centerBurst", "gravityBounce",
+  "splitReveal", "splitSlide",
 ]
 
 const TEXT_SCROLL_PRESETS: AnimationPreset[] = [
   "fadeIn", "letterDrop", "textReveal", "scatter", "splash", "glitch",
   "slideUp", "slideDown", "flip", "bounce", "popIn", "dropIn", "riseUp", "expandIn",
   "underlineDraw",
+  "textEffect", "staggerText", "scrollFanIn",
+  "textRotate", "gooeyMorph", "randomLetterSwap",
+  "bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall",
+  "pendulum", "centerBurst", "gravityBounce",
+  "splitReveal", "splitSlide",
+  "decoder", "scramble",
+  "popUp", "liftReveal",
 ]
 
 const TEXT_INTERACTION_PRESETS: AnimationPreset[] = [
   "bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping",
-  "highlight", "boldFlash", "blur", "textReveal",
+  "highlight", "boldFlash", "blur",
   "underlineSlide", "underlineDraw", "copyConfirm", "brightnessShift", "activeTabText",
+  "textReveal", "glitch", "letterDrop",
 ]
 
 const TEXT_HOVER_PRESETS: AnimationPreset[] = [
@@ -162,7 +347,7 @@ const TEXT_HOVER_PRESETS: AnimationPreset[] = [
 
 const TEXT_CLICK_PRESETS: AnimationPreset[] = [
   ...TEXT_HOVER_PRESETS,
-  "popUp", "ping", "textReveal", "copyConfirm",
+  "popUp", "ping", "copyConfirm",
 ]
 
 const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
@@ -173,6 +358,9 @@ const TEXT_MOUNT_PRESETS: AnimationPreset[] = [
   "textRotate", "gooeyMorph", "randomLetterSwap",
   "slideUp", "slideDown", "flip", "bounce", "popIn", "dropIn", "riseUp", "expandIn",
   "underlineDraw", "copyConfirm", "brightnessShift", "activeTabText",
+  "fadeSwap", "morph", "slideReplace", "typewriter", "odometer", "ticker",
+  "highlight", "boldFlash", "blur", "strikeThrough",
+  "liftReveal", "popUp",
 ]
 
 const PARAGRAPH_ALL_PRESETS: ParagraphPreset[] = [
@@ -200,6 +388,7 @@ const PARAGRAPH_CHANGE_PRESETS: ParagraphPreset[] = [
   "slideUp", "slideDown", "slideLeft", "slideRight",
   "popIn", "expandIn", "zoomIn", "shake", "errorMessageIn",
   "cursorBlink", "fadeMask", "streamFade", "heightAuto",
+  "fadeIn", "pulse",
 ]
 
 const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
@@ -207,14 +396,16 @@ const PARAGRAPH_SCROLL_PRESETS: ParagraphPreset[] = [
   "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide",
   "scrollWordReveal", "slideUp", "slideDown", "slideLeft", "slideRight",
   "popIn", "expandIn", "zoomIn", "highlight", "flash",
-  "fadeMask", "streamFade",
+  "fadeMask", "streamFade", "errorMessageIn",
+  "crossFade", "pushLeft", "pushRight", "flipPage",
+  "cursorBlink",
 ]
 
 const PARAGRAPH_INTERACTION_PRESETS: ParagraphPreset[] = [
   "highlight", "flash", "pulse", "shake",
   "wordFadeIn", "wordSlideUp", "wordPop", "lineFadeIn", "lineSlideUp",
   "slideUp", "slideDown", "popIn", "zoomIn", "errorMessageIn",
-  "cursorBlink",
+  "cursorBlink", "fadeIn",
 ]
 
 const PARAGRAPH_MOUNT_PRESETS: ParagraphPreset[] = [
@@ -223,6 +414,9 @@ const PARAGRAPH_MOUNT_PRESETS: ParagraphPreset[] = [
   "slideUp", "slideDown", "slideLeft", "slideRight",
   "popIn", "expandIn", "zoomIn", "errorMessageIn", "highlight", "flash",
   "cursorBlink", "fadeMask", "streamFade", "heightAuto",
+  "fadeSwap", "morphText", "slideReplace", "crossFade",
+  "pushLeft", "pushRight", "flipPage", "diffAnimate", "morphBlur",
+  "pulse", "shake",
 ]
 
 const LIST_PRESETS: ListAnimationPreset[] = [
@@ -391,19 +585,19 @@ const PRESETS_BY_MODULE_TRIGGER: Record<Exclude<ModuleId, "docs">, string[] | Pa
   },
   list: {
     scroll: [...LIST_ENTER_PRESETS, ...LIST_PARALLAX_PRESETS],
-    hover: LIST_ENTER_PRESETS,
-    click: LIST_ENTER_PRESETS,
-    manual: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS, ...LIST_REORDER_PRESETS],
+    hover: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS],
+    click: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS],
+    manual: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS, ...LIST_PARALLAX_PRESETS, ...LIST_REORDER_PRESETS],
     mount: [...LIST_ENTER_PRESETS, ...LIST_MARQUEE_PRESETS],
     exit: LIST_EXIT_PRESETS,
   },
   block: {
-    change: BLOCK_CHANGE_PRESETS,
-    scroll: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_SCROLL_LINK_PRESETS],
+    change: [...BLOCK_CHANGE_PRESETS],
+    scroll: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_SCROLL_LINK_PRESETS, ...BLOCK_ONESHOT_PRESETS],
     hover: BLOCK_INTERACTION_PRESETS,
     click: BLOCK_CLICK_PRESETS,
-    manual: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_ONESHOT_PRESETS, ...BLOCK_CONTINUOUS_PRESETS],
-    mount: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_CONTINUOUS_PRESETS],
+    manual: [...BLOCK_ONESHOT_PRESETS, ...BLOCK_ENTRANCE_PRESETS, ...BLOCK_CONTINUOUS_PRESETS, ...BLOCK_HOVER_STATE_PRESETS, ...BLOCK_CURSOR_PRESETS, ...BLOCK_OVERLAY_PRESETS],
+    mount: [...BLOCK_ENTRANCE_PRESETS, ...BLOCK_CONTINUOUS_PRESETS, ...BLOCK_ONESHOT_PRESETS],
     exit: BLOCK_EXIT_PRESETS,
   },
 }
@@ -1090,7 +1284,6 @@ function TextMountDemo({ preset, duration, easing, exitPreset, properties, prese
             key={hasExit ? "text-exit-demo" : String(visible)}
             show={hasExit ? visible : undefined}
             exitAnimation={hasExit ? exitPreset : undefined}
-            unmountOnExit={false}
             trigger={triggerValue}
             animation={preset}
             duration={duration}
@@ -1157,7 +1350,6 @@ function TextExitDemo({ preset, duration, easing, properties, presetOptions }: {
             animation="fadeIn"
             show={show}
             exitAnimation={preset}
-            unmountOnExit={false}
             duration={duration}
             easing={easing}
             as="h2"
@@ -1388,7 +1580,7 @@ function ReadMoreDemo({ preset, duration, easing, properties, presetOptions }: {
 
   return (
     <div className="real-demo">
-      <p className="demo-label">Click "Read more" to see the paragraph animate with the full content</p>
+      <p className="demo-label">Click the paragraph text to see it animate with the full content</p>
       <ParagraphAnimate.Paragraph
         ref={ref}
         trigger={triggerValue}
@@ -1399,7 +1591,7 @@ function ReadMoreDemo({ preset, duration, easing, properties, presetOptions }: {
         presetOptions={presetOptions as any}
         onClick={handleClick}
         as="div"
-        className="readmore-card"
+        style={{ cursor: "pointer", maxWidth: 640, margin: "0 auto", fontSize: 16, lineHeight: 1.7, color: "var(--text-secondary)", padding: "12px 0" }}
         {...paragraphHighlightProps(preset)}
       >
         <p>{expanded
@@ -1590,7 +1782,6 @@ function ParagraphExitDemo({ preset, duration, easing, properties, presetOptions
           animation="fadeIn"
           show={show}
           exitAnimation={preset}
-          unmountOnExit={false}
           duration={duration}
           easing={easing}
           as="div"
@@ -1614,7 +1805,6 @@ function ParagraphExit() {
       animation="fadeIn"
       show={show}
       exitAnimation="${preset}"
-      unmountOnExit={false}
       duration={${duration}}
       easing="${easing}"
       as="div"${propertiesSnippet(properties)}
@@ -2567,83 +2757,136 @@ const DOC_MODULES = [
     title: "Text",
     importPath: "trigr/text",
     component: "Animate.Text",
-    use: "Short, inline text: words, labels, counters, nav items, headings, and tiny state changes.",
-    examples: "Search labels, pricing words, changing numbers, hero keywords, command buttons.",
+    defaults: "trigger=\"change\", duration=300, easing=SPRING, as=\"span\"",
+    presets: 75,
+    use: "Inline text that changes, replaces, or animates per word or character. Best for labels, nav items, counters, headings, and tiny state changes.",
+    when: "Use when content is a short inline string that needs to react to change, hover, or scroll.",
   },
   {
     title: "Paragraph",
     importPath: "trigr/paragraph",
     component: "Animate.Paragraph",
-    use: "Longer prose where words and lines need to remain readable while animating.",
-    examples: "Article intros, marketing copy, FAQ answers, onboarding descriptions, feature summaries.",
+    defaults: "trigger=\"change\", duration=300, easing=SMOOTH, as=\"div\"",
+    presets: 42,
+    use: "Longer prose where words and lines remain readable while animating. Built-in word/line structure.",
+    when: "Use for article intros, marketing copy, FAQ answers, onboarding descriptions, and feature summaries.",
   },
   {
     title: "List",
     importPath: "trigr/list",
     component: "Animate.List",
-    use: "Any repeated keyed collection, not only list tags.",
-    examples: "Cards, buttons, menu items, dashboard rows, feature rows, logos, pricing options.",
+    defaults: "animation=\"staggerFadeIn\", duration=300, trigger=\"mount\", stagger=60, reorder=\"flip\", exitAnimation=\"itemFadeOut\"",
+    presets: 55,
+    use: "Any repeated keyed collection. Handles add, remove, reorder, and presence detection via keyed diffing.",
+    when: "Use for cards, buttons, menu items, dashboard rows, feature rows, logos, and pricing options.",
   },
   {
     title: "Block",
     importPath: "trigr/block",
     component: "Animate.Block",
-    use: "One complete element or surface moving as a unit.",
-    examples: "Cards, panels, modals, notifications, hero images, sections, hover surfaces.",
+    defaults: "trigger=\"change\", duration=400, easing=SPRING, as=\"div\"",
+    presets: 79,
+    use: "One complete element or surface moving as a unit. Supports drag, shared layout, parallax, hover states, and overlays.",
+    when: "Use for cards, panels, modals, notifications, hero images, sections, and interactive surfaces.",
   },
 ]
 
 const DOC_TRIGGERS = [
-  { name: "change", desc: "Runs when the children or value prop change. Best for replacing or updating content.", best: "fadeSwap, morph, slideReplace, typewriter, diffAnimate, block entrances." },
-  { name: "scroll", desc: "Runs when the element reaches the configured viewport threshold.", best: "fadeIn, slide, line/word reveals, block parallax, list parallax variants." },
-  { name: "hover", desc: "Runs on pointer hover. Best for short feedback that resets on leave.", best: "bump, lift, glow, press-like feedback, compact list item reveals." },
-  { name: "click", desc: "Runs on click or tap. Best for tactile confirmation.", best: "press, ripple, burst, shake, bounce, list item feedback." },
-  { name: "manual", desc: "Runs from ref.current.animate(). Use when outside state controls the timing.", best: "Replay buttons, guided tours, command palettes, step-by-step flows." },
-  { name: "mount", desc: "Runs when the component appears. Best for first paint and conditional UI.", best: "fadeIn, popIn, stackIn, staggerSlideUp, block entrances." },
-  { name: "exit", desc: "Runs when content leaves through show/unmount or keyed list removal.", best: "fadeOut, slideOut, collapseOut, blurOut, item removal, toast/modal exits." },
+  { name: "change", desc: "Runs when children or value prop change. Best for replacing or updating content.", icon: "↻", detail: "Fires on every render where content differs from the previous render. Supports queueing — if an animation is already running, change is queued (up to 2)." },
+  { name: "scroll", desc: "Runs when the element reaches the configured viewport threshold via IntersectionObserver.", icon: "▽", detail: "Controlled by threshold (0–1, clamped 0.05–0.95) and once/repeat. Uses computed rootMargin: if repeat is false, the observer disconnects after the first intersection." },
+  { name: "hover", desc: "Runs on pointer enter. Best for short feedback that resets on leave.", icon: "↖", detail: "Text/Paragraph/Block: fires the animation on pointer enter. Block hover-state presets (lift, glow, tilt3D) use CSS transitions for instant release. Text hover resets on pointer leave." },
+  { name: "click", desc: "Runs on click or tap. Best for tactile confirmation.", icon: "⌘", detail: "Fires on every click. The animation replays even if already running (queued up to 2). Works with both mouse and touch events." },
+  { name: "manual", desc: "Runs from ref.current.animate(). Use when external state controls timing.", icon: "▶", detail: "The only trigger that requires imperative control. Does not auto-fire. The animate() method replays the preset regardless of the current trigger setting." },
+  { name: "mount", desc: "Runs when the component first appears in the DOM.", icon: "◇", detail: "Fires once on mount. If the component re-mounts (key change or conditional render), the animation fires again. For scroll-triggered entrances, use scroll instead." },
+  { name: "exit", desc: "Runs when content leaves via show/unmount or keyed list child removal.", icon: "✕", detail: "Lifecycle-controlled — there is no separate exit prop. For Text/Paragraph/Block, set show={false} and provide exitAnimation. For List, exit fires automatically on keyed child removal." },
 ]
 
 const DOC_ANIMATION_GROUPS = [
   {
     module: "Text",
     groups: [
-      { title: "Swap and replace", presets: ["fadeSwap", "morph", "slideReplace", "typewriter", "decoder", "scramble", "odometer", "ticker", "textRotate", "gooeyMorph"], best: "Use with change when old and new text both matter." },
-      { title: "Reveal", presets: ["fadeIn", "letterDrop", "textReveal", "scatter", "splash", "splitReveal", "splitSlide", "staggerText", "textEffect", "scrollFanIn"], best: "Use on mount or scroll for headings and labels." },
-      { title: "Particle and physics", presets: ["bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall", "pendulum", "centerBurst", "gravityBounce"], best: "Use sparingly for hero moments and expressive text." },
-      { title: "Interaction", presets: ["bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping", "highlight", "boldFlash", "blur", "randomLetterSwap"], best: "Use with hover, click, or manual feedback." },
-      { title: "Exit", presets: ["fadeOut", "fadeOutUp", "fadeOutDown", "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight", "scaleOut", "popOut", "blurOut", "clipOut", "fadeAway"], best: "Use with show + exitAnimation when inline text leaves." },
+      { title: "Swap & replace", presets: ["fadeSwap", "morph", "slideReplace", "typewriter", "decoder", "scramble", "odometer", "ticker", "textRotate", "gooeyMorph", "underlineDraw", "underlineSlide", "copyConfirm", "brightnessShift", "activeTabText"], best: "Use with change when old and new text both exist." },
+      { title: "Reveal", presets: ["fadeIn", "letterDrop", "textReveal", "liftReveal", "scatter", "splash", "splitReveal", "splitSlide", "staggerText", "textEffect", "scrollFanIn", "riseUp", "dropIn", "popIn", "expandIn"], best: "Use on mount or scroll for headings and labels." },
+      { title: "Particle & physics", presets: ["bigBang", "scatterAssemble", "pixelRain", "vortex", "dominoFall", "pendulum", "centerBurst", "gravityBounce", "flip"], best: "Use sparingly for hero moments and expressive text." },
+      { title: "Interaction", presets: ["bump", "jitter", "popUp", "jello", "shake", "pulse", "blink", "wave", "ping", "highlight", "boldFlash", "strikeThrough", "blur", "randomLetterSwap", "glitch"], best: "Use with hover, click, or manual for feedback." },
+      { title: "Exit", presets: ["fadeOut", "fadeOutUp", "fadeOutDown", "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight", "scaleOut", "popOut", "blurOut", "clipOut", "fadeAway", "strikeOut", "typeOut", "scrambleOut", "shrinkOut"], best: "Use with show + exitAnimation when inline text leaves." },
     ],
   },
   {
     module: "Paragraph",
     groups: [
-      { title: "Word and line reveal", presets: ["wordFadeIn", "wordSlideUp", "wordPop", "lineFadeIn", "lineSlideUp", "streamIn", "streamSlide", "scrollWordReveal"], best: "Use with scroll or mount for readable prose." },
-      { title: "Content replacement", presets: ["fadeSwap", "morphText", "slideReplace", "crossFade", "expandCollapse", "morphBlur", "pushLeft", "pushRight", "flipPage"], best: "Use with change when paragraph copy updates." },
-      { title: "Review and emphasis", presets: ["highlight", "diffAnimate", "flash"], best: "Use for text review, edits, changed words, or attention states." },
-      { title: "Paragraph-level motion", presets: ["fadeIn", "slideUp", "slideDown", "slideLeft", "slideRight", "popIn", "expandIn", "zoomIn", "pulse", "shake"], best: "Use for paragraph-level entrances on scroll or mount — unlike Block these operate on word/line structure, not just the outer box." },
-      { title: "Exit", presets: ["paragraphFadeOut", "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight", "collapseHeight", "wordFadeOut", "wordSlideOut", "lineFadeOut", "lineSlideOut", "fadeMaskOut"], best: "Use when prose leaves a view, accordion, panel, or route." },
+      { title: "Word & line reveal", presets: ["wordFadeIn", "wordSlideUp", "wordPop", "lineFadeIn", "lineSlideUp", "streamIn", "streamFade", "streamSlide", "scrollWordReveal", "cursorBlink"], best: "Use with scroll or mount for readable prose entrances." },
+      { title: "Content replacement", presets: ["fadeSwap", "morphText", "slideReplace", "crossFade", "expandCollapse", "morphBlur", "pushLeft", "pushRight", "flipPage", "errorMessageIn", "fadeMask"], best: "Use with change when paragraph copy updates." },
+      { title: "Review & emphasis", presets: ["highlight", "diffAnimate", "flash", "heightAuto", "pulse", "shake"], best: "Use for text review, edits, changed words, or attention states." },
+      { title: "Paragraph-level motion", presets: ["fadeIn", "slideUp", "slideDown", "slideLeft", "slideRight", "popIn", "expandIn", "zoomIn"], best: "Use for paragraph entrances on scroll or mount — operates on word/line structure, not just the outer box." },
+      { title: "Exit", presets: ["paragraphFadeOut", "slideOutUp", "slideOutDown", "slideOutLeft", "slideOutRight", "collapseHeight", "wordFadeOut", "wordSlideOut", "lineFadeOut", "lineSlideOut", "fadeMaskOut", "zoomOut"], best: "Use when prose leaves a view, accordion, panel, or route." },
     ],
   },
   {
     module: "List",
     groups: [
-      { title: "Stagger", presets: ["staggerFadeIn", "staggerSlideUp", "staggerSlideLeft", "staggerZoomIn", "staggerPopIn", "stackIn"], best: "Use for cards, rows, blocks, buttons, and feature lists." },
+      { title: "Stagger entrances", presets: ["staggerFadeIn", "staggerSlideUp", "staggerSlideLeft", "staggerZoomIn", "staggerPopIn", "stackIn", "staggerBlurIn", "feedAppend", "filterIn", "emptyToList", "insertItem"], best: "Use for cards, rows, blocks, buttons, and feature lists." },
       { title: "Cascade", presets: ["wordCascade", "wordWave", "wordDrop", "wordFadeIn"], best: "Use for compact word, tag, and button collections." },
-      { title: "Presence", presets: ["itemFadeIn", "itemSlideIn", "itemPopIn", "itemBounceIn", "itemFadeOut", "itemSlideOut", "itemCollapseOut"], best: "Use when keyed children are added or removed." },
-      { title: "Exit", presets: ["itemFadeOut", "itemSlideOut", "itemCollapseOut", "itemDismissOut", "rowCollapseOut", "tagRemove", "cardRemove"], best: "Use with keyed removal for rows, cards, tags, notifications, and menus." },
-      { title: "Motion systems", presets: ["marquee", "marqueeReverse", "marqueeFade", "parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll", "parallaxStagger", "flip", "smooth", "spring", "none"], best: "Use for logos, scroll-depth card groups, and keyed reorder." },
+      { title: "Item presence", presets: ["itemFadeIn", "itemSlideIn", "itemPopIn", "itemBounceIn", "itemFadeOut", "itemSlideOut", "itemCollapseOut", "selectionPulse", "glideIn", "glideOut", "flipIn", "flipOut", "slideIn", "slideOut", "bounceIn", "bounceOut"], best: "Use when keyed children are added or removed dynamically." },
+      { title: "Item exit", presets: ["itemFadeOut", "itemSlideOut", "itemCollapseOut", "itemDismissOut", "rowCollapseOut", "tagRemove", "cardRemove", "itemSlideOutLeft", "itemSlideOutRight", "itemScaleOut", "itemPopOut", "itemBlurOut"], best: "Use with keyed removal for rows, cards, tags, notifications, and menus." },
+      { title: "Motion systems", presets: ["marquee", "marqueeReverse", "marqueeFade", "parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll", "parallaxStagger", "flip", "smooth", "spring", "none", "expandIn"], best: "Use for logos, scroll-depth card groups, and keyed reorder." },
     ],
   },
   {
     module: "Block",
     groups: [
-      { title: "Entrance and exit", presets: ["fadeIn", "fadeSwap", "slideUp", "slideDown", "slideLeft", "slideRight", "scaleIn", "popIn", "rotateIn", "flipX", "flipY", "bounceIn", "blurIn", "clipUp", "clipLeft", "zoomIn"], best: "Use for cards, panels, sections, and notifications." },
+      { title: "Entrance & exit", presets: ["fadeIn", "fadeSwap", "slideUp", "slideDown", "slideLeft", "slideRight", "scaleIn", "popIn", "rotateIn", "flipX", "flipY", "bounceIn", "blurIn", "clipUp", "clipLeft", "zoomIn", "bounceOut", "collapseOut"], best: "Use for cards, panels, sections, and notifications." },
       { title: "Scroll-linked", presets: ["parallax", "parallaxFast", "parallaxReverse", "tiltScroll", "scaleScroll"], best: "Use for one hero image, card, or section moving at a different scroll speed." },
-      { title: "Hover and cursor", presets: ["lift", "sink", "grow", "glow", "shadow", "borderPop", "tilt", "tilt3D", "rotate3D", "depth"], best: "Use for interactive cards, pricing panels, and clickable surfaces." },
-      { title: "Feedback and overlays", presets: ["press", "ripple", "burst", "shake", "wiggle", "jello", "flash", "heartBeat", "pulse", "float", "spin", "ping", "shimmer"], best: "Use for click feedback, loading surfaces, and status moments." },
-      { title: "Exit", presets: ["fadeOut", "scaleOut", "popOut", "rotateOut", "bounceOut", "collapseOut", "blurOut", "modalOut", "drawerOutLeft", "toastOut", "dismissOut", "tabPanelOut"], best: "Use for unmounting cards, modals, drawers, tabs, and notifications." },
+      { title: "Hover & cursor", presets: ["lift", "sink", "grow", "glow", "shadow", "borderPop", "tilt", "tilt3D", "rotate3D", "depth", "float"], best: "Use for interactive cards, pricing panels, and clickable surfaces. Block applies CSS transitions for tear-free release." },
+      { title: "Feedback & overlays", presets: ["press", "ripple", "burst", "shake", "wiggle", "jello", "flash", "heartBeat", "pulse", "float", "spin", "ping", "shimmer", "successCheckIn", "buttonLoading", "focusRingPulse", "successToast", "checkboxCheck", "errorOut", "successOut"], best: "Use for click feedback, loading surfaces, status moments, and UI polish." },
+      { title: "UI pattern presets", presets: ["modalIn", "modalOut", "dialogOut", "popoverIn", "popoverOut", "toastIn", "toastOut", "toastOutRight", "toastOutUp", "tabPanelIn", "tabPanelOut", "drawerOutLeft", "drawerOutRight", "drawerOutTop", "drawerOutBottom", "menuOut", "dismissOut", "collapseWidth"], best: "Purpose-built for common UI patterns — modals, drawers, toasts, popovers, tabs." },
     ],
   },
+]
+
+const DOC_EASING = [
+  { name: "SPRING", value: "cubic-bezier(0.34, 1.56, 0.64, 1)", desc: "Overshoot bounce. Default for Text and Block. Ideal for entrances and change animations.", modules: "text, paragraph, list, block" },
+  { name: "SNAPPY", value: "cubic-bezier(0.2, 0, 0, 1)", desc: "Fast settle with no overshoot. Ideal for instant feedback on hover and click.", modules: "text, list, block (not paragraph)" },
+  { name: "SMOOTH", value: "cubic-bezier(0.22, 1, 0.36, 1)", desc: "Smooth deceleration with a long, polished tail. Default for Paragraph. Ideal for reveals, scroll-triggered motion, and any entrance that should feel unhurried.", modules: "text, paragraph, list, block" },
+  { name: "EASE_IN", value: "cubic-bezier(0.0, 0.0, 0.2, 1)", desc: "Subtle acceleration. Default for List entrance stagger. Good for items entering from off-screen.", modules: "text, paragraph, list, block" },
+  { name: "EASE_OUT", value: "cubic-bezier(0.4, 0.0, 1, 1)", desc: "Fast start with slow deceleration. Good for exits and dismissals.", modules: "text, paragraph, list, block" },
+  { name: "EASE_IN_OUT", value: "cubic-bezier(0.4, 0.0, 0.2, 1)", desc: "Standard symmetrical curve. Default for list reorder. Use for neutral transitions.", modules: "text, paragraph, list, block" },
+]
+
+const DOC_PRESET_OPTIONS = [
+  {
+    module: "Text",
+    options: ["distance", "scale", "blur", "stagger"],
+    desc: "Controls how far elements move (translate), their scale, blur radius, and per-character stagger delay.",
+  },
+  {
+    module: "Paragraph",
+    options: ["distance", "scale", "blur"],
+    desc: "Controls word/line offset distance, scale, and blur. Stagger is derived from duration.",
+  },
+  {
+    module: "List",
+    options: ["distance", "scale", "blur", "stagger"],
+    desc: "Controls item offset, scale, blur, and stagger spacing. Overrides the top-level stagger prop.",
+  },
+  {
+    module: "Block",
+    options: ["distance", "scale", "blur", "rotate"],
+    desc: "Controls offset, scale, blur, and rotation. Rotate is unique to Block (not available on other modules).",
+  },
+]
+
+const DOC_CALLBACKS = [
+  { name: "onClick", modules: "text, paragraph, block", fired: "On click/tap of the wrapper element." },
+  { name: "onEnter", modules: "text, paragraph, block", fired: "After the entrance animation (mount or scroll) completes." },
+  { name: "onExit", modules: "text, paragraph, block", fired: "After the exit animation completes and the element unmounts." },
+  { name: "onHoverStart", modules: "text, paragraph, block", fired: "On pointer enter." },
+  { name: "onHoverEnd", modules: "text, paragraph, block", fired: "On pointer leave." },
+  { name: "onAnimationEnd", modules: "text, paragraph, block", fired: "After every animation cycle (entrance and change both fire this)." },
+  { name: "onItemEnter(key)", modules: "list", fired: "When a keyed child enters (mounts or becomes present)." },
+  { name: "onItemExit(key)", modules: "list", fired: "When a keyed child exits (removed from children)." },
+  { name: "onReorder", modules: "list", fired: "After a reorder animation completes." },
+  { name: "onDragEnd(info)", modules: "block", fired: "After drag ends. Info includes offset, velocity, and dismissed boolean." },
 ]
 
 function DocsSection() {
@@ -2682,16 +2925,20 @@ function DocsSection() {
         </div>
         <div className="docs-principle-grid">
           <article>
-            <strong>Import by what animates</strong>
-            <p>Use text for inline words, paragraph for prose, list for repeated keyed children, and block for one full surface.</p>
+            <strong>Content-aware modules</strong>
+            <p>Four modules match four content shapes — text for inline strings, paragraph for prose, list for keyed collections, block for single surfaces. Each understands its content's internal structure.</p>
           </article>
           <article>
-            <strong>Trigger by when it runs</strong>
-            <p>Use scroll, change, hover, click, manual, or mount. Pass an array for multi-trigger, e.g. <code>trigger={["scroll", "change"]}</code>.</p>
+            <strong>Trigger-decoupled motion</strong>
+            <p>Triggers (change, scroll, hover, click, manual, mount) decide <em>when</em> motion fires. Presets decide <em>how</em> it looks. Combine them freely per module via the <code>triggers</code> array API.</p>
           </article>
           <article>
-            <strong>Presets stay content-aware</strong>
-            <p>The same idea can feel different by module because text, paragraphs, lists, and blocks have different layout needs.</p>
+            <strong>Lifecycle-first exits</strong>
+            <p>Exit animations are driven by lifecycle transitions — <code>show={false}</code> for Text/Paragraph/Block, key removal for List. No separate exit trigger prop. The component handles unmount timing.</p>
+          </article>
+          <article>
+            <strong>Presets with per-preset defaults</strong>
+            <p>Each of 200+ presets has recommended duration and easing baked in. Select any preset and the defaults auto-configure — override only what you need.</p>
           </article>
         </div>
       </section>
@@ -2710,8 +2957,11 @@ function DocsSection() {
                 <code>{item.importPath}</code>
               </div>
               <p>{item.use}</p>
-              <small>{item.examples}</small>
-              <strong>{item.component}</strong>
+              <small>{item.when}</small>
+              <div><strong>{item.component}</strong> <span style={{fontSize:12,color:"var(--text-tertiary)",fontWeight:500}}>{item.presets} presets</span></div>
+              <div className="docs-preset-pills" style={{marginTop:2}}>
+                <span style={{background:"var(--bg-sidebar)",border:"1px solid var(--border-subtle)",padding:"3px 8px",borderRadius:999,font:"600 10px/1 var(--mono)",color:"var(--text-tertiary)"}}>{item.defaults}</span>
+              </div>
             </article>
           ))}
         </div>
@@ -2726,13 +2976,19 @@ function DocsSection() {
         <div className="docs-trigger-grid">
           {DOC_TRIGGERS.map((item) => (
             <article key={item.name}>
-              <h4>{item.name}</h4>
+              <h4><span style={{marginRight:6}}>{item.icon}</span>{item.name}</h4>
               <p>{item.desc}</p>
-              <small>{item.best}</small>
+              <small>{item.detail}</small>
             </article>
           ))}
         </div>
-        <DocCode>{`<Animate.Text
+        <div className="docs-section-head" style={{marginTop:16}}>
+          <span style={{fontSize:11,color:"var(--text-tertiary)",fontWeight:700,fontFamily:"var(--mono)",letterSpacing:"0.08em",textTransform:"uppercase"}}>Multi-trigger</span>
+          <h3 style={{fontSize:"clamp(18px, 1.8vw, 24px)"}}>Two APIs for combining triggers</h3>
+          <p>Use the compact <code>trigger</code> + <code>scrollAnimation</code> pattern for simple cases, or the explicit <code>triggers</code> array for per-trigger control.</p>
+        </div>
+        <DocCode>{`{/* Compact — trigger tuple + scrollAnimation override */}
+<Animate.Text
   trigger={["scroll", "change"]}
   scrollAnimation="fadeIn"
   animation="fadeSwap"
@@ -2741,14 +2997,23 @@ function DocsSection() {
   {text}
 </Animate.Text>
 
-{/* Or use the triggers API for per-trigger animations: */}
+{/* Explicit — triggers array, each with its own animation */}
 <Animate.Text
   triggers={[
     { trigger: "scroll", animation: "fadeIn", threshold: 0.3 },
     { trigger: "change", animation: "fadeSwap" },
+    { trigger: "click", animation: "shake" },
   ]}
 >
   {text}
+</Animate.Text>
+
+{/* Queue behavior — scroll drops if running; change/hover/click queue up to 2 */}
+<Animate.Text
+  trigger="click"
+  animation="bounce"
+>
+  Click rapidly — animations queue
 </Animate.Text>`}</DocCode>
       </section>
 
@@ -2783,136 +3048,301 @@ function DocsSection() {
       <section className="docs-section">
         <div className="docs-section-head">
           <span>05</span>
-          <h3>Extended API</h3>
-          <p>Additional props and APIs shared across modules.</p>
+          <h3>Exit Animations</h3>
+          <p>Lifecycle-controlled exits — no separate trigger prop needed.</p>
+        </div>
+        <div className="docs-principle-grid">
+          <article>
+            <strong>show + exitAnimation (Text, Paragraph, Block)</strong>
+            <p>Set <code>show={false}</code> to trigger the exit. The component plays <code>exitAnimation</code>, calls <code>onExit</code>, and unmounts if <code>unmountOnExit</code> is true (default). No manual state management needed for the exit.</p>
+            <DocCode>{`<Animate.Block
+  show={isOpen}
+  animation="slideUp"
+  exitAnimation="modalOut"
+  unmountOnExit
+>
+  <Dialog />
+</Animate.Block>`}</DocCode>
+          </article>
+          <article>
+            <strong>Keyed child removal (List)</strong>
+            <p>List detects child removal via keyed diffing. Removed children play <code>exitAnimation</code> (default <code>"itemFadeOut"</code>) as ghost entries before the DOM node is released. Use <code>exitStagger</code> to delay each exit.</p>
+            <DocCode>{`<Animate.List
+  exitAnimation="itemSlideOut"
+  exitStagger={30}
+>
+  {items.map((item) => (
+    <Row key={item.id} />
+  ))}
+</Animate.List>`}</DocCode>
+          </article>
+          <article>
+            <strong>Exit stagger and per-module exit presets</strong>
+            <p>Each module has dedicated exit presets (25+ across all modules). Use <code>exitStagger</code> on List to offset multi-item exits. Per-item delay is <code>index * exitStagger</code> ms.</p>
+            <div className="docs-preset-pills" style={{marginTop:6}}>
+              <span>fadeOut</span><span>slideOutUp</span><span>slideOutDown</span><span>slideOutLeft</span><span>slideOutRight</span>
+              <span>scaleOut</span><span>popOut</span><span>blurOut</span><span>collapseHeight</span><span>collapseWidth</span>
+              <span>fadeMaskOut</span><span>wordFadeOut</span><span>lineSlideOut</span><span>itemCollapseOut</span>
+              <span>modalOut</span><span>drawerOutLeft</span><span>toastOut</span><span>dismissOut</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="docs-section">
+        <div className="docs-section-head">
+          <span>06</span>
+          <h3>Advanced API</h3>
+          <p>Props, configuration, and hooks shared across modules.</p>
         </div>
         <div className="docs-api-grid">
           <article>
-            <h4>properties</h4>
-            <p>Tween one or more CSS properties alongside the main animation. Pass an object where each key is a CSS property and the value is a <code>[from, to]</code> pair.</p>
+            <h4>presetOptions</h4>
+            <p>Per-preset keyframe overrides. Each module has its own PresetOptions type. Pass only the values you want to change — defaults come from the preset definition. Available options vary by module:</p>
+            <div className="docs-preset-pills" style={{marginBottom:10}}>
+              <span>distance (all)</span><span>scale (all)</span><span>blur (all)</span>
+              <span>stagger (text, list)</span><span>rotate (block)</span>
+            </div>
             <DocCode>{`<Animate.Text
-  trigger="change"
+  presetOptions={{
+    distance: 48,
+    blur: 2,
+  }}
+>
+  Larger offset, slight blur
+</Animate.Text>`}</DocCode>
+          </article>
+          <article>
+            <h4>properties</h4>
+            <p>Tween one or more CSS properties in parallel with the main animation. Each key is a CSS property mapped to a <code>[from, to]</code> pair. The from value is applied instantly and the to value is held on finish.</p>
+            <DocCode>{`<Animate.Text
   animation="morph"
   properties={{
-    color: ["#111111", "#7F77DD"],
-    letterSpacing: ["0px", "0.5px"]
+    color: ["#111", "#7F77DD"],
+    fontSize: ["14px", "18px"],
+    letterSpacing: ["0px", "0.5px"],
   }}
 >
   {label}
 </Animate.Text>`}</DocCode>
           </article>
           <article>
-            <h4>triggers</h4>
-            <p>Array of per-trigger configs that replace <code>trigger</code> + <code>scrollAnimation</code>. Each object specifies a trigger source, its animation, and an optional per-trigger <code>threshold</code>. The old <code>trigger</code>/<code>scrollAnimation</code> props still work for backwards compatibility.</p>
-            <DocCode>{`<Animate.Text
-  triggers={[
-    { trigger: "scroll", animation: "wordFadeIn", threshold: 0.3 },
-    { trigger: "click", animation: "shake" },
-    { trigger: "hover", animation: "highlight" },
-  ]}
->
-  {label}
-</Animate.Text>`}</DocCode>
+            <h4>Easing</h4>
+            <p>Six named cubic-bezier constants exported from every module. Pass the constant or its string name to the <code>easing</code> prop. Duration can be set independently via <code>duration</code> (100–1000ms range, default varies by module).</p>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+              {DOC_EASING.map(e => (
+                <div key={e.name} style={{fontSize:12,lineHeight:1.5,padding:"8px 10px",borderRadius:8,background:"var(--bg)",border:"1px solid var(--border-subtle)"}}>
+                  <strong style={{color:"var(--text)",fontFamily:"var(--mono)"}}>{e.name}</strong>
+                  <div style={{color:"var(--text-tertiary)",fontSize:11,marginTop:2}}>{e.value}</div>
+                  <div style={{color:"var(--text-secondary)",fontSize:11,marginTop:2}}>{e.desc}</div>
+                </div>
+              ))}
+            </div>
           </article>
           <article>
-            <h4>show</h4>
-            <p>Controls mounted state declaratively. When <code>show</code> becomes <code>false</code>, <code>exitAnimation</code> plays before unmount. Available on Text, Paragraph, and Block. List exits are driven by keyed child removal.</p>
-            <DocCode>{`<Animate.Block
-  show={isVisible}
-  animation="fadeIn"
-  exitAnimation="fadeOut"
-  unmountOnExit
->
-  <Card />
-</Animate.Block>
+            <h4>AnimateHandle (ref API)</h4>
+            <p>Text, List, and Block expose <code>animate()</code> and <code>element</code> via ref. Use <code>trigger="manual"</code> for imperative-only control, or call <code>animate()</code> anytime to replay. Paragraph's handle type is defined but not wired.</p>
+            <DocCode>{`const ref = useRef(null)
 
 <Animate.Text
-  show={showLabel}
-  animation="fadeIn"
-  exitAnimation="slideOutUp"
+  ref={ref}
+  trigger="manual"
+  animation="bounce"
 >
-  Saved
-</Animate.Text>`}</DocCode>
+  Click Me
+</Animate.Text>
+
+<button onClick={() => ref.current?.animate()}>
+  Replay
+</button>`}</DocCode>
           </article>
           <article>
-            <h4>speed</h4>
-            <p>Used by marquee and scroll-linked presets. On <code>Animate.List</code> it controls marquee pixels-per-second (default <code>50</code>). On <code>Animate.Block</code> it controls parallax depth multiplier (default <code>0.5</code>).</p>
-            <DocCode>{`<Animate.List
-  animation="marquee"
-  speed={50}
+            <h4>Drag (Block only)</h4>
+            <p>Pointer-events-based drag with configurable axis, threshold, elasticity, and snap-back. <code>drag</code> accepts <code>"x"</code>, <code>"y"</code>, <code>"both"</code>, or <code>true</code>. <code>onDragEnd</code> receives offset, velocity, and a <code>dismissed</code> boolean (true when drag exceeds the threshold on the exit side).</p>
+            <DocCode>{`<Animate.Block
+  drag="x"
+  dragThreshold={100}
+  dragElastic={0.3}
+  dragSnapBackDuration={300}
+  onDragEnd={(info) => {
+    if (info.dismissed) close()
+  }}
 >
-  {logos.map((logo) => <span key={logo}>{logo}</span>)}
+  Swipeable card
+</Animate.Block>`}</DocCode>
+          </article>
+          <article>
+            <h4>layoutId (Block only)</h4>
+            <p>FLIP-based shared layout transitions. When two elements share a <code>layoutId</code> across renders, Animate.Block measures their positions and animates the transition. Supports <code>layoutTransition</code> to customize duration and easing.</p>
+            <DocCode>{`{[items.map(item =>
+  <Animate.Block
+    key={item.id}
+    layoutId={item.id}
+    layoutTransition={{ duration: 400, easing: SPRING }}
+  >
+    <Card>{item.name}</Card>
+  </Animate.Block>
+)]`}</DocCode>
+          </article>
+          <article>
+            <h4>Parallax (Block export)</h4>
+            <p>A standalone scroll-linked parallax wrapper exported from <code>trigr/block</code>. Uses <code>position: sticky</code> + <code>100dvh</code> frames for smooth parallax without scroll listeners. Respects <code>prefers-reduced-motion</code>.</p>
+            <DocCode>{`import { Parallax } from "trigr/block"
+
+<Parallax type="parallaxFast" strength={0.4}>
+  <img src={hero} alt="" />
+</Parallax>`}</DocCode>
+          </article>
+          <article>
+            <h4>customAnimation (List only)</h4>
+            <p>Define custom <code>Keyframe[]</code> arrays for list item enter and exit animations, bypassing presets entirely. Each definition includes <code>keyframes</code> and optional <code>options</code> (duration, easing, etc.).</p>
+            <DocCode>{`<Animate.List
+  customAnimation={{
+    enter: {
+      keyframes: [
+        { opacity: 0, transform: "translateX(-50px) rotate(-10deg)" },
+        { opacity: 1, transform: "translateX(0) rotate(0)" },
+      ],
+    },
+    exit: {
+      keyframes: [
+        { opacity: 1, transform: "scale(1)" },
+        { opacity: 0, transform: "scale(0.5)" },
+      ],
+    },
+  }}
+>
+  {items.map(i => <div key={i.id}>{i.name}</div>)}
+</Animate.List>`}</DocCode>
+          </article>
+          <article>
+            <h4>stagger, reorder &amp; speed</h4>
+            <p><strong>stagger</strong> (List, default 60ms): delay between each child's entrance animation. <strong>exitStagger</strong> (List, default 0ms): delay between child exit animations.</p>
+            <p><strong>reorder</strong> / <strong>reorderAnimation</strong> (List): accepts <code>"flip"</code> (default), <code>"smooth"</code>, <code>"spring"</code>, or <code>"none"</code>. Detects key position changes and animates items to new locations.</p>
+            <p><strong>speed</strong> (List: marquee px/s, default 50; Block: parallax multiplier, default 0.5).</p>
+            <DocCode>{`<Animate.List
+  stagger={80}
+  exitStagger={20}
+  reorderAnimation="spring"
+  speed={40}
+>
+  {items}
 </Animate.List>`}</DocCode>
           </article>
           <article>
             <h4>as</h4>
-            <p>Sets the wrapper element rendered by each module. Text defaults to <code>"span"</code>; Paragraph, List, and Block default to <code>"div"</code>. List item wrappers are always <code>&lt;div&gt;</code> and cannot be changed.</p>
-            <DocCode>{`<Animate.Text as="h2">
-  Hello
-</Animate.Text>
-
+            <p>Sets the wrapper element type. Text defaults to <code>"span"</code>, Paragraph/List/Block default to <code>"div"</code>. List item wrappers are always <code>&lt;div&gt;</code> and are not configurable.</p>
+            <DocCode>{`<Animate.Text as="h2">Heading</Animate.Text>
+<Animate.Paragraph as="article">...</Animate.Paragraph>
 <Animate.List as="ul">
-  {items.map((item) => <li key={item.id}>{item.name}</li>)}
+  <li key={1}>item</li>
 </Animate.List>`}</DocCode>
           </article>
           <article>
-            <h4>reorder</h4>
-            <p>Sets the reorder animation preset for keyed list children. Accepts <code>"flip"</code>, <code>"smooth"</code>, <code>"spring"</code>, or <code>"none"</code>. Detects key changes and animates items to their new positions.</p>
-            <DocCode>{`<Animate.List
-  animation="staggerFadeIn"
-  exitAnimation="slideOut"
-  reorderAnimation="flip"
->
-  {items.map((item) => <Row key={item.id} {...item} />)}
-</Animate.List>`}</DocCode>
+            <h4>Event callbacks</h4>
+            <p>Lifecycle hooks for animation phases and user interaction. Available per module as shown:</p>
+            <div style={{display:"grid",gap:4}}>
+              {DOC_CALLBACKS.map(cb => (
+                <div key={cb.name} style={{fontSize:12,lineHeight:1.5,padding:"6px 10px",borderRadius:6,background:"var(--bg)",border:"1px solid var(--border-subtle)"}}>
+                  <strong style={{fontFamily:"var(--mono)",color:"var(--text)"}}>{cb.name}</strong>
+                  <span style={{color:"var(--text-tertiary)",marginLeft:6,fontSize:11}}>{cb.modules}</span>
+                  <div style={{color:"var(--text-secondary)",fontSize:11,marginTop:2}}>{cb.fired}</div>
+                </div>
+              ))}
+            </div>
           </article>
           <article>
-            <h4>AnimateHandle (ref API)</h4>
-            <p>Every component exposes an imperative handle with <code>animate()</code>. Use with <code>trigger="manual"</code> or any trigger to replay the animation.</p>
-            <DocCode>{`const ref = useRef(null)
-
-function handleClick() {
-  ref.current?.animate()
-}
-
-<Animate.Text ref={ref} trigger="manual" animation="bounce">
-  Click Me
+            <h4>once, repeat &amp; threshold</h4>
+            <p>Scroll behavior props that control how and when scroll-triggered animations fire. <code>threshold</code> (0–1, default 0.4) sets the visible portion needed. <code>once</code> (default true for mount) disconnects the observer after first intersection. <code>repeat</code> (default false) allows re-animation on re-entry.</p>
+            <DocCode>{`<Animate.Text
+  trigger="scroll"
+  animation="fadeIn"
+  threshold={0.2}
+  repeat
+>
+  {content}
 </Animate.Text>`}</DocCode>
           </article>
           <article>
-            <h4>Easing constants</h4>
-            <p>Each module exports named easing constants: <code>SPRING</code>, <code>SNAPPY</code>, <code>SMOOTH</code>, <code>EASE_IN</code>, <code>EASE_OUT</code>, <code>EASE_IN_OUT</code>. All except <code>SNAPPY</code> are available from every module (SNAPPY is not in paragraph). Pass the string or constant to <code>easing</code>.</p>
-            <DocCode>{`import { SPRING, SMOOTH } from "trigr/text"
-
-<Animate.Text
-  trigger="change"
-  animation="morph"
-  easing={SPRING}
+            <h4>highlightColor (Text &amp; Paragraph)</h4>
+            <p>Controls the highlight marker color used by the <code>"highlight"</code> preset. Accepts any valid CSS color string. Defaults to a yellow-like marker.</p>
+            <DocCode>{`<Animate.Text
+  animation="highlight"
+  highlightColor="#FF6B6B"
 >
-  {label}
+  Important text
 </Animate.Text>`}</DocCode>
           </article>
           <article>
-            <h4>Four modules only</h4>
-            <p>trigr ships exactly four modules: <code>text</code>, <code>paragraph</code>, <code>list</code>, and <code>block</code>. Earlier prototypes included <code>trigr/mount</code> and <code>trigr/empty</code> — these were removed. Every animation path now lives inside the four content-aware wrappers above.</p>
+            <h4>Nested styling (Text only)</h4>
+            <p>When <code>Animate.Text</code> wraps a single styled child like <code>&lt;span className="stat-value"&gt;</code>, text-replacing animations (odometer, ticker, typewriter, scramble, decoder) animate inside that child instead of wiping it. Your class, font-size, weight, and color stay attached.</p>
+            <DocCode>{`<Animate.Text trigger="change" animation="odometer">
+  <span className="stat-value">200+</span>
+</Animate.Text>`}</DocCode>
+          </article>
+          <article>
+            <h4>Subpath imports only</h4>
+            <p>trigr has no root entry. Import from the module you need — each is independent and tree-shakeable. <code>import { Animate } from "trigr"</code> does not exist.</p>
+            <DocCode>{`import { Animate } from "trigr/text"
+import { Animate } from "trigr/block"
+import { Animate } from "trigr/paragraph"
+import { Animate } from "trigr/list"`}</DocCode>
+          </article>
+        </div>
+      </section>
+
+      <section className="docs-section">
+        <div className="docs-section-head">
+          <span>07</span>
+          <h3>Performance &amp; Production</h3>
+          <p>Optimizations for real-world use, accessibility, and bundle size.</p>
+        </div>
+        <div className="docs-practice-grid">
+          <article>
+            <strong>Reduced motion</strong>
+            <p>All modules respect <code>prefers-reduced-motion: reduce</code>. When detected, modules strip transform/filter keyframes and keep only opacity transitions (Text, Paragraph, List) or halve duration and skip continuous/hover-state animations entirely (Block). The <code>Parallax</code> component returns early with no motion.</p>
+          </article>
+          <article>
+            <strong>willChange management</strong>
+            <p>Each module applies <code>willChange</code> before animation starts and removes it on finish to prevent GPU memory bloat. The property list includes <code>transform, opacity, filter, background-position, background-size</code>.</p>
+          </article>
+          <article>
+            <strong>IntersectionObserver scrolling</strong>
+            <p>Scroll triggers use a single <code>IntersectionObserver</code> per component with computed <code>rootMargin</code> from the <code>threshold</code> prop. No scroll event listeners are added, so scroll performance is not impacted by pageload.</p>
+          </article>
+          <article>
+            <strong>Tree-shakeable subpath exports</strong>
+            <p>Import only what you use. <code>trigr/text</code>, <code>trigr/paragraph</code>, <code>trigr/list</code>, and <code>trigr/block</code> are independent subpath exports. A minimal Text-only import is ~77KB (28KB gzip). Package.json declares <code>"sideEffects": false</code>.</p>
+            <DocCode>{`// ✅ Only imports what you need
+import { Animate } from "trigr/text"
+import { Animate } from "trigr/block"`}</DocCode>
+          </article>
+          <article>
+            <strong>Per-preset default overrides</strong>
+            <p>Every preset has recommended <code>duration</code> and <code>easing</code> defaults stored in a 130+ entry map. When you select a preset, the defaults auto-apply. Override any value explicitly — the prop takes precedence.</p>
+          </article>
+          <article>
+            <strong>Minified production builds</strong>
+            <p>The library is bundled with esbuild with minification enabled. esbuild is conservative — it never touches string literals, object keys, or external API calls — so WAAPI keyframes and animation strings are safe.</p>
           </article>
         </div>
       </section>
 
       <section className="docs-section docs-best-practices">
         <div className="docs-section-head">
-          <span>06</span>
+          <span>08</span>
           <h3>Best Practices</h3>
           <p>Rules for using trigr in production without making the interface feel busy.</p>
         </div>
         <div className="docs-practice-grid">
-          <article><strong>Use change presets for replacement</strong><p>fadeSwap, morph, typewriter, and slideReplace need old and new values to feel correct.</p></article>
-          <article><strong>Use scroll presets for reveal</strong><p>Scroll should reveal content or link motion to scroll depth. Avoid forcing swap-only presets into scroll demos.</p></article>
-          <article><strong>Use list for keyed collections</strong><p>Every child needs a stable key. trigr uses keys for presence, reorder, and item tracking.</p></article>
-          <article><strong>Keep hover and click short</strong><p>Interaction feedback should feel immediate. Use shorter duration and snappy easing.</p></article>
-          <article><strong>Prefer block for one surface</strong><p>If one complete card or image moves together, use block. If many children move as a collection, use list. Paragraph works with prose structure, not just the outer box.</p></article>
-          <article><strong>Add properties for parallel style transitions</strong><p>Use properties when color, font size, or background should tween alongside the animation.</p></article>
-          <article><strong>Use show for block exit animations</strong><p>Wrap conditional block content with show + exitAnimation + unmountOnExit instead of manual state toggling for smooth unmounts.</p></article>
+          <article><strong>Pick the right module for the content</strong><p>Text for inline strings, Paragraph for prose, List for keyed collections, Block for single surfaces. The wrong module produces awkward motion.</p></article>
+          <article><strong>Use change presets for replacement</strong><p>fadeSwap, morph, typewriter, slideReplace, and underline presets need old and new values to feel correct. Scroll triggers should use reveal presets.</p></article>
+          <article><strong>Keep interaction feedback fast</strong><p>Hover and click presets should use short duration (150-250ms) and SNAPPY or SPRING easing. Avoid long animations on micro-interactions.</p></article>
+          <article><strong>Use show for unmounts</strong><p>Wrap conditional content with <code>show</code> + <code>exitAnimation</code> + <code>unmountOnExit</code> instead of manual state toggling. This guarantees smooth unmounts.</p></article>
+          <article><strong>Add properties for parallel style transitions</strong><p>Use the <code>properties</code> prop when color, font size, or background should animate alongside the preset.</p></article>
+          <article><strong>Stable keys on List children</strong><p>Every child needs a stable, unique key. trigr uses keys for presence detection, reorder FLIP, and exit tracking. Unstable keys cause ghost entries.</p></article>
+          <article><strong>Use presetOptions to tune, not replace</strong><p>Adjust distance, scale, blur, stagger, or rotate via <code>presetOptions</code> rather than writing custom keyframes. The rebase engine modifies the preset's built-in keyframes proportionally.</p></article>
+          <article><strong>Trust the per-preset defaults</strong><p>Each preset ships with ideal duration and easing. Start with the defaults and override only when a specific timing need arises.</p></article>
         </div>
       </section>
     </div>
@@ -3074,6 +3504,7 @@ export default function Playground() {
           </span>
           <nav className="topbar-nav">
             <button type="button" onClick={() => selectModule("docs")}>Docs</button>
+            <a href={`${window.location.origin}${import.meta.env.BASE_URL}example.html`}>Example</a>
             <a href="https://github.com/Emeka-Ugbanu-hub/Trigr" target="_blank" rel="noopener noreferrer">GitHub</a>
             <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">
               {dark ? <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> : <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>}
@@ -3357,6 +3788,16 @@ export default function Playground() {
             </RuntimeOptionsContext.Provider>
           </div>
         </main>
+        {!sidebarOpen && module !== "docs" && (
+          <button className="mobile-controls-btn" onClick={() => setSidebarOpen(true)} aria-label="Open controls">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="10" y1="18" x2="20" y2="18" />
+              <circle cx="7" cy="18" r="2" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   )
@@ -3366,6 +3807,34 @@ export default function Playground() {
 
 const styles = `
 *, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+.topbar, .sidebar, .main, .controls-section, .preview-body, .preview-toolbar {
+  transition: background-color 300ms ease, border-color 300ms ease;
+}
+
+a, button, p, h1, h2, h3, h4, h5, h6, span, label, strong, small, code, pre {
+  transition: color 300ms ease;
+}
+
+.doc-code, .code-block, .code-wrap, .select-trigger, .select-popover, .select-search-wrap,
+.docs-section, .docs-hero, .docs-module-card, .docs-practice-grid article,
+.docs-api-grid article, .docs-trigger-grid article, .docs-principle-grid article,
+.docs-preset-group, .docs-animation-module, .select-trigger:hover, .select-option {
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease, box-shadow 300ms ease;
+}
 
 :root {
   --bg: #fafafa;
@@ -3401,7 +3870,7 @@ const styles = `
   --bg-sidebar: #0a0a0a;
   --bg-topbar: #0a0a0a;
   --border: #262626;
-  --border-subtle: #0d0d0d;
+  --border-subtle: #141414;
   --text: #f5f5f5;
   --text-secondary: #a3a3a3;
   --text-tertiary: #737373;
@@ -3412,356 +3881,12 @@ const styles = `
   --logo-fill: #f5f5f5;
 }
 
-[data-theme="dark"] .select-trigger,
-[data-theme="dark"] .select-popover,
-[data-theme="dark"] .select-search-wrap,
-[data-theme="dark"] .select-empty,
-[data-theme="dark"] .preview-card,
-[data-theme="dark"] .docs-section,
-[data-theme="dark"] .docs-hero,
-[data-theme="dark"] .docs-module-card,
-[data-theme="dark"] .docs-practice-grid article,
-[data-theme="dark"] .capability-panel,
-[data-theme="dark"] .docs-api-grid article,
-[data-theme="dark"] .docs-trigger-grid article,
-[data-theme="dark"] .docs-principle-grid article,
-[data-theme="dark"] .docs-preset-group,
-[data-theme="dark"] .docs-animation-module { background: var(--bg-elevated); }
-
-[data-theme="dark"] .select-option { color: var(--text); }
-[data-theme="dark"] .select-option:hover { background: var(--bg-sidebar); }
-[data-theme="dark"] .select-option.active { background: #2a2a2e; color: var(--text); font-weight: 600; }
-[data-theme="dark"] .select-caret { color: var(--text-tertiary); }
-[data-theme="dark"] .select-trigger:hover { border-color: var(--border); }
-[data-theme="dark"] .select-menu.open .select-trigger { border-color: var(--text-tertiary); box-shadow: 0 0 0 2px rgba(232,232,237,0.08); }
-
-[data-theme="dark"] .doc-code { background: var(--code-bg); }
-
-[data-theme="dark"] .control-slider { background: var(--border); }
-[data-theme="dark"] .control-slider::-webkit-slider-thumb { background: var(--text); }
-
-[data-theme="dark"] .sidebar-trigger:hover { background: var(--bg-elevated); }
-[data-theme="dark"] .sidebar-trigger.active { background: var(--bg-elevated); }
-
-[data-theme="dark"] .preview-body { background: var(--bg-elevated); }
-[data-theme="dark"] .preview-toolbar { background: var(--bg-sidebar); border-color: var(--border-subtle); }
-[data-theme="dark"] .code-wrap { background: var(--code-bg); }
-[data-theme="dark"] .code-block { background: #1a1a1c; }
-[data-theme="dark"] .demo-stage { background: var(--bg-elevated); }
-[data-theme="dark"] .real-demo { background: var(--bg-elevated); }
-[data-theme="dark"] .search-field { background: var(--bg-elevated); }
-[data-theme="dark"] .toast-demo { background: var(--bg-elevated); }
-[data-theme="dark"] .card-basic { background: #2a2520; }
-[data-theme="dark"] .card-pricing { background: #2a2020; }
-[data-theme="dark"] .card-faq { background: #20202a; }
-[data-theme="dark"] .list-card { background: var(--bg-elevated); }
-[data-theme="dark"] .grid-card { background: var(--bg-elevated); }
-[data-theme="dark"] .reorder-card { background: var(--bg-elevated); }
-[data-theme="dark"] .ghost { background: var(--bg-elevated); border-color: var(--border); }
-[data-theme="dark"] .nav-links-demo { background: var(--bg-elevated); }
-[data-theme="dark"] .docs-hero::before {
-  background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%);
-}
-
-/* ── Dark Mode Text Colors ─────────────────── */
-/* Force all text to use light colors in dark mode */
-[data-theme="dark"] .docs-hero h2,
-[data-theme="dark"] .docs-hero p,
-[data-theme="dark"] .docs-section h3,
-[data-theme="dark"] .docs-section p,
-[data-theme="dark"] .docs-section strong,
-[data-theme="dark"] .docs-module-card h4,
-[data-theme="dark"] .docs-module-card p,
-[data-theme="dark"] .docs-module-card small,
-[data-theme="dark"] .docs-module-card > strong,
-[data-theme="dark"] .docs-principle-grid article strong,
-[data-theme="dark"] .docs-principle-grid article p,
-[data-theme="dark"] .docs-trigger-grid h4,
-[data-theme="dark"] .docs-trigger-grid p,
-[data-theme="dark"] .docs-trigger-grid small,
-[data-theme="dark"] .docs-practice-grid article strong,
-[data-theme="dark"] .docs-practice-grid article p,
-[data-theme="dark"] .docs-api-grid article h4,
-[data-theme="dark"] .docs-api-grid article p,
-[data-theme="dark"] .docs-animation-module h4,
-[data-theme="dark"] .docs-preset-group strong,
-[data-theme="dark"] .docs-preset-group small { color: var(--text) !important; }
-
-[data-theme="dark"] .docs-hero-subtitle,
-[data-theme="dark"] .docs-section-head p,
-[data-theme="dark"] .docs-module-card p,
-[data-theme="dark"] .docs-principle-grid article p,
-[data-theme="dark"] .docs-trigger-grid p,
-[data-theme="dark"] .docs-practice-grid article p,
-[data-theme="dark"] .docs-api-grid article p,
-[data-theme="dark"] .docs-kicker,
-[data-theme="dark"] .docs-section-head span,
-[data-theme="dark"] .docs-module-card small,
-[data-theme="dark"] .docs-trigger-grid small,
-[data-theme="dark"] .docs-preset-group small { color: var(--text-secondary) !important; }
-
-/* Blog card dark mode */
-[data-theme="dark"] .blog-card-body h3,
-[data-theme="dark"] .blog-card-body p,
-[data-theme="dark"] .blog-card-meta,
-[data-theme="dark"] .blog-card-date,
-[data-theme="dark"] .blog-card-author,
-[data-theme="dark"] .blog-card-read,
-[data-theme="dark"] .blog-card-tag { color: var(--text) !important; }
-
-/* Search demo dark mode */
-[data-theme="dark"] .search-real-header,
-[data-theme="dark"] .search-real-header input,
-[data-theme="dark"] .search-real-result-item,
-[data-theme="dark"] .search-real-result-body h4,
-[data-theme="dark"] .search-real-result-body p { color: var(--text) !important; }
-[data-theme="dark"] .search-real-header input::placeholder { color: var(--text-tertiary); }
-
-/* App header demo dark mode */
-[data-theme="dark"] .app-header-demo,
-[data-theme="dark"] .app-header-logo,
-[data-theme="dark"] .app-header-logo span { color: var(--text) !important; }
-[data-theme="dark"] .app-header-cta { color: var(--bg-elevated) !important; }
-
-/* Landing hero demo dark mode */
-[data-theme="dark"] .landing-hero-demo,
-[data-theme="dark"] .landing-eyebrow,
-[data-theme="dark"] .landing-headline,
-[data-theme="dark"] .landing-subtitle { color: var(--text) !important; }
-[data-theme="dark"] .landing-btn { color: var(--text-secondary) !important; background: var(--bg-elevated) !important; }
-[data-theme="dark"] .landing-btn:hover { color: var(--text) !important; }
-[data-theme="dark"] .landing-btn-primary,
-[data-theme="dark"] .landing-btn-primary:hover { color: var(--bg-elevated) !important; background: var(--accent) !important; }
-
-/* Testimonial demo dark mode */
-[data-theme="dark"] .testimonial-demo,
-[data-theme="dark"] .testimonial-author strong,
-[data-theme="dark"] .testimonial-author span { color: var(--text) !important; }
-
-/* Page load demo dark mode */
-[data-theme="dark"] .page-load-content,
-[data-theme="dark"] .page-load-content h2,
-[data-theme="dark"] .page-load-desc,
-[data-theme="dark"] .page-load-stat strong,
-[data-theme="dark"] .page-load-stat span { color: var(--text) !important; }
-[data-theme="dark"] .page-load-desc,
-[data-theme="dark"] .page-load-stat span { color: var(--text-secondary) !important; }
-
-/* List demos dark mode */
-[data-theme="dark"] .list-dashboard-row,
-[data-theme="dark"] .list-feature-card,
-[data-theme="dark"] .list-notification-row,
-[data-theme="dark"] .list-tag-pill,
-[data-theme="dark"] .list-nav-row,
-[data-theme="dark"] .list-flip-card,
-[data-theme="dark"] .list-bounce-item,
-[data-theme="dark"] .list-pop-row,
-[data-theme="dark"] .list-menu-button { background: var(--bg-elevated) !important; }
-[data-theme="dark"] .list-dashboard-row,
-[data-theme="dark"] .list-dashboard-row strong,
-[data-theme="dark"] .list-dashboard-row p,
-[data-theme="dark"] .list-feature-card,
-[data-theme="dark"] .list-feature-card strong,
-[data-theme="dark"] .list-feature-card p,
-[data-theme="dark"] .list-feature-card span,
-[data-theme="dark"] .list-notification-row,
-[data-theme="dark"] .list-notification-row strong,
-[data-theme="dark"] .list-notification-row p,
-[data-theme="dark"] .list-tag-pill,
-[data-theme="dark"] .list-nav-row,
-[data-theme="dark"] .list-nav-row strong,
-[data-theme="dark"] .list-flip-card,
-[data-theme="dark"] .list-flip-card strong,
-[data-theme="dark"] .list-bounce-item,
-[data-theme="dark"] .list-bounce-item strong,
-[data-theme="dark"] .list-pop-row,
-[data-theme="dark"] .list-pop-row strong,
-[data-theme="dark"] .list-menu-button { color: var(--text) !important; }
-[data-theme="dark"] .list-dashboard-row p,
-[data-theme="dark"] .list-feature-card p,
-[data-theme="dark"] .list-notification-row p,
-[data-theme="dark"] .list-flip-card p,
-[data-theme="dark"] .list-pop-row .pop-badge { color: var(--text-secondary) !important; }
-[data-theme="dark"] .list-feature-card.tone-green,
-[data-theme="dark"] .list-feature-card.tone-blue,
-[data-theme="dark"] .list-feature-card.tone-amber,
-[data-theme="dark"] .list-feature-card.tone-pink,
-[data-theme="dark"] .list-feature-card.tone-violet { background: var(--bg-elevated) !important; }
-[data-theme="dark"] .pop-badge { background: rgba(255,255,255,0.08) !important; color: var(--text-secondary) !important; }
-[data-theme="dark"] .list-parallax-demo { background: var(--bg-elevated) !important; }
-[data-theme="dark"] .list-parallax-card { color: var(--text) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .list-parallax-card span { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .list-parallax-card p { color: var(--text-secondary) !important; }
-[data-theme="dark"] .list-parallax-card button { background: var(--text) !important; color: var(--bg-elevated) !important; border-color: var(--text) !important; }
-[data-theme="dark"] .list-remove-btn { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .toolbar-count { color: var(--text-secondary) !important; }
-
-/* Block demos dark mode */
-[data-theme="dark"] .block-demo-card,
-[data-theme="dark"] .block-demo-card h3,
-[data-theme="dark"] .block-demo-card p,
-[data-theme="dark"] .block-card-icon { color: var(--text) !important; }
-[data-theme="dark"] .block-demo-card p { color: var(--text-secondary) !important; }
-[data-theme="dark"] .block-demo-card button { color: var(--bg-elevated) !important; background: var(--accent) !important; border-color: var(--accent) !important; }
-[data-theme="dark"] .block-demo-card button:hover { background: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
-
-/* Demo labels and meta */
-[data-theme="dark"] .demo-label { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .demo-meta { color: var(--text-tertiary) !important; }
-
-/* Capability panel */
-[data-theme="dark"] .capability-panel p { color: var(--text-secondary) !important; }
-[data-theme="dark"] .capability-chips span { color: var(--text-secondary) !important; background: var(--bg-sidebar) !important; }
-
-/* Input and controls */
-[data-theme="dark"] .search-field input { background: var(--bg-elevated) !important; color: var(--text) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .random-btn { background: var(--bg-elevated) !important; color: var(--text) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .random-btn:hover { background: var(--accent) !important; color: var(--bg-elevated) !important; }
-[data-theme="dark"] .fire-button { background: var(--accent) !important; color: var(--bg-elevated) !important; border-color: var(--accent) !important; }
-[data-theme="dark"] .fire-button:hover { background: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
-
-/* Preview body text */
-[data-theme="dark"] .preview-body h1,
-[data-theme="dark"] .preview-body h2,
-[data-theme="dark"] .preview-body h3,
-[data-theme="dark"] .preview-body h4,
-[data-theme="dark"] .preview-body p,
-[data-theme="dark"] .preview-body span,
-[data-theme="dark"] .preview-body div { color: var(--text); }
-[data-theme="dark"] .preview-body p { color: var(--text-secondary); }
-
-/* Marquee */
-[data-theme="dark"] .marquee-prefix { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .marquee-item { color: var(--text) !important; }
-
-/* Code blocks */
-[data-theme="dark"] .code { background: #0a0a0a !important; color: #a3a3a3 !important; border-color: rgba(255,255,255,0.06) !important; }
-[data-theme="dark"] .code-tag { color: #7dd3fc !important; }
-[data-theme="dark"] .code-string { color: #fbbf24 !important; }
-
-/* Doc code */
-[data-theme="dark"] .doc-code { background: var(--code-bg) !important; }
-[data-theme="dark"] .doc-code pre { color: var(--text) !important; }
-
-/* Scroll demo */
-[data-theme="dark"] .scroll-intro { color: var(--text-secondary) !important; }
-[data-theme="dark"] .scroll-reveal-item p { color: var(--text-secondary) !important; }
-
-/* Nav links */
-[data-theme="dark"] .nav-link-item { color: var(--text-secondary) !important; }
-[data-theme="dark"] .nav-link-item:hover { color: var(--text) !important; background: rgba(255,255,255,0.05) !important; }
-
-/* Select menu */
-[data-theme="dark"] .select-search { background: var(--bg-sidebar) !important; color: var(--text) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .select-search:focus { border-color: var(--text-tertiary) !important; box-shadow: 0 0 0 2px rgba(232,232,237,0.06) !important; }
-
-/* View code button */
-[data-theme="dark"] .view-code-btn { background: var(--bg-sidebar) !important; color: var(--text-secondary) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .view-code-btn:hover { background: var(--bg) !important; color: var(--text) !important; }
-
-/* Replay button */
-[data-theme="dark"] .replay-btn { background: var(--bg-sidebar) !important; color: var(--text-secondary) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .replay-btn:hover { background: var(--bg) !important; color: var(--text) !important; }
-
-/* Main header */
-[data-theme="dark"] .main-header h1 { color: var(--text) !important; }
-[data-theme="dark"] .main-desc { color: var(--text-secondary) !important; }
-[data-theme="dark"] .badge { background: var(--bg-elevated) !important; color: var(--text-secondary) !important; border-color: var(--border) !important; }
-
-/* Sidebar */
-[data-theme="dark"] .sidebar-module-btn { color: var(--text-secondary) !important; }
-[data-theme="dark"] .sidebar-module.active .sidebar-module-btn { color: var(--text) !important; }
-[data-theme="dark"] .sidebar-trigger { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .sidebar-trigger.active { color: var(--text) !important; }
-[data-theme="dark"] .sidebar-trigger-count { background: rgba(255,255,255,0.06) !important; color: var(--text-tertiary) !important; }
-[data-theme="dark"] .sidebar-trigger.active .sidebar-trigger-count { background: rgba(255,255,255,0.08) !important; color: var(--text-secondary) !important; }
-[data-theme="dark"] .sidebar { border: none !important; outline: none !important; box-shadow: none !important; background: var(--bg) !important; }
-[data-theme="dark"] .sidebar-scroll { scrollbar-width: none; }
-[data-theme="dark"] .sidebar-scroll::-webkit-scrollbar { display: none; }
-
-/* Controls */
-[data-theme="dark"] .controls-title { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .control-label { color: var(--text-secondary) !important; }
-[data-theme="dark"] .control-value { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .control-hint { color: var(--text-tertiary) !important; }
-
-/* Window action buttons */
-[data-theme="dark"] .window-action-btn { background: var(--bg-elevated) !important; color: var(--text-secondary) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .window-action-btn:hover { background: var(--bg-sidebar) !important; color: var(--text) !important; }
-
-/* Cards */
-[data-theme="dark"] .card-basic { background: #2a2520 !important; }
-[data-theme="dark"] .card-pro { background: #1a2530 !important; }
-[data-theme="dark"] .card-features { background: #1a2a1f !important; }
-[data-theme="dark"] .card-pricing { background: #2a1a1c !important; }
-[data-theme="dark"] .card-faq { background: #1a1a2a !important; }
-[data-theme="dark"] .card-welcome { background: #1a2a1f !important; }
-
-/* Parallax demo */
-[data-theme="dark"] .parallax-demo .block-demo-card { background: var(--bg-elevated) !important; }
-
-/* Toast / notif */
-[data-theme="dark"] .notif-card { background: var(--bg-elevated) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .notif-card:hover { background: var(--bg) !important; }
-[data-theme="dark"] .notif-body strong { color: var(--text) !important; }
-[data-theme="dark"] .notif-body p { color: var(--text-secondary) !important; }
-[data-theme="dark"] .notif-dismiss { color: var(--text-tertiary) !important; }
-[data-theme="dark"] .notif-dismiss:hover { color: #ef4444 !important; }
-[data-theme="dark"] .empty-notifs { color: var(--text-tertiary) !important; }
-
-/* Exit controls */
-[data-theme="dark"] .exit-controls .select-menu { color: var(--text) !important; }
-
-/* Article / paragraph display */
-[data-theme="dark"] .paragraph-display article h3 { color: var(--text) !important; }
-[data-theme="dark"] .paragraph-display article p { color: var(--text-secondary) !important; }
-
-/* Quote display */
-[data-theme="dark"] .quote-display { color: var(--text) !important; }
-[data-theme="dark"] .quote-display blockquote { color: var(--text) !important; }
-
-/* Manual controls */
-[data-theme="dark"] .manual-controls { color: var(--text) !important; }
-
-/* Field row */
-[data-theme="dark"] .field-row { color: var(--text) !important; }
-[data-theme="dark"] .field-row input { background: var(--bg-elevated) !important; color: var(--text) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .field-row button { background: var(--bg-elevated) !important; color: var(--text) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .field-row button:hover { background: var(--accent) !important; color: var(--bg-elevated) !important; }
-
-/* Hover grid */
-[data-theme="dark"] .block-hover-grid { color: var(--text) !important; }
-[data-theme="dark"] .block-hover-item { color: var(--text) !important; }
-[data-theme="dark"] .block-hover-item:hover { background: var(--bg-sidebar) !important; }
-
-/* Pressed states */
-[data-theme="dark"] .pressed-demo { color: var(--text) !important; }
-
-/* Cursor track */
-[data-theme="dark"] .cursor-track-demo { color: var(--text) !important; }
-
-/* Continuous */
-[data-theme="dark"] .continuous-demo { color: var(--text) !important; }
-
-/* Overlay */
-[data-theme="dark"] .overlay-demo { color: var(--text) !important; }
-
-/* Scroll link */
-[data-theme="dark"] .scroll-link-demo { color: var(--text) !important; }
-
-/* 3D */
-[data-theme="dark"] .demo-3d { color: var(--text) !important; }
-
-}
-
-html, body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 14px/1.6 var(--font);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+[data-theme="dark"] .sidebar { border-right-color: transparent; }
+[data-theme="dark"] .topbar { border-bottom-color: transparent; }
+[data-theme="dark"] .controls-section { background: var(--bg-sidebar); border-color: transparent; }
+[data-theme="dark"] .control-chip { background: var(--bg); border-color: var(--border); color: var(--text-tertiary); }
+[data-theme="dark"] .control-chip:hover { background: var(--bg-elevated); color: var(--text); }
+[data-theme="dark"] .control-chip.active { background: var(--accent); color: var(--bg-elevated); border-color: var(--accent); }
 
 /* ── Topbar ─────────────────────────────── */
 .topbar {
@@ -3917,26 +4042,26 @@ html, body {
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fcfcfc;
+  background: var(--bg-elevated);
   color: var(--text);
   font: 500 12.5px/1.2 var(--font);
   cursor: pointer;
   transition: all 0.15s var(--ease);
 }
-.select-trigger:hover { border-color: #bdbdbd; }
-.select-menu.open .select-trigger { border-color: #9f9f9f; box-shadow: 0 0 0 2px rgba(17,17,17,0.06); }
+.select-trigger:hover { border-color: var(--text-tertiary); }
+.select-menu.open .select-trigger { border-color: var(--text-tertiary); box-shadow: 0 0 0 2px rgba(127,127,127,0.15); }
 .select-value { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select-caret { color: #7a7a7a; font-size: 12px; line-height: 1; }
+.select-caret { color: var(--text-tertiary); font-size: 12px; line-height: 1; }
 .select-popover {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
   right: 0;
   z-index: 90;
-  background: #fff;
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: 10px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-lg);
   padding: 6px;
   max-height: 240px;
   overflow: auto;
@@ -3946,7 +4071,7 @@ html, body {
   top: -6px;
   z-index: 1;
   padding: 0 0 6px;
-  background: #fff;
+  background: var(--bg-elevated);
 }
 .select-search {
   width: 100%;
@@ -3954,14 +4079,14 @@ html, body {
   padding: 0 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #f7f7f7;
+  background: var(--bg);
   color: var(--text);
   font: 500 12.5px/1 var(--font);
 }
 .select-search:focus {
   outline: none;
-  border-color: #9f9f9f;
-  box-shadow: 0 0 0 2px rgba(17,17,17,0.06);
+  border-color: var(--text-tertiary);
+  box-shadow: 0 0 0 2px rgba(127,127,127,0.15);
 }
 .select-option {
   width: 100%;
@@ -3970,12 +4095,12 @@ html, body {
   border-radius: 7px;
   text-align: left;
   padding: 8px 9px;
-  color: #252525;
+  color: var(--text);
   font: 500 12.5px/1.25 var(--font);
   cursor: pointer;
 }
-.select-option:hover { background: #f1f1f1; }
-.select-option.active { background: #ebebeb; color: #111; font-weight: 600; }
+.select-option:hover { background: var(--bg-sidebar); }
+.select-option.active { background: var(--bg); color: var(--text); font-weight: 600; }
 .select-empty {
   padding: 12px 9px;
   color: var(--text-tertiary);
@@ -5655,9 +5780,9 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
   align-content: center;
   gap: 14px;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
 }
-.block-demo-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: var(--border); }
+.block-demo-card:hover { box-shadow: var(--shadow-lg); border-color: var(--border); }
 .block-card-icon { color: var(--text-tertiary); margin-bottom: 4px; }
 .block-demo-card h3 {
   margin: 0;
@@ -5687,19 +5812,122 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
   transition: all 0.15s var(--ease);
 }
 .block-demo-card button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+/* ── Pastel card tones — always light surface with dark text ── */
 .card-basic { background: #fff8e6; }
 .card-pro { background: #e8f4ff; }
 .card-features { background: #e8f9ee; }
 .card-pricing { background: #ffe8ea; }
 .card-faq { background: #f0f0ff; }
+
+/* Pastel cards use fixed dark foreground regardless of theme */
+.card-basic, .card-pro, .card-features, .card-pricing, .card-faq {
+  --card-text: #171717;
+  --card-muted: #525252;
+  --card-button-bg: #171717;
+  --card-button-text: #ffffff;
+}
+.card-basic h3, .card-pro h3, .card-features h3, .card-pricing h3, .card-faq h3,
+.card-basic strong, .card-pro strong, .card-features strong, .card-pricing strong, .card-faq strong {
+  color: var(--card-text) !important;
+}
+.card-basic p, .card-pro p, .card-features p, .card-pricing p, .card-faq p,
+.card-basic span, .card-pro span, .card-features span, .card-pricing span, .card-faq span {
+  color: var(--card-muted) !important;
+}
+.card-basic .block-card-icon, .card-pro .block-card-icon,
+.card-features .block-card-icon, .card-pricing .block-card-icon,
+.card-faq .block-card-icon {
+  color: var(--card-muted) !important;
+}
+.card-basic button, .card-pro button, .card-features button,
+.card-pricing button, .card-faq button {
+  background: var(--card-button-bg) !important;
+  color: var(--card-button-text) !important;
+  border-color: var(--card-button-bg) !important;
+}
+.card-basic button:hover, .card-pro button:hover, .card-features button:hover,
+.card-pricing button:hover, .card-faq button:hover {
+  background: #333333 !important;
+  border-color: #333333 !important;
+}
+
+/* Parallax pastel card overrides */
+.list-parallax-card.card-basic,
+.list-parallax-card.card-pro,
+.list-parallax-card.card-features,
+.list-parallax-card.card-pricing,
+.list-parallax-card.card-faq {
+  --card-text: #171717;
+  --card-muted: #525252;
+}
+.list-parallax-card.card-basic h3, .list-parallax-card.card-pro h3,
+.list-parallax-card.card-features h3, .list-parallax-card.card-pricing h3,
+.list-parallax-card.card-faq h3 {
+  color: var(--card-text) !important;
+}
+.list-parallax-card.card-basic p, .list-parallax-card.card-pro p,
+.list-parallax-card.card-features p, .list-parallax-card.card-pricing p,
+.list-parallax-card.card-faq p {
+  color: var(--card-muted) !important;
+}
 .card-welcome { background: #e8f9ee; }
 
-/* ── Block Preview Area ─────────────────── */
-.block-preview-area {
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ── Pastel card tones — always light surface with dark text ── */
+.card-basic { background: #fff8e6; }
+.card-pro { background: #e8f4ff; }
+.card-features { background: #e8f9ee; }
+.card-pricing { background: #ffe8ea; }
+.card-faq { background: #f0f0ff; }
+
+.card-basic, .card-pro, .card-features, .card-pricing, .card-faq, .card-welcome {
+  --card-text: #171717;
+  --card-muted: #525252;
+  --card-button-bg: #171717;
+  --card-button-text: #ffffff;
+}
+.card-basic h3, .card-pro h3, .card-features h3, .card-pricing h3, .card-faq h3, .card-welcome h3,
+.card-basic strong, .card-pro strong, .card-features strong, .card-pricing strong, .card-faq strong, .card-welcome strong {
+  color: var(--card-text) !important;
+}
+.card-basic p, .card-pro p, .card-features p, .card-pricing p, .card-faq p, .card-welcome p,
+.card-basic span, .card-pro span, .card-features span, .card-pricing span, .card-faq span, .card-welcome span {
+  color: var(--card-muted) !important;
+}
+.card-basic .block-card-icon, .card-pro .block-card-icon,
+.card-features .block-card-icon, .card-pricing .block-card-icon,
+.card-faq .block-card-icon, .card-welcome .block-card-icon {
+  color: var(--card-muted) !important;
+}
+.card-basic button, .card-pro button, .card-features button,
+.card-pricing button, .card-faq button, .card-welcome button {
+  background: var(--card-button-bg) !important;
+  color: var(--card-button-text) !important;
+  border-color: var(--card-button-bg) !important;
+}
+.card-basic button:hover, .card-pro button:hover, .card-features button:hover,
+.card-pricing button:hover, .card-faq button:hover, .card-welcome button:hover {
+  background: #333333 !important;
+  border-color: #333333 !important;
+}
+
+/* Parallax pastel card overrides */
+.list-parallax-card.card-basic,
+.list-parallax-card.card-pro,
+.list-parallax-card.card-features,
+.list-parallax-card.card-pricing,
+.list-parallax-card.card-faq {
+  --card-text: #171717;
+  --card-muted: #525252;
+}
+.list-parallax-card.card-basic h3, .list-parallax-card.card-pro h3,
+.list-parallax-card.card-features h3, .list-parallax-card.card-pricing h3,
+.list-parallax-card.card-faq h3 {
+  color: var(--card-text) !important;
+}
+.list-parallax-card.card-basic p, .list-parallax-card.card-pro p,
+.list-parallax-card.card-features p, .list-parallax-card.card-pricing p,
+.list-parallax-card.card-faq p {
+  color: var(--card-muted) !important;
 }
 
 /* ── Block Scroll ───────────────────────── */
@@ -5708,7 +5936,7 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
   height: var(--preview-stage-height);
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 48px 24px;
   width: 100%;
   justify-items: center;
 }
@@ -5716,7 +5944,8 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
   justify-self: center;
 }
 .scroll-demo .block-scroll-item + .block-scroll-item {
-  margin-top: 0;
+  margin-top: 80px;
+  border-top: 1px solid var(--border-subtle);
 }
 .parallax-demo {
   position: relative;
@@ -5979,9 +6208,6 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
 }
 .control-chip:hover { background: var(--bg-elevated); color: var(--text); border-color: var(--text-tertiary); }
 .control-chip.active { background: var(--accent); color: var(--bg-elevated); border-color: var(--accent); }
-[data-theme="dark"] .control-chip { background: var(--bg); border-color: var(--border); color: var(--text-tertiary); }
-[data-theme="dark"] .control-chip:hover { background: var(--bg-elevated); color: var(--text); }
-[data-theme="dark"] .control-chip.active { background: var(--accent); color: var(--bg-elevated); border-color: var(--accent); }
 
 /* ── Properties Editor ──────────────────── */
 .properties-toggle {
@@ -6013,6 +6239,32 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
 .demo-actions { display: flex; gap: 10px; margin-bottom: 16px; }
 .demo-nav button { font-family: var(--font); }
 
+/* ── Mobile Controls Button ──────────────── */
+.mobile-controls-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 96;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.mobile-controls-btn:active {
+  transform: scale(0.94);
+}
+.mobile-controls-btn svg {
+  display: block;
+}
+
 /* ── Responsive ─────────────────────────── */
 @media (max-width: 900px) {
   .sidebar-toggle { display: flex; }
@@ -6036,6 +6288,7 @@ button:disabled:hover { background: var(--bg-elevated); border-color: var(--bord
   .docs-section-head { grid-template-columns: 1fr; }
   .docs-section-head span { grid-row: auto; }
   .docs-api-grid { grid-template-columns: 1fr; }
+  .mobile-controls-btn { display: flex; }
 }
 
 @media (max-width: 600px) {
